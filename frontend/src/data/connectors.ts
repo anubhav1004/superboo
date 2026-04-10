@@ -1,3 +1,162 @@
 import type { Connector } from "../types";
-export const CONNECTORS: Connector[] = [];
-export const CONNECTOR_CATEGORIES: string[] = [];
+
+export const CONNECTORS: Connector[] = [
+  // ── Consumer Integrations ──
+  {
+    id: "tiktok",
+    name: "TikTok",
+    category: "social",
+    status: "connected",
+    description: "Post TikToks directly. Auto-captions, trending sounds, scheduling.",
+  },
+  {
+    id: "instagram",
+    name: "Instagram",
+    category: "social",
+    status: "connected",
+    description: "Share posts, reels, and stories. Auto-hashtags and scheduling.",
+  },
+  {
+    id: "youtube",
+    name: "YouTube",
+    category: "social",
+    status: "configured",
+    description: "Upload videos, create thumbnails, manage your channel.",
+  },
+  {
+    id: "spotify",
+    name: "Spotify",
+    category: "social",
+    status: "disconnected",
+    description: "Distribute podcasts and music directly to Spotify.",
+  },
+  {
+    id: "google-slides",
+    name: "Google Slides",
+    category: "data",
+    status: "connected",
+    description: "Export pitch decks and presentations to Google Slides.",
+  },
+  {
+    id: "google-drive",
+    name: "Google Drive",
+    category: "data",
+    status: "connected",
+    description: "Save all your creations to Drive automatically.",
+  },
+  {
+    id: "notion",
+    name: "Notion",
+    category: "data",
+    status: "configured",
+    description: "Export documents, research, and plans to Notion.",
+  },
+  {
+    id: "canva",
+    name: "Canva",
+    category: "data",
+    status: "disconnected",
+    description: "Import and export designs between Superboo and Canva.",
+  },
+  {
+    id: "twitter-x",
+    name: "X (Twitter)",
+    category: "social",
+    status: "connected",
+    description: "Post tweets, threads, and images. Auto-scheduling.",
+  },
+  {
+    id: "linkedin",
+    name: "LinkedIn",
+    category: "social",
+    status: "configured",
+    description: "Share professional posts and articles.",
+  },
+  {
+    id: "whatsapp",
+    name: "WhatsApp",
+    category: "social",
+    status: "connected",
+    description: "Send creations directly to WhatsApp contacts and groups.",
+  },
+  {
+    id: "email-smtp",
+    name: "Email (SMTP)",
+    category: "data",
+    status: "connected",
+    description: "Send emails directly from Superboo.",
+  },
+
+  // ── Developer / Advanced ──
+  {
+    id: "openclaw-gateway",
+    name: "Superboo Gateway",
+    category: "dev",
+    status: "connected",
+    description: "AI agent gateway powering Superboo.",
+    credentials: "OC_BRIDGE_TOKEN",
+  },
+  {
+    id: "gemini",
+    name: "Google Gemini",
+    category: "ai",
+    status: "connected",
+    description: "Gemini 3.1 Pro for scripts, images, and video generation.",
+    credentials: "GEMINI_API_KEY",
+  },
+  {
+    id: "zai-glm",
+    name: "Z.ai GLM 5.1",
+    category: "ai",
+    status: "connected",
+    description: "Primary language model.",
+    credentials: "Z_AI_API_KEY",
+  },
+  {
+    id: "elevenlabs",
+    name: "ElevenLabs",
+    category: "ai",
+    status: "connected",
+    description: "Natural voice generation for voiceovers.",
+    credentials: "ELEVENLABS_API_KEY",
+  },
+  {
+    id: "github",
+    name: "GitHub",
+    category: "dev",
+    status: "connected",
+    description: "Version control and deployment.",
+    credentials: "GH_TOKEN",
+  },
+  {
+    id: "vercel",
+    name: "Vercel",
+    category: "deployment",
+    status: "connected",
+    description: "Frontend hosting and deployment.",
+    credentials: "VERCEL_TOKEN",
+  },
+  {
+    id: "gcp-vm",
+    name: "GCP VM",
+    category: "dev",
+    status: "connected",
+    description: "Backend compute infrastructure.",
+  },
+  {
+    id: "bridge-api",
+    name: "Superboo Bridge",
+    category: "dev",
+    status: "connected",
+    description: "FastAPI bridge for chat and file serving.",
+    credentials: "oc-bridge-2026-anubhav-secret",
+  },
+];
+
+export const CONNECTOR_CATEGORIES: string[] = [
+  "social",
+  "data",
+  "ai",
+  "dev",
+  "deployment",
+];

@@ -8,6 +8,7 @@ import {
   Trash2,
   Search,
   Settings as SettingsIcon,
+  Plug,
 } from "lucide-react";
 
 function GhostIcon({ size = 24 }: { size?: number }) {
@@ -46,6 +47,7 @@ import TasksList from "../tasks/TasksList";
 
 interface Props {
   onOpenSkills: () => void;
+  onOpenConnectors: () => void;
   onOpenSettings: () => void;
 }
 
@@ -62,6 +64,7 @@ function timeAgo(ts: number): string {
 
 export default function Sidebar({
   onOpenSkills,
+  onOpenConnectors,
   onOpenSettings,
 }: Props) {
   const {
@@ -110,6 +113,13 @@ export default function Sidebar({
           title="Create"
         >
           <Sparkles size={16} />
+        </button>
+        <button
+          onClick={onOpenConnectors}
+          className="p-2.5 rounded-xl hover:bg-bg-surface text-fg-muted hover:text-fg transition-all hover:scale-105 active:scale-95"
+          title="Connect"
+        >
+          <Plug size={16} />
         </button>
         <div className="flex-1" />
         <button
@@ -176,6 +186,13 @@ export default function Sidebar({
         >
           <Sparkles size={13} className="text-accent" />
           Create
+        </button>
+        <button
+          onClick={onOpenConnectors}
+          className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-full bg-bg-elevated hover:bg-bg-surface border border-border hover:border-accent/30 text-[12px] text-fg-muted hover:text-fg transition-all hover:scale-[1.02] active:scale-[0.98]"
+        >
+          <Plug size={13} className="text-accent" />
+          Connect
         </button>
       </div>
 
