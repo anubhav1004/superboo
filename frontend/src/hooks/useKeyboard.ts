@@ -5,7 +5,7 @@ export function useKeyboard() {
   const {
     createSession,
     toggleSidebar,
-    setSkillsOpen,
+    setCreatePanelOpen,
     setConnectorsOpen,
     setSettingsOpen,
   } = useChatStore();
@@ -30,7 +30,7 @@ export function useKeyboard() {
         toggleSidebar();
       } else if (e.key === "k" && e.shiftKey) {
         e.preventDefault();
-        setSkillsOpen(true);
+        setCreatePanelOpen(true);
       } else if (e.key === "j" && e.shiftKey) {
         e.preventDefault();
         setConnectorsOpen(true);
@@ -44,7 +44,7 @@ export function useKeyboard() {
   }, [
     createSession,
     toggleSidebar,
-    setSkillsOpen,
+    setCreatePanelOpen,
     setConnectorsOpen,
     setSettingsOpen,
   ]);

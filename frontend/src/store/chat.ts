@@ -16,7 +16,7 @@ interface ChatState {
   sessions: Session[];
   activeSessionId: string | null;
   sidebarOpen: boolean;
-  skillsOpen: boolean;
+  createPanelOpen: boolean;
   connectorsOpen: boolean;
   settingsOpen: boolean;
   tasks: Task[];
@@ -37,7 +37,7 @@ interface ChatState {
     patch: Partial<Message>
   ) => void;
   toggleSidebar: () => void;
-  setSkillsOpen: (open: boolean) => void;
+  setCreatePanelOpen: (open: boolean) => void;
   setConnectorsOpen: (open: boolean) => void;
   setSettingsOpen: (open: boolean) => void;
   setAgent: (id: string, model: string) => void;
@@ -63,18 +63,18 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 
 function makeStepsForSkill(skillId: string): TaskStep[] {
   const base = [
-    "Parse request & load skill",
-    "Prepare inputs",
-    "Execute main action",
-    "Post-process outputs",
-    "Finalize & notify",
+    "Understanding your request",
+    "Creating content",
+    "Polishing output",
+    "Adding final touches",
+    "Ready to download",
   ];
   const skill = SKILLS.find((s) => s.id === skillId);
   return base.map((title, i) => ({
     id: uid(),
     title,
     status: i === 0 ? "running" : "pending",
-    tool: skill?.model || skill?.id,
+    tool: skill?.id,
     startedAt: i === 0 ? Date.now() : 0,
   }));
 }
@@ -85,7 +85,7 @@ export const useChatStore = create<ChatState>()(
       sessions: [],
       activeSessionId: null,
       sidebarOpen: typeof window !== "undefined" ? window.innerWidth >= 768 : true,
-      skillsOpen: false,
+      createPanelOpen: false,
       connectorsOpen: false,
       settingsOpen: false,
       tasks: SEED_TASKS,
@@ -161,7 +161,7 @@ export const useChatStore = create<ChatState>()(
         })),
 
       toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
-      setSkillsOpen: (open) => set({ skillsOpen: open }),
+      setCreatePanelOpen: (open) => set({ createPanelOpen: open }),
       setConnectorsOpen: (open) => set({ connectorsOpen: open }),
       setSettingsOpen: (open) => set({ settingsOpen: open }),
       setAgent: (agentId, model) => set({ agentId, model }),
@@ -257,7 +257,7 @@ export const useChatStore = create<ChatState>()(
         })),
     }),
     {
-      name: "superboo-ui-v1",
+      name: "superboo-ui-v2",
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => ({
         sessions: s.sessions,

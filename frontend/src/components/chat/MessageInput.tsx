@@ -1,7 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import {
   Plus,
-  Hash,
   Mic,
   ArrowUp,
   X,
@@ -9,39 +8,23 @@ import {
   Image as ImageIcon,
   Video,
   Code,
-  Sparkles,
 } from "lucide-react";
-import { SKILLS } from "../../data/skills";
-import type { Skill } from "../../types";
 import clsx from "clsx";
 
 interface Props {
-  onSend: (text: string, skillTags: string[], files: File[]) => void;
+  onSend: (text: string, files: File[]) => void;
   disabled?: boolean;
 }
 
 export default function MessageInput({ onSend, disabled }: Props) {
   const [text, setText] = useState("");
-  const [skillTags, setSkillTags] = useState<string[]>([]);
   const [files, setFiles] = useState<File[]>([]);
-  const [showSkillPicker, setShowSkillPicker] = useState(false);
-  const [skillQuery, setSkillQuery] = useState("");
   const [recording, setRecording] = useState(false);
   const [focused, setFocused] = useState(false);
   const [sendBounce, setSendBounce] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-
-  useEffect(() => {
-    const match = text.match(/#(\w*)$/);
-    if (match) {
-      setShowSkillPicker(true);
-      setSkillQuery(match[1]);
-    } else {
-      setShowSkillPicker(false);
-    }
-  }, [text]);
 
   useEffect(() => {
     const ta = textareaRef.current;
@@ -55,9 +38,8 @@ export default function MessageInput({ onSend, disabled }: Props) {
     if (!trimmed && files.length === 0) return;
     setSendBounce(true);
     setTimeout(() => setSendBounce(false), 300);
-    onSend(trimmed, skillTags, files);
+    onSend(trimmed, files);
     setText("");
-    setSkillTags([]);
     setFiles([]);
   };
 
@@ -66,15 +48,6 @@ export default function MessageInput({ onSend, disabled }: Props) {
       e.preventDefault();
       handleSend();
     }
-  };
-
-  const addSkill = (skill: Skill) => {
-    if (!skillTags.includes(skill.id)) {
-      setSkillTags((prev) => [...prev, skill.id]);
-    }
-    setText((prev) => prev.replace(/#\w*$/, ""));
-    setShowSkillPicker(false);
-    textareaRef.current?.focus();
   };
 
   const handleFiles = (list: FileList | null) => {
@@ -106,10 +79,6 @@ export default function MessageInput({ onSend, disabled }: Props) {
     }
   };
 
-  const filteredSkills = SKILLS.filter((s) =>
-    s.name.toLowerCase().includes(skillQuery.toLowerCase())
-  ).slice(0, 6);
-
   const fileIcon = (f: File) => {
     if (f.type.startsWith("image/")) return <ImageIcon size={12} />;
     if (f.type.startsWith("video/")) return <Video size={12} />;
@@ -122,32 +91,6 @@ export default function MessageInput({ onSend, disabled }: Props) {
   return (
     <div className="px-4 md:px-8 pb-4 md:pb-6 pt-2">
       <div className="max-w-full md:max-w-3xl mx-auto">
-        {/* Skill tags */}
-        {skillTags.length > 0 && (
-          <div className="flex gap-1.5 mb-2 flex-wrap px-1">
-            {skillTags.map((id) => {
-              const skill = SKILLS.find((s) => s.id === id);
-              return (
-                <span
-                  key={id}
-                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-accent/15 text-accent-hover border border-accent/30 fade-in-fast"
-                >
-                  <Sparkles size={10} />
-                  {skill?.name ?? id}
-                  <button
-                    onClick={() =>
-                      setSkillTags((prev) => prev.filter((x) => x !== id))
-                    }
-                    className="hover:text-white transition-colors ml-0.5"
-                  >
-                    <X size={11} />
-                  </button>
-                </span>
-              );
-            })}
-          </div>
-        )}
-
         {/* Files */}
         {files.length > 0 && (
           <div className="flex gap-1.5 mb-2 flex-wrap px-1">
@@ -181,31 +124,6 @@ export default function MessageInput({ onSend, disabled }: Props) {
             disabled && "opacity-60"
           )}
         >
-          {/* Skill picker dropdown */}
-          {showSkillPicker && filteredSkills.length > 0 && (
-            <div className="absolute bottom-full mb-2 left-0 right-0 glass border border-border rounded-2xl shadow-modal overflow-hidden scale-in">
-              <div className="px-4 py-2.5 text-[11px] text-fg-dim font-medium uppercase tracking-wider border-b border-border flex items-center gap-2">
-                <Sparkles size={11} className="text-accent" />
-                Skills
-              </div>
-              {filteredSkills.map((s) => (
-                <button
-                  key={s.id}
-                  onClick={() => addSkill(s)}
-                  className="w-full text-left px-4 py-3 hover:bg-bg-hover transition-all border-b border-border/40 last:border-b-0 group"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[13px] text-fg font-medium">{s.name}</span>
-                    <span className="text-[10px] text-fg-dim px-2 py-0.5 rounded-full bg-bg-surface border border-border">{s.category}</span>
-                  </div>
-                  <div className="text-[11px] text-fg-dim truncate mt-0.5">
-                    {s.description}
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-
           {/* Gradient focus line */}
           <div className={clsx(
             "h-[1px] mx-4 transition-opacity duration-300",
@@ -219,7 +137,7 @@ export default function MessageInput({ onSend, disabled }: Props) {
             onKeyDown={handleKey}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
-            placeholder="Ask Boo anything..."
+            placeholder="What do you want to create?"
             rows={1}
             className="w-full bg-transparent text-[14px] text-fg placeholder:text-fg-dim px-5 pt-3 pb-1 resize-none focus:outline-none leading-relaxed relative z-[1]"
             disabled={disabled}
@@ -240,18 +158,6 @@ export default function MessageInput({ onSend, disabled }: Props) {
               onChange={(e) => handleFiles(e.target.files)}
               className="hidden"
             />
-            <button
-              onClick={() => {
-                setText(
-                  (prev) => prev + (prev.endsWith(" ") || !prev ? "#" : " #")
-                );
-                textareaRef.current?.focus();
-              }}
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-bg-surface text-fg-muted hover:text-accent transition-all hover:scale-110 active:scale-95"
-              title="Add skill"
-            >
-              <Hash size={15} />
-            </button>
             <button
               onClick={toggleRecording}
               className={clsx(

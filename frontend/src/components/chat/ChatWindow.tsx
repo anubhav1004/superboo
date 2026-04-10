@@ -3,35 +3,25 @@ import { useChatStore, uid } from "../../store/chat";
 import Message from "./Message";
 import MessageInput from "./MessageInput";
 import { sendChatWithPolling } from "../../lib/api";
-import { SKILLS } from "../../data/skills";
-import { Menu } from "lucide-react";
+import { Menu, Video, Image, FileText, Smile, TrendingUp } from "lucide-react";
 
 const SUGGESTIONS = [
-  {
-    emoji: "\uD83C\uDFAC",
-    title: "Make a video",
-    prompt:
-      "Generate a UGC street interview ad for Professor Curious in Kota with the kota-coaching scene #ugc-street-interview",
-  },
-  {
-    emoji: "\uD83D\uDCC8",
-    title: "Grow my account",
-    prompt:
-      "Kick off the 24/7 growth engine for @professorcurious.ai #growth-engine",
-  },
-  {
-    emoji: "\u2702\uFE0F",
-    title: "Edit a clip",
-    prompt:
-      "Post-process the latest render: warm color grade, hook text overlay, loudnorm audio #video-editor",
-  },
-  {
-    emoji: "\uD83D\uDD0D",
-    title: "Research trends",
-    prompt:
-      "Research the latest trending hooks and formats on TikTok for edtech content",
-  },
+  { icon: "Video", color: "#EC4899", title: "Create a TikTok", prompt: "Create a 15-second TikTok about my new coffee shop opening this weekend" },
+  { icon: "Presentation", color: "#22C55E", title: "Make a deck", prompt: "Create a 10-slide pitch deck for my AI-powered fitness app startup" },
+  { icon: "Image", color: "#3B82F6", title: "Design a poster", prompt: "Design a poster for a college music festival happening next month" },
+  { icon: "FileText", color: "#22C55E", title: "Write a resume", prompt: "Write a professional resume for a recent CS graduate" },
+  { icon: "Smile", color: "#EC4899", title: "Make a meme", prompt: "Create a funny meme about procrastinating on assignments" },
+  { icon: "TrendingUp", color: "#EAB308", title: "Research trends", prompt: "What are the top trending topics on TikTok this week?" },
 ];
+
+const ICON_MAP: Record<string, React.ReactNode> = {
+  Video: <Video size={18} />,
+  Presentation: <FileText size={18} />,
+  Image: <Image size={18} />,
+  FileText: <FileText size={18} />,
+  Smile: <Smile size={18} />,
+  TrendingUp: <TrendingUp size={18} />,
+};
 
 function GhostEmptyState() {
   return (
@@ -89,9 +79,6 @@ export default function ChatWindow() {
     updateMessage,
     createSession,
     renameSession,
-    createTaskFromSkill,
-    advanceTaskProgress,
-    setTaskStatus,
     toggleSidebar,
   } = useChatStore();
 
@@ -107,7 +94,6 @@ export default function ChatWindow() {
 
   const handleSend = async (
     text: string,
-    skillTags: string[],
     files: File[]
   ) => {
     // Ensure session
@@ -124,7 +110,6 @@ export default function ChatWindow() {
       id: uid(),
       role: "user",
       content: text,
-      skillTags,
       attachments: files.map((f) => ({
         id: uid(),
         name: f.name,
@@ -138,26 +123,13 @@ export default function ChatWindow() {
       createdAt: Date.now(),
     });
 
-    // Create a task if a skill was tagged
-    const taskIds: string[] = [];
-    for (const skillId of skillTags) {
-      const skill = SKILLS.find((s) => s.id === skillId);
-      if (!skill) continue;
-      const taskId = createTaskFromSkill(
-        skillId,
-        `${skill.name} — ${text.slice(0, 50)}`,
-        sid
-      );
-      taskIds.push(taskId);
-    }
-
     // Assistant placeholder with execution steps
     const asstId = uid();
     const initSteps = [
-      { label: "Sending your message...", state: "active" as const, icon: "send" as const },
-      { label: "Boo is thinking...", state: "pending" as const, icon: "think" as const },
-      { label: "Getting the response...", state: "pending" as const, icon: "receive" as const },
-      { label: "Almost there...", state: "pending" as const, icon: "render" as const },
+      { label: "Sending to Boo...", state: "active" as const, icon: "send" as const },
+      { label: "Boo is on it...", state: "pending" as const, icon: "think" as const },
+      { label: "Almost there...", state: "pending" as const, icon: "receive" as const },
+      { label: "Wrapping up...", state: "pending" as const, icon: "render" as const },
     ];
     addMessage(sid, {
       id: asstId,
@@ -177,16 +149,13 @@ export default function ChatWindow() {
     };
 
     try {
-      const uiContext = `[system: You are on the Superboo Web UI. It renders videos/images/docs INLINE from file paths. Always include full file paths. Do NOT send to WhatsApp unless asked.]\n`;
-      const skillPreamble = skillTags.length
-        ? `[skills: ${skillTags.join(", ")}]\n`
-        : "";
+      const uiContext = `[system: You are Superboo, a friendly AI that creates things for people. Always include file paths for any media you generate. Be helpful and casual.]\n`;
       const attachmentNote = files.length
         ? `[attachments: ${files.map((f) => f.name).join(", ")}]\n`
         : "";
 
       const reply = await sendChatWithPolling(
-        uiContext + skillPreamble + attachmentNote + text,
+        uiContext + attachmentNote + text,
         "agent:main:main",
         (step, progress) => {
           if (step === "sending") setStep(0);
@@ -217,13 +186,6 @@ export default function ChatWindow() {
       setTimeout(() => {
         updateMessage(sid, asstId, { execSteps: undefined });
       }, 2000);
-
-      // Advance task progress for tagged skills
-      for (const tid of taskIds) {
-        for (let i = 0; i < 2; i++) {
-          setTimeout(() => advanceTaskProgress(tid), 800 * (i + 1));
-        }
-      }
     } catch (err: any) {
       const msg = `**Oops!** Something went wrong.\n\n\`${err.message}\`\n\nCheck Settings or make sure the bridge is running.`;
       updateMessage(sid, asstId, {
@@ -231,7 +193,6 @@ export default function ChatWindow() {
         streaming: false,
         execSteps: undefined,
       });
-      for (const tid of taskIds) setTaskStatus(tid, "cancelled");
     }
   };
 
@@ -261,21 +222,22 @@ export default function ChatWindow() {
               <GhostEmptyState />
             </div>
             <h1 className="text-[28px] md:text-[32px] font-bold text-fg mb-2 tracking-tight">
-              Hey! I'm <span className="text-gradient">Superboo</span>
+              What do you want to <span className="text-gradient">create</span>?
             </h1>
             <p className="text-[14px] text-fg-muted mb-10 text-center max-w-md">
               Tell me what you need — I'll figure out the rest
             </p>
 
-            <div className="flex flex-wrap gap-2.5 justify-center w-full">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 w-full max-w-lg">
               {SUGGESTIONS.map((s) => (
                 <button
                   key={s.title}
-                  onClick={() => handleSend(s.prompt, [], [])}
-                  className="group chip-shimmer flex items-center gap-2.5 px-5 py-3 rounded-full bg-bg-elevated hover:bg-bg-surface border border-border hover:border-accent/30 text-[13px] text-fg-muted hover:text-fg transition-all hover:scale-[1.03] active:scale-[0.97] hover:shadow-card"
+                  onClick={() => handleSend(s.prompt, [])}
+                  className="group flex items-center gap-3 px-4 py-3.5 rounded-xl bg-bg-elevated hover:bg-bg-surface border border-border hover:border-accent/30 text-left transition-all hover:scale-[1.03] active:scale-[0.97] hover:shadow-card"
+                  style={{ borderLeftWidth: 3, borderLeftColor: s.color }}
                 >
-                  <span className="text-base">{s.emoji}</span>
-                  {s.title}
+                  <span style={{ color: s.color }}>{ICON_MAP[s.icon]}</span>
+                  <span className="text-[13px] text-fg-muted group-hover:text-fg font-medium">{s.title}</span>
                 </button>
               ))}
             </div>

@@ -99,9 +99,10 @@ export default function Settings({ onClose }: Props) {
         <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4 md:py-5 space-y-6">
           {/* Bridge config */}
           <div>
-            <div className="text-[11px] font-semibold text-fg-dim tracking-wider uppercase mb-3">
-              Boo's Brain
+            <div className="text-[11px] font-semibold text-fg-dim tracking-wider uppercase mb-1">
+              Advanced
             </div>
+            <div className="text-[11px] text-fg-dim mb-3">For developers</div>
             <div className="space-y-3">
               <div>
                 <label className="text-[12px] text-fg-muted block mb-1.5">

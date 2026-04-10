@@ -28,6 +28,13 @@ export default {
           glow: "#9370ff",
           soft: "rgba(147, 112, 255, 0.15)",
         },
+        category: {
+          content: '#EC4899',
+          design: '#3B82F6',
+          docs: '#22C55E',
+          video: '#F97316',
+          business: '#EAB308',
+        },
       },
       fontFamily: {
         sans: [

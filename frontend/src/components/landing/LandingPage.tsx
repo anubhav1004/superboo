@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { Video, Presentation, PenTool, FileText, Film, TrendingUp } from "lucide-react";
 
 /* ═══════════════════════════════════════════════════════
    Ghost SVG
@@ -51,12 +52,11 @@ function useReveal<T extends HTMLElement>(): [React.RefObject<T | null>, boolean
    ═══════════════════════════════════════════════════════ */
 function ChatPreview() {
   const lines = [
-    { role: "user", text: "Generate 5 UGC street interview ads for Kota" },
-    { role: "bot", text: "Starting... Picked skills: ugc-street-interview, video-editor" },
-    { role: "bot", text: "Writing Hindi scripts with Gemini 3.1 Pro..." },
-    { role: "bot", text: "Generating scene 1 with Veo 3... extracting reference frame..." },
-    { role: "bot", text: "Stitching 6 scenes → loudnorm → captions → merged_video.mp4" },
-    { role: "bot", text: "Sent 5 videos to Slack. All done." },
+    { role: "user", text: "Make me a pitch deck for my AI fitness app" },
+    { role: "bot", text: "On it! Creating your pitch deck..." },
+    { role: "bot", text: "Writing the narrative and key slides..." },
+    { role: "bot", text: "Designing visuals and charts..." },
+    { role: "bot", text: "Your 10-slide pitch deck is ready! \uD83D\uDCCA" },
   ];
   const [shown, setShown] = useState(0);
   useEffect(() => {
@@ -77,14 +77,14 @@ function ChatPreview() {
         <span className="text-[11px] text-[#5a5a67] ml-2 font-mono">superboo.me/chat</span>
       </div>
       {/* Messages */}
-      <div className="px-4 py-4 space-y-3 min-h-[220px]">
+      <div className="px-4 py-4 space-y-3 min-h-[200px]">
         {lines.slice(0, shown).map((l, i) => (
-          <div key={i} className={`flex gap-2.5 ${l.role === "user" ? "" : ""}`}
+          <div key={i} className="flex gap-2.5"
             style={{ animation: "chatFadeIn 0.4s ease-out" }}>
             <div className={`w-5 h-5 rounded-full flex-shrink-0 mt-0.5 flex items-center justify-center text-[9px] ${
               l.role === "user" ? "bg-[#1e1e26] text-[#8f8f9c]" : "bg-gradient-to-br from-[#7c5cff] to-[#C084FC] text-white"
             }`}>
-              {l.role === "user" ? "A" : "S"}
+              {l.role === "user" ? "Y" : "S"}
             </div>
             <div className={`text-[12px] leading-relaxed ${l.role === "user" ? "text-[#ececef]" : "text-[#8f8f9c]"}`}>
               {l.text}
@@ -109,39 +109,34 @@ function ChatPreview() {
 /* ═══════════════════════════════════════════════════════
    Data
    ═══════════════════════════════════════════════════════ */
-const FEATURES = [
-  { icon: "video", title: "Video Generation", desc: "UGC ads, street interviews, talking heads with Veo 3, Sora 2, native AI voice — ready to post." },
-  { icon: "edit", title: "Post-Production", desc: "Color grading, captions, xfade transitions, CTA overlays, loudnorm audio. One command." },
-  { icon: "growth", title: "Growth Engine", desc: "Measure → learn → decide → create → post. A 24/7 daemon that grows your audience on autopilot." },
-  { icon: "search", title: "Trend Intelligence", desc: "Scrape viral accounts, analyze what's working, generate content briefs with AI-powered insights." },
-  { icon: "social", title: "Social Publishing", desc: "Auto-publish to Instagram, TikTok with optimized captions, hashtags, and posting schedules." },
-  { icon: "build", title: "Build Your Own", desc: "Create custom skills. Connect any API. Chain skills together. Your agent, your rules." },
+const FEATURES: { icon: React.ComponentType<{ size?: number; className?: string }>; title: string; desc: string }[] = [
+  { icon: Video, title: "TikTok & Reels", desc: "Scroll-stopping short videos with captions, transitions, and trending hooks." },
+  { icon: Presentation, title: "Pitch Decks", desc: "Polished presentations that tell your story. From idea to slides in seconds." },
+  { icon: PenTool, title: "Designs & Posters", desc: "Event posters, flyers, social graphics. Describe it, Boo designs it." },
+  { icon: FileText, title: "Resumes & Docs", desc: "Professional resumes, essays, emails. Write better, faster." },
+  { icon: Film, title: "Video Editing", desc: "Captions, color grading, transitions, voiceovers. Drop your clip, get it polished." },
+  { icon: TrendingUp, title: "Research & Trends", desc: "Market analysis, competitor research, trend reports. Know what's happening." },
 ];
 
-const ICON_PATHS: Record<string, string> = {
-  video: "M15 10l4.553-2.276A1 1 0 0 1 21 8.618v6.764a1 1 0 0 1-1.447.894L15 14M5 18h8a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2z",
-  edit: "M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z",
-  growth: "M23 6l-9.5 9.5-5-5L1 18M17 6h6v6",
-  search: "M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.35-4.35",
-  social: "M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z",
-  build: "M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z",
-};
-
-const SKILLS_ROW1 = [
-  "UGC Street Interview", "Video Editor", "Growth Engine", "Angry Object Ads",
-  "Podcast Ads", "News Reporter", "Social Caption Engine", "Trend Research",
-  "Analytics Tracker",
-];
-const SKILLS_ROW2 = [
-  "Character Gallery", "Generate Video", "Livestream Call", "Reaction Hooks",
-  "Script Polisher", "A/B Test Runner", "Custom Skill Builder", "Instagram Publisher",
-];
+const SKILLS_ROW1 = ["TikTok Videos", "Pitch Decks", "YouTube Thumbnails", "Resumes", "Social Posts", "Posters", "Memes", "Blog Posts", "Email Copy"];
+const SKILLS_ROW2 = ["Video Editing", "Voiceovers", "Logo Design", "Image Editing", "Market Research", "Business Plans", "Trend Reports", "Podcast Clips"];
 
 const STATS = [
-  { value: "17+", label: "Skills" },
-  { value: "5", label: "AI Models" },
-  { value: "24/7", label: "Autonomous" },
-  { value: "<30s", label: "Per Video" },
+  { value: "20+", label: "Creation Types" },
+  { value: "Instant", label: "Results" },
+  { value: "Zero", label: "Design Skills Needed" },
+  { value: "Free", label: "To Try" },
+];
+
+const USE_CASES = [
+  { emoji: "\uD83C\uDFAC", label: "Create a TikTok", color: "#EC4899" },
+  { emoji: "\uD83D\uDCCA", label: "Make a deck", color: "#22C55E" },
+  { emoji: "\uD83C\uDFA8", label: "Design a poster", color: "#3B82F6" },
+  { emoji: "\uD83D\uDCDD", label: "Write a resume", color: "#22C55E" },
+  { emoji: "\uD83D\uDE02", label: "Make a meme", color: "#EC4899" },
+  { emoji: "\uD83C\uDFB5", label: "Create a beat", color: "#F97316" },
+  { emoji: "\uD83D\uDCC8", label: "Research trends", color: "#EAB308" },
+  { emoji: "\u2709\uFE0F", label: "Write an email", color: "#22C55E" },
 ];
 
 /* ═══════════════════════════════════════════════════════
@@ -214,6 +209,7 @@ export default function LandingPage() {
   const [howRef, howVis] = useReveal<HTMLDivElement>();
   const [demoRef, demoVis] = useReveal<HTMLDivElement>();
   const [ctaRef, ctaVis] = useReveal<HTMLDivElement>();
+  const [useCaseRef, useCaseVis] = useReveal<HTMLDivElement>();
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
@@ -271,19 +267,21 @@ export default function LandingPage() {
           <h1 className="text-[48px] sm:text-[64px] md:text-[80px] font-[200] leading-[0.95] tracking-[-0.04em] mb-6">
             <span className="grad-text">Super</span>boo
           </h1>
-          <p className="text-[16px] md:text-[18px] text-[#8f8f9c] leading-relaxed max-w-md mb-10">
-            The AI agent that doesn&apos;t just chat — it <em className="text-[#C084FC] not-italic font-medium">executes</em>.
-            Videos, growth, publishing, analytics. Autonomously.
+          <p className="text-[18px] md:text-[22px] text-[#ececef] leading-relaxed max-w-md mb-3 font-medium">
+            Tell Boo what you need. Get it done.
+          </p>
+          <p className="text-[14px] md:text-[16px] text-[#8f8f9c] leading-relaxed max-w-md mb-10">
+            TikToks, decks, posters, resumes &mdash; just describe it.
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
             <button onClick={() => nav("/chat")}
               className="group px-8 py-4 rounded-2xl bg-[#7c5cff] hover:bg-[#9379ff] text-white text-[14px] font-medium transition-all cta-glow-btn">
-              Start chatting
+              Start creating
               <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
             </button>
-            <a href="#features"
+            <a href="#use-cases"
               className="px-8 py-4 rounded-2xl border border-[#222] hover:border-[#7c5cff]/50 text-[#8f8f9c] hover:text-white text-[14px] font-medium transition-all text-center">
-              Explore skills
+              See what Boo can make
             </a>
           </div>
         </div>
@@ -292,6 +290,25 @@ export default function LandingPage() {
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
           <div className="w-5 h-8 rounded-full border border-[#333] flex justify-center pt-1.5">
             <div className="w-1 h-2 rounded-full bg-[#7c5cff] scroll-dot-anim"/>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Use Case Tiles ─── */}
+      <section id="use-cases" className="py-16 md:py-20 px-5 md:px-8">
+        <div ref={useCaseRef} className={`max-w-3xl mx-auto reveal ${useCaseVis ? "revealed" : ""}`}>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {USE_CASES.map((uc) => (
+              <button
+                key={uc.label}
+                onClick={() => nav("/chat")}
+                className="use-case-tile group flex flex-col items-center justify-center gap-2 py-5 px-3 rounded-2xl border border-[#1a1a22] bg-[#0e0e13] transition-all hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
+                style={{ ["--uc-color" as string]: uc.color }}
+              >
+                <span className="text-2xl">{uc.emoji}</span>
+                <span className="text-[13px] text-[#8f8f9c] group-hover:text-white transition-colors font-medium">{uc.label}</span>
+              </button>
+            ))}
           </div>
         </div>
       </section>
@@ -314,24 +331,25 @@ export default function LandingPage() {
           <div className="text-center mb-16 md:mb-20">
             <span className="text-[11px] text-[#7c5cff] uppercase tracking-[0.2em] font-medium">Capabilities</span>
             <h2 className="text-[32px] md:text-[44px] font-[200] tracking-[-0.03em] mt-3 mb-4">
-              One AI. <span className="grad-text">Every skill.</span>
+              One AI. <span className="grad-text">Endless creations.</span>
             </h2>
             <p className="text-[#5a5a67] text-[15px] max-w-md mx-auto leading-relaxed">
-              Superboo ships with specialized skills that handle everything — so you don&apos;t have to.
+              Describe what you want. Boo picks the right tools and creates it for you.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {FEATURES.map((f, i) => (
-              <div key={i} className="feat-card group p-6 rounded-2xl border border-[#1a1a22] bg-[#0e0e13] hover:border-[#7c5cff]/40 transition-all duration-500">
-                <div className="w-10 h-10 rounded-xl bg-[#7c5cff]/10 border border-[#7c5cff]/20 flex items-center justify-center mb-4 group-hover:bg-[#7c5cff]/20 transition-colors">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c5cff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d={ICON_PATHS[f.icon]}/>
-                  </svg>
+            {FEATURES.map((f, i) => {
+              const IconComp = f.icon;
+              return (
+                <div key={i} className="feat-card group p-6 rounded-2xl border border-[#1a1a22] bg-[#0e0e13] hover:border-[#7c5cff]/40 transition-all duration-500">
+                  <div className="w-10 h-10 rounded-xl bg-[#7c5cff]/10 border border-[#7c5cff]/20 flex items-center justify-center mb-4 group-hover:bg-[#7c5cff]/20 transition-colors">
+                    <IconComp size={18} className="text-[#7c5cff]" />
+                  </div>
+                  <h3 className="text-[15px] font-medium mb-2 text-white">{f.title}</h3>
+                  <p className="text-[13px] text-[#6a6a78] leading-relaxed">{f.desc}</p>
                 </div>
-                <h3 className="text-[15px] font-medium mb-2 text-white">{f.title}</h3>
-                <p className="text-[13px] text-[#6a6a78] leading-relaxed">{f.desc}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -346,7 +364,7 @@ export default function LandingPage() {
               It works like <span className="grad-text">magic</span>
             </h2>
             <p className="text-[#5a5a67] text-[15px] max-w-md mx-auto">
-              One message. Five videos. Published. No code, no manual work.
+              One message. A polished creation. No design skills needed.
             </p>
           </div>
           {demoVis && <ChatPreview />}
@@ -366,9 +384,9 @@ export default function LandingPage() {
             {/* Vertical line */}
             <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#7c5cff]/30 to-transparent hidden md:block"/>
             {[
-              { n:"01", t:"Describe what you need", d:"Tell Superboo in plain language. A UGC ad campaign, a growth strategy, a publishing schedule." },
-              { n:"02", t:"Superboo assembles the right skills", d:"It analyzes your request, picks the perfect combination of AI models, tools, and skills." },
-              { n:"03", t:"Watch it execute — end to end", d:"Scripts, video generation, editing, captions, publishing, analytics. All autonomous." },
+              { n:"01", t:"Tell Boo what you need", d:"Describe what you want in plain language. A TikTok, a resume, a poster — anything." },
+              { n:"02", t:"Boo creates it for you", d:"Boo picks the right tools and creates exactly what you described." },
+              { n:"03", t:"Download & share", d:"Get your creation instantly. Download, share, or post it directly." },
             ].map((s, i) => (
               <div key={i} className={`flex items-start gap-6 md:gap-10 mb-12 last:mb-0 ${i%2===1 ? "md:flex-row-reverse md:text-right" : ""}`}>
                 <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-[#7c5cff]/10 border border-[#7c5cff]/20 flex items-center justify-center">
@@ -388,7 +406,7 @@ export default function LandingPage() {
       <section className="py-20 md:py-28 overflow-hidden">
         <div className="text-center mb-12 px-5">
           <h2 className="text-[28px] md:text-[36px] font-[200] tracking-[-0.03em]">
-            <span className="grad-text">17+ skills</span> and growing
+            <span className="grad-text">20+ creations</span> and growing
           </h2>
         </div>
         <div className="space-y-3">
@@ -417,14 +435,14 @@ export default function LandingPage() {
             <Ghost size={80} id="ctaG" />
           </div>
           <h2 className="text-[36px] md:text-[52px] font-[200] tracking-[-0.03em] mb-4 leading-tight">
-            Ready to meet<br/>your <span className="grad-text">boo</span>?
+            What will you<br/><span className="grad-text">create today</span>?
           </h2>
           <p className="text-[#5a5a67] text-[15px] max-w-sm mb-10">
-            Start a conversation. Superboo handles the rest.
+            Start a conversation. Boo handles the rest.
           </p>
           <button onClick={() => nav("/chat")}
             className="group px-10 py-4 rounded-2xl bg-[#7c5cff] hover:bg-[#9379ff] text-white text-[15px] font-medium transition-all cta-glow-btn">
-            Start chatting
+            Start creating
             <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
           </button>
         </div>
@@ -554,6 +572,12 @@ export default function LandingPage() {
           opacity: 0; transition: opacity 0.5s;
         }
         .feat-card:hover::before { opacity: 1; }
+
+        /* Use case tiles */
+        .use-case-tile:hover {
+          border-color: var(--uc-color, #7c5cff);
+          box-shadow: 0 0 20px -8px var(--uc-color, #7c5cff);
+        }
 
         /* Demo glow */
         .demo-glow {

@@ -50,11 +50,11 @@ export interface Skill {
   name: string;
   category: string;
   description: string;
-  tags: string[];
-  markdown: string;
-  inputs?: string[];
-  outputs?: string[];
-  model?: string;
+  icon: string;
+  color: string;
+  examplePrompt: string;
+  outputPreview: string;
+  trending?: boolean;
 }
 
 export type TaskStatus = "running" | "completed" | "cancelled";
