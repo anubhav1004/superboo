@@ -2,13 +2,11 @@ import { useState } from "react";
 import {
   Plus,
   MessageSquare,
-  Sparkles,
   PanelLeftClose,
   PanelLeft,
   Trash2,
   Search,
   Settings as SettingsIcon,
-  Plug,
 } from "lucide-react";
 
 function GhostIcon({ size = 24 }: { size?: number }) {
@@ -43,11 +41,8 @@ function GhostIcon({ size = 24 }: { size?: number }) {
 }
 import clsx from "clsx";
 import { useChatStore } from "../../store/chat";
-import TasksList from "../tasks/TasksList";
 
 interface Props {
-  onOpenSkills: () => void;
-  onOpenConnectors: () => void;
   onOpenSettings: () => void;
 }
 
@@ -63,8 +58,6 @@ function timeAgo(ts: number): string {
 }
 
 export default function Sidebar({
-  onOpenSkills,
-  onOpenConnectors,
   onOpenSettings,
 }: Props) {
   const {
@@ -87,7 +80,7 @@ export default function Sidebar({
 
   if (!sidebarOpen) {
     return (
-      <div className="hidden md:flex w-16 border-r border-border bg-bg flex-col items-center py-5 gap-2">
+      <div className="hidden md:flex w-14 border-r border-border bg-bg flex-col items-center py-5 gap-2">
         <button
           onClick={toggleSidebar}
           className="p-2.5 rounded-xl hover:bg-bg-surface text-fg-muted hover:text-fg transition-all hover:scale-105 active:scale-95"
@@ -95,31 +88,17 @@ export default function Sidebar({
         >
           <PanelLeft size={18} />
         </button>
-        <div className="h-3" />
+        <div className="h-2" />
         <div className="transition-transform hover:scale-110 active:scale-95">
-          <GhostIcon size={28} />
+          <GhostIcon size={24} />
         </div>
-        <div className="h-3" />
+        <div className="h-2" />
         <button
           onClick={() => createSession()}
-          className="p-2.5 rounded-full bg-gradient-to-br from-accent to-accent-hover text-white shadow-card transition-all hover:scale-110 active:scale-95"
+          className="p-2 rounded-full bg-gradient-to-br from-accent to-accent-hover text-white shadow-card transition-all hover:scale-110 active:scale-95"
           title="New chat"
         >
-          <Plus size={16} />
-        </button>
-        <button
-          onClick={onOpenSkills}
-          className="p-2.5 rounded-xl hover:bg-bg-surface text-fg-muted hover:text-fg transition-all hover:scale-105 active:scale-95"
-          title="Create"
-        >
-          <Sparkles size={16} />
-        </button>
-        <button
-          onClick={onOpenConnectors}
-          className="p-2.5 rounded-xl hover:bg-bg-surface text-fg-muted hover:text-fg transition-all hover:scale-105 active:scale-95"
-          title="Connect"
-        >
-          <Plug size={16} />
+          <Plus size={14} />
         </button>
         <div className="flex-1" />
         <button
@@ -145,19 +124,19 @@ export default function Sidebar({
     <aside className={clsx(
       "border-r border-border flex flex-col h-full",
       isMobile
-        ? "fixed inset-y-0 left-0 z-50 w-[280px] shadow-2xl"
-        : "w-[280px]"
+        ? "fixed inset-y-0 left-0 z-50 w-[240px] shadow-2xl"
+        : "w-[240px]"
     )} style={{background: 'linear-gradient(to bottom, #0c0c12, #0a0a0e 40%)'}}>
       {/* Brand */}
-      <div className="px-5 pt-6 pb-5 flex items-center justify-between">
-        <div className="flex items-center gap-3 group cursor-default">
+      <div className="px-4 pt-5 pb-4 flex items-center justify-between">
+        <a href="/" className="flex items-center gap-2.5 group cursor-pointer no-underline">
           <div className="transition-transform group-hover:scale-110 group-hover:-translate-y-0.5">
-            <GhostIcon size={28} />
+            <GhostIcon size={24} />
           </div>
-          <span className="text-[16px] font-semibold bg-gradient-to-r from-[#c084fc] to-[#a78bfa] bg-clip-text text-transparent">
+          <span className="text-[15px] font-semibold bg-gradient-to-r from-[#c084fc] to-[#a78bfa] bg-clip-text text-transparent">
             Superboo
           </span>
-        </div>
+        </a>
         <button
           onClick={toggleSidebar}
           className="p-1.5 rounded-lg hover:bg-bg-surface text-fg-dim hover:text-fg transition-all hover:scale-105 active:scale-95"
@@ -167,62 +146,39 @@ export default function Sidebar({
         </button>
       </div>
 
-      {/* New chat */}
-      <div className="px-4 pb-4">
+      {/* New chat pill */}
+      <div className="px-3 pb-3">
         <button
           onClick={() => createSession()}
-          className="relative w-full flex items-center justify-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-[#9370ff] to-[#C084FC] hover:from-[#a080ff] hover:to-[#d0a0ff] text-white text-[13px] font-semibold transition-all shadow-[0_0_20px_-4px_rgba(147,112,255,0.3)] hover:shadow-[0_0_28px_-4px_rgba(147,112,255,0.5)] hover:scale-[1.02] active:scale-[0.98] sparkle-once"
+          className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-full bg-gradient-to-r from-[#9370ff] to-[#C084FC] hover:from-[#a080ff] hover:to-[#d0a0ff] text-white text-[12px] font-semibold transition-all shadow-[0_0_16px_-4px_rgba(147,112,255,0.3)] hover:shadow-[0_0_24px_-4px_rgba(147,112,255,0.5)] hover:scale-[1.02] active:scale-[0.98]"
         >
-          <span className="text-base">+</span>
-          New chat
+          <Plus size={14} />
+          New
         </button>
-      </div>
-
-      {/* Nav pills */}
-      <div className="px-4 pb-3 flex gap-2">
-        <button
-          onClick={onOpenSkills}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-full bg-bg-elevated hover:bg-bg-surface border border-border hover:border-accent/30 text-[12px] text-fg-muted hover:text-fg transition-all hover:scale-[1.02] active:scale-[0.98]"
-        >
-          <Sparkles size={13} className="text-accent" />
-          Create
-        </button>
-        <button
-          onClick={onOpenConnectors}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-full bg-bg-elevated hover:bg-bg-surface border border-border hover:border-accent/30 text-[12px] text-fg-muted hover:text-fg transition-all hover:scale-[1.02] active:scale-[0.98]"
-        >
-          <Plug size={13} className="text-accent" />
-          Connect
-        </button>
-      </div>
-
-      {/* Tasks */}
-      <div className="pt-2">
-        <TasksList />
       </div>
 
       {/* History */}
-      <div className="flex-1 flex flex-col overflow-hidden pt-2">
-        <div className="px-5 pb-2 text-[11px] text-fg-dim font-medium uppercase tracking-wider">Chats</div>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="px-4 pb-2 text-[10px] text-fg-dim font-medium uppercase tracking-wider">Chats</div>
 
-        <div className="px-4 pb-3">
+        <div className="px-3 pb-2">
           <div className="relative">
             <Search
-              size={13}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-fg-dim pointer-events-none"
+              size={12}
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-dim pointer-events-none"
             />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search chats..."
-              className="w-full bg-bg-elevated border border-border rounded-full pl-8 pr-3 py-2 text-[12px] text-fg placeholder:text-fg-dim focus:outline-none focus:border-accent/40 focus:shadow-[0_0_0_3px_rgba(147,112,255,0.1)] transition-all"
+              placeholder="Search..."
+              className="w-full bg-bg-elevated border border-border rounded-full pl-7 pr-3 py-1.5 text-[11px] text-fg placeholder:text-fg-dim focus:outline-none focus:border-accent/40 focus:shadow-[0_0_0_3px_rgba(147,112,255,0.1)] transition-all"
             />
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-3 pb-4 space-y-1.5">
+        <div className="flex-1 overflow-y-auto px-2 pb-3 space-y-1">
           {filtered.length === 0 && (
-            <div className="text-[12px] text-fg-dim px-3 py-8 text-center">
+            <div className="text-[11px] text-fg-dim px-3 py-6 text-center">
               {sessions.length === 0 ? "No chats yet" : "No results"}
             </div>
           )}
@@ -231,25 +187,21 @@ export default function Sidebar({
               key={s.id}
               onClick={() => setActiveSession(s.id)}
               className={clsx(
-                "group flex items-center gap-3 px-3.5 py-2.5 rounded-xl cursor-pointer transition-all hover:scale-[1.01]",
+                "group flex items-center gap-2.5 px-3 py-2 rounded-xl cursor-pointer transition-all hover:scale-[1.01]",
                 activeSessionId === s.id
                   ? "bg-bg-surface border border-accent/20 shadow-card shadow-accent/5"
-                  : "border border-transparent text-fg-muted hover:bg-bg-elevated hover:text-fg hover:border-border hover:shadow-[inset_2px_0_8px_-4px_rgba(147,112,255,0.2)]"
+                  : "border border-transparent text-fg-muted hover:bg-bg-elevated hover:text-fg"
               )}
             >
-              <div className={clsx(
-                "w-1 h-8 rounded-full flex-shrink-0 transition-colors",
-                activeSessionId === s.id ? "bg-accent" : "bg-transparent group-hover:bg-fg-dim/30"
-              )} />
               <MessageSquare
-                size={13}
+                size={12}
                 className={clsx(
                   "flex-shrink-0",
                   activeSessionId === s.id ? "text-accent-hover" : "text-fg-dim"
                 )}
               />
               <div className="flex-1 min-w-0">
-                <span className="text-[12px] truncate block">{s.title}</span>
+                <span className="text-[11px] truncate block">{s.title}</span>
                 <span className="text-[10px] text-fg-dim">{timeAgo(s.updatedAt)}</span>
               </div>
               <button
@@ -259,41 +211,41 @@ export default function Sidebar({
                 }}
                 className="opacity-0 group-hover:opacity-100 text-fg-dim hover:text-red-400 transition-all p-1 rounded-lg hover:bg-red-400/10"
               >
-                <Trash2 size={12} />
+                <Trash2 size={11} />
               </button>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Footer — user profile */}
-      <div className="px-4 py-4 flex items-center gap-3 border-t border-transparent" style={{borderImage: 'linear-gradient(to right, transparent, rgba(147,112,255,0.2), transparent) 1'}}>
+      {/* Footer — user + settings */}
+      <div className="px-3 py-3 flex items-center gap-2.5 border-t border-transparent" style={{borderImage: 'linear-gradient(to right, transparent, rgba(147,112,255,0.2), transparent) 1'}}>
         <div className="relative">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-accent via-[#c084fc] to-accent-hover flex items-center justify-center text-[13px] font-bold text-white flex-shrink-0 shadow-card">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent via-[#c084fc] to-accent-hover flex items-center justify-center text-[12px] font-bold text-white flex-shrink-0 shadow-card">
             A
           </div>
           {connection === "online" && (
-            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#4ade80] border-2 border-bg green-pulse" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#4ade80] border-2 border-bg green-pulse" />
           )}
           {connection === "offline" && (
-            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#f87171] border-2 border-bg" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#f87171] border-2 border-bg" />
           )}
           {connection === "checking" && (
-            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#fbbf24] border-2 border-bg pulse-dot" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#fbbf24] border-2 border-bg pulse-dot" />
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-[13px] text-fg font-medium truncate">Anubhav</div>
-          <div className="text-[11px] text-fg-dim">
+          <div className="text-[12px] text-fg font-medium truncate">Anubhav</div>
+          <div className="text-[10px] text-fg-dim">
             {connection === "online" ? "Online" : connection === "offline" ? "Offline" : "Connecting..."}
           </div>
         </div>
         <button
           onClick={onOpenSettings}
-          className="p-2 rounded-xl hover:bg-bg-surface text-fg-dim hover:text-fg transition-all hover:scale-105 active:scale-95"
+          className="p-1.5 rounded-xl hover:bg-bg-surface text-fg-dim hover:text-fg transition-all hover:scale-105 active:scale-95"
           title="Settings"
         >
-          <SettingsIcon size={15} />
+          <SettingsIcon size={14} />
         </button>
       </div>
     </aside>

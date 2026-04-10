@@ -8,15 +8,25 @@ import {
   Image as ImageIcon,
   Video,
   Code,
+  Flame,
 } from "lucide-react";
 import clsx from "clsx";
 
 interface Props {
   onSend: (text: string, files: File[]) => void;
   disabled?: boolean;
+  isHub?: boolean;
 }
 
-export default function MessageInput({ onSend, disabled }: Props) {
+const TRENDING_PILLS = [
+  { label: "TikTok video", prompt: "Create a 15-second TikTok about my new coffee shop opening this weekend" },
+  { label: "Pitch deck", prompt: "Create a 10-slide pitch deck for my AI-powered fitness app startup" },
+  { label: "Meme", prompt: "Create a funny meme about procrastinating on assignments using the Drake format" },
+  { label: "Resume", prompt: "Write a resume for a recent computer science graduate looking for frontend developer roles" },
+  { label: "Logo design", prompt: "Design a minimal logo for my streetwear brand called 'Drift'" },
+];
+
+export default function MessageInput({ onSend, disabled, isHub }: Props) {
   const [text, setText] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [recording, setRecording] = useState(false);
@@ -89,7 +99,7 @@ export default function MessageInput({ onSend, disabled }: Props) {
   const canSend = !disabled && (text.trim() || files.length > 0);
 
   return (
-    <div className="px-4 md:px-8 pb-4 md:pb-6 pt-2">
+    <div className={clsx("px-4 md:px-8 pb-4 md:pb-6 pt-2", isHub && "pb-5 md:pb-8")}>
       <div className="max-w-full md:max-w-3xl mx-auto">
         {/* Files */}
         {files.length > 0 && (
@@ -114,12 +124,13 @@ export default function MessageInput({ onSend, disabled }: Props) {
           </div>
         )}
 
-        {/* Input container */}
+        {/* Input container — larger and more prominent */}
         <div
           className={clsx(
-            "relative bg-bg-elevated border rounded-2xl transition-all duration-200 ambient-glow noise-bg",
+            "relative border rounded-2xl transition-all duration-200 ambient-glow noise-bg",
+            isHub ? "bg-[#12121a]" : "bg-bg-elevated",
             focused
-              ? "border-accent/40 shadow-[0_0_24px_-4px_rgba(147,112,255,0.2)]"
+              ? "border-accent/40 shadow-[0_0_32px_-4px_rgba(147,112,255,0.25)]"
               : "border-border hover:border-border-strong",
             disabled && "opacity-60"
           )}
@@ -137,19 +148,22 @@ export default function MessageInput({ onSend, disabled }: Props) {
             onKeyDown={handleKey}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
-            placeholder="What do you want to create?"
+            placeholder="Describe what you want to create..."
             rows={1}
-            className="w-full bg-transparent text-[14px] text-fg placeholder:text-fg-dim px-5 pt-3 pb-1 resize-none focus:outline-none leading-relaxed relative z-[1]"
+            className={clsx(
+              "w-full bg-transparent text-fg placeholder:text-fg-dim resize-none focus:outline-none leading-relaxed relative z-[1]",
+              isHub ? "text-[15px] px-5 pt-4 pb-1" : "text-[14px] px-5 pt-3 pb-1"
+            )}
             disabled={disabled}
           />
 
           <div className="flex items-center gap-1.5 px-3 pb-3 pt-1">
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-bg-surface text-fg-muted hover:text-fg transition-all hover:scale-110 active:scale-95"
+              className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-bg-surface text-fg-muted hover:text-fg transition-all hover:scale-110 active:scale-95"
               title="Attach file"
             >
-              <Plus size={16} />
+              <Plus size={17} />
             </button>
             <input
               ref={fileInputRef}
@@ -161,32 +175,48 @@ export default function MessageInput({ onSend, disabled }: Props) {
             <button
               onClick={toggleRecording}
               className={clsx(
-                "w-8 h-8 flex items-center justify-center rounded-full transition-all relative",
+                "w-9 h-9 flex items-center justify-center rounded-full transition-all relative",
                 recording
                   ? "bg-red-500/15 text-red-400 pulse-ring"
                   : "hover:bg-bg-surface text-fg-muted hover:text-fg hover:scale-110 active:scale-95"
               )}
               title="Voice input"
             >
-              <Mic size={15} className={recording ? "pulse-dot" : ""} />
+              <Mic size={16} className={recording ? "pulse-dot" : ""} />
             </button>
             <div className="flex-1" />
             <button
               onClick={handleSend}
               disabled={!canSend}
               className={clsx(
-                "w-9 h-9 flex items-center justify-center rounded-full transition-all",
+                "w-10 h-10 flex items-center justify-center rounded-full transition-all",
                 canSend
-                  ? "bg-gradient-to-br from-[#9370ff] to-[#C084FC] text-white shadow-[0_0_16px_-2px_rgba(147,112,255,0.4)] hover:shadow-[0_0_24px_-2px_rgba(147,112,255,0.6)] hover:scale-110 active:scale-90"
+                  ? "bg-gradient-to-br from-[#9370ff] to-[#C084FC] text-white shadow-[0_0_20px_-2px_rgba(147,112,255,0.5)] hover:shadow-[0_0_28px_-2px_rgba(147,112,255,0.7)] hover:scale-110 active:scale-90"
                   : "bg-bg-surface text-fg-dim cursor-not-allowed opacity-50",
                 sendBounce && "bounce-send"
               )}
               title="Send"
             >
-              <ArrowUp size={16} />
+              <ArrowUp size={18} />
             </button>
           </div>
         </div>
+
+        {/* Trending pills (only in hub state) */}
+        {isHub && (
+          <div className="flex gap-2 mt-3 flex-wrap justify-center">
+            {TRENDING_PILLS.map((pill) => (
+              <button
+                key={pill.label}
+                onClick={() => onSend(pill.prompt, [])}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#12121a] border border-[#1f1f2a] hover:border-[#9370ff]/30 text-[11px] text-fg-muted hover:text-fg transition-all hover:scale-105 active:scale-95"
+              >
+                <Flame size={10} className="text-orange-400" />
+                {pill.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

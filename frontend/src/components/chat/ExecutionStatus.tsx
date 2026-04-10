@@ -41,61 +41,72 @@ function MiniGhostBounce() {
 export default function ExecutionStatus({ steps }: { steps: ExecStep[] }) {
   const doneCount = steps.filter((s) => s.state === "done").length;
   const allDone = doneCount === steps.length;
-  const progressPct = steps.length > 0 ? (doneCount / steps.length) * 100 : 0;
+  const activeIdx = steps.findIndex((s) => s.state === "active");
+  const activeLabel = activeIdx >= 0 ? steps[activeIdx].label : "";
 
   return (
-    <div className="rounded-2xl border border-accent/20 bg-bg-elevated p-4 max-w-sm fade-in animated-border">
+    <div className="rounded-2xl border border-[#1f1f2a] bg-[#12121a] p-5 w-full fade-in">
       {/* Header with mini ghost */}
-      <div className="flex items-center gap-2.5 mb-3">
+      <div className="flex items-center gap-2.5 mb-4">
         <MiniGhostBounce />
-        <span className={clsx("text-[13px] font-medium", allDone ? "text-fg" : "text-shimmer")}>
-          {allDone ? "All done!" : "Boo is working..."}
+        <span className={clsx("text-[14px] font-medium", allDone ? "text-fg" : "text-shimmer")}>
+          {allDone ? "All done!" : activeLabel || "Boo is creating..."}
         </span>
       </div>
 
-      {/* Steps checklist */}
-      <div className="flex flex-col gap-2 ml-1">
-        {steps.map((step, i) => {
-          const Icon = ICONS[step.icon];
-          return (
-            <div key={i} className="flex items-center gap-2.5">
-              <div
-                className={clsx(
-                  "w-5 h-5 rounded-full flex items-center justify-center transition-all",
-                  step.state === "done" && "bg-[#4ade80]/15 step-done-burst",
-                  step.state === "active" && "bg-accent/15",
-                  step.state === "pending" && "bg-bg-surface border border-border"
-                )}
-              >
-                {step.state === "done" ? (
-                  <Check size={10} className="text-[#4ade80]" />
-                ) : step.state === "active" ? (
-                  <Loader2 size={10} className="text-accent-hover animate-spin" />
-                ) : (
-                  <Icon size={9} className="text-fg-dim" />
-                )}
-              </div>
-              <span
-                className={clsx(
-                  "text-[12px] transition-colors",
-                  step.state === "done" && "text-fg-muted",
-                  step.state === "active" && "text-fg font-medium",
-                  step.state === "pending" && "text-fg-dim"
-                )}
-              >
-                {step.label}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Progress bar */}
-      <div className="mt-3 h-1 bg-bg-surface rounded-full overflow-hidden">
+      {/* Horizontal progress bar with labeled dots */}
+      <div className="relative px-2">
+        {/* Connection line */}
+        <div className="absolute top-3 left-6 right-6 h-[2px] bg-[#1f1f2a] rounded-full" />
+        {/* Progress fill */}
         <div
-          className="h-full rounded-full bg-gradient-to-r from-accent to-accent-hover transition-all duration-500 ease-out"
-          style={{ width: `${progressPct}%` }}
+          className="absolute top-3 left-6 h-[2px] rounded-full bg-gradient-to-r from-[#9370ff] to-[#C084FC] transition-all duration-500 ease-out"
+          style={{
+            width: steps.length > 1
+              ? `${(doneCount / (steps.length - 1)) * (100 - (12 / (steps.length)))}%`
+              : "0%",
+          }}
         />
+
+        {/* Step dots */}
+        <div className="relative flex justify-between">
+          {steps.map((step, i) => {
+            const Icon = ICONS[step.icon];
+            return (
+              <div key={i} className="flex flex-col items-center gap-2 z-10">
+                {/* Dot */}
+                <div
+                  className={clsx(
+                    "w-6 h-6 rounded-full flex items-center justify-center transition-all border-2",
+                    step.state === "done" && "bg-[#4ade80] border-[#4ade80] step-done-burst",
+                    step.state === "active" && "bg-[#12121a] border-[#9370ff] shadow-[0_0_12px_-2px_rgba(147,112,255,0.5)]",
+                    step.state === "pending" && "bg-[#12121a] border-[#1f1f2a]"
+                  )}
+                >
+                  {step.state === "done" ? (
+                    <Check size={11} className="text-white" />
+                  ) : step.state === "active" ? (
+                    <Loader2 size={11} className="text-[#9370ff] animate-spin" />
+                  ) : (
+                    <Icon size={10} className="text-fg-dim" />
+                  )}
+                </div>
+
+                {/* Label */}
+                <span
+                  className={clsx(
+                    "text-[10px] text-center max-w-[72px] leading-tight",
+                    step.state === "done" && "text-fg-muted",
+                    step.state === "active" && "text-fg font-medium",
+                    step.state === "pending" && "text-fg-dim"
+                  )}
+                >
+                  {step.state === "active" ? step.label : step.icon === "send" ? "Send" : step.icon === "think" ? "Think" : step.icon === "receive" ? "Receive" : "Render"}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

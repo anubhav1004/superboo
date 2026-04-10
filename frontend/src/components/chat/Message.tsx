@@ -190,13 +190,16 @@ export default function Message({ msg }: { msg: MessageType }) {
     return result;
   }, [explicitMedia, contentMedia]);
 
+  // Detect if content has structured elements (headings, lists, code blocks)
+  const hasStructuredContent = cleanContent ? /^#{1,3}\s|^\-\s|^\d+\.\s|```/m.test(cleanContent) : false;
+
   // User messages — right-aligned bubble
   if (isUser) {
     return (
       <div className="msg-slide-up px-4 md:px-8 py-3 md:py-4">
         <div className="max-w-full md:max-w-3xl mx-auto flex justify-end gap-3">
           <div className="max-w-[85%] md:max-w-[70%]">
-            <div className="bg-bg-surface border border-border rounded-2xl rounded-tr-md px-4 py-3 text-[14px] text-fg leading-relaxed border-l-2 border-l-accent/40">
+            <div className="bg-bg-surface border border-border rounded-2xl rounded-tr-md px-4 py-3 text-[14px] text-fg leading-relaxed">
               {msg.content}
             </div>
           </div>
@@ -272,12 +275,26 @@ export default function Message({ msg }: { msg: MessageType }) {
             </div>
           )}
 
-          {/* Content */}
+          {/* Content — card-style for bot messages */}
           {cleanContent && (
-            <div className="prose-msg relative">
-              <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
-                {cleanContent}
-              </ReactMarkdown>
+            <div
+              className={clsx(
+                "relative",
+                // Sparkpage-style card for bot messages with structured content
+                hasStructuredContent && !isTool
+                  ? "bg-[#12121a] border border-[#1f1f2a] rounded-2xl p-5 md:p-6"
+                  : "prose-msg"
+              )}
+            >
+              {/* Colored top border for structured cards */}
+              {hasStructuredContent && !isTool && (
+                <div className="absolute top-0 left-4 right-4 h-[2px] rounded-full bg-gradient-to-r from-[#9370ff] to-[#C084FC]" />
+              )}
+              <div className={hasStructuredContent && !isTool ? "prose-msg" : ""}>
+                <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+                  {cleanContent}
+                </ReactMarkdown>
+              </div>
               {/* Copy pill on hover */}
               {!msg.streaming && (
                 <button

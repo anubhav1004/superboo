@@ -1,31 +1,55 @@
 import { useEffect, useRef } from "react";
 import { useChatStore, uid } from "../../store/chat";
+import { SKILLS, SKILL_CATEGORIES } from "../../data/skills";
+import type { Skill } from "../../types";
 import Message from "./Message";
 import MessageInput from "./MessageInput";
 import { sendChatWithPolling } from "../../lib/api";
-import { Menu, Video, Image, FileText, Smile, TrendingUp } from "lucide-react";
+import {
+  Menu,
+  Video,
+  Image,
+  Share2,
+  Mic,
+  Layout,
+  PenTool,
+  Wand2,
+  Smile,
+  Presentation,
+  FileText,
+  BookOpen,
+  Mail,
+  Film,
+  Headphones,
+  Music,
+  ScrollText,
+  BarChart2,
+  Briefcase,
+  TrendingUp,
+  Search,
+  Flame,
+} from "lucide-react";
 
-const SUGGESTIONS = [
-  { icon: "Video", color: "#EC4899", title: "Create a TikTok", prompt: "Create a 15-second TikTok about my new coffee shop opening this weekend" },
-  { icon: "Presentation", color: "#22C55E", title: "Make a deck", prompt: "Create a 10-slide pitch deck for my AI-powered fitness app startup" },
-  { icon: "Image", color: "#3B82F6", title: "Design a poster", prompt: "Design a poster for a college music festival happening next month" },
-  { icon: "FileText", color: "#22C55E", title: "Write a resume", prompt: "Write a professional resume for a recent CS graduate" },
-  { icon: "Smile", color: "#EC4899", title: "Make a meme", prompt: "Create a funny meme about procrastinating on assignments" },
-  { icon: "TrendingUp", color: "#EAB308", title: "Research trends", prompt: "What are the top trending topics on TikTok this week?" },
-];
+const ICON_MAP: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+  "video": Video, "image": Image, "share-2": Share2, "mic": Mic,
+  "layout": Layout, "pen-tool": PenTool, "wand-2": Wand2, "smile": Smile,
+  "presentation": Presentation, "file-text": FileText, "book-open": BookOpen,
+  "mail": Mail, "film": Film, "headphones": Headphones, "music": Music,
+  "scroll": ScrollText, "bar-chart-2": BarChart2, "briefcase": Briefcase,
+  "trending-up": TrendingUp, "search": Search,
+};
 
-const ICON_MAP: Record<string, React.ReactNode> = {
-  Video: <Video size={18} />,
-  Presentation: <FileText size={18} />,
-  Image: <Image size={18} />,
-  FileText: <FileText size={18} />,
-  Smile: <Smile size={18} />,
-  TrendingUp: <TrendingUp size={18} />,
+const CATEGORY_COLORS: Record<string, string> = {
+  "Content Creation": "#EC4899",
+  "Design & Visual": "#3B82F6",
+  "Presentations & Docs": "#22C55E",
+  "Video & Audio": "#F97316",
+  "Business & Research": "#EAB308",
 };
 
 function GhostEmptyState() {
   return (
-    <svg width="80" height="80" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" className="ghost-float drop-shadow-[0_0_40px_rgba(147,112,255,0.5)]">
+    <svg width="64" height="64" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" className="ghost-float drop-shadow-[0_0_40px_rgba(147,112,255,0.5)]">
       <path
         d="M64 10 C92 10 112 32 112 58 C112 84 92 106 64 106 C56 106 52 96 46 106 C40 96 34 106 28 96 C22 86 20 74 20 58 C20 32 40 10 64 10 Z"
         fill="url(#ghostGradEmpty)"
@@ -68,6 +92,43 @@ function GhostHeaderIcon() {
         </radialGradient>
       </defs>
     </svg>
+  );
+}
+
+function SkillTile({ skill, onSelect }: { skill: Skill; onSelect: (prompt: string) => void }) {
+  const IconComp = ICON_MAP[skill.icon];
+  const color = CATEGORY_COLORS[skill.category] || "#7c5cff";
+
+  return (
+    <button
+      onClick={() => onSelect(skill.examplePrompt)}
+      className="group relative flex flex-col gap-2.5 p-4 rounded-2xl bg-[#12121a] border border-[#1f1f2a] hover:border-[#9370ff]/30 text-left transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] hover:shadow-[0_0_24px_-8px_rgba(147,112,255,0.15)]"
+    >
+      {/* Trending badge */}
+      {skill.trending && (
+        <div className="absolute top-2.5 right-2.5">
+          <Flame size={12} className="text-orange-400" />
+        </div>
+      )}
+
+      {/* Icon */}
+      <div
+        className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors"
+        style={{ backgroundColor: `${color}15`, color }}
+      >
+        {IconComp && <IconComp size={17} />}
+      </div>
+
+      {/* Name */}
+      <div className="text-[13px] font-medium text-fg group-hover:text-white transition-colors leading-tight">
+        {skill.name}
+      </div>
+
+      {/* Description */}
+      <div className="text-[11px] text-fg-dim leading-relaxed line-clamp-2">
+        {skill.description}
+      </div>
+    </button>
   );
 }
 
@@ -162,7 +223,6 @@ export default function ChatWindow() {
           else if (step === "thinking") setStep(1);
           else if (step === "polling") {
             setStep(1);
-            // Update the thinking label with elapsed time
             if (progress) {
               const steps = initSteps.map((s, i) => ({
                 ...s,
@@ -175,19 +235,18 @@ export default function ChatWindow() {
         }
       );
 
-      // Show response immediately
       updateMessage(sid, asstId, {
         content: reply,
         streaming: false,
         execSteps: initSteps.map((s) => ({ ...s, state: "done" as const })),
       });
 
-      // Clear steps after a moment
       setTimeout(() => {
         updateMessage(sid, asstId, { execSteps: undefined });
       }, 2000);
-    } catch (err: any) {
-      const msg = `**Oops!** Something went wrong.\n\n\`${err.message}\`\n\nCheck Settings or make sure the bridge is running.`;
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      const msg = `**Oops!** Something went wrong.\n\n\`${errMsg}\`\n\nCheck Settings or make sure the bridge is running.`;
       updateMessage(sid, asstId, {
         content: msg,
         streaming: false,
@@ -197,7 +256,7 @@ export default function ChatWindow() {
   };
 
 
-  // Empty state
+  // Empty state — GenSpark-style hub
   if (!session || session.messages.length === 0) {
     return (
       <div className="flex-1 flex flex-col bg-bg h-full overflow-hidden page-enter">
@@ -214,44 +273,65 @@ export default function ChatWindow() {
             <span className="text-[14px] font-semibold bg-gradient-to-r from-[#c084fc] to-[#a78bfa] bg-clip-text text-transparent">Superboo</span>
           </div>
         </div>
-        <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-6 bg-grid">
-          <div className="w-full max-w-2xl flex flex-col items-center">
-            <div className="mb-6 relative">
-              {/* Radial glow behind ghost */}
-              <div className="absolute inset-0 -m-12 rounded-full bg-[radial-gradient(circle,rgba(147,112,255,0.15)_0%,transparent_70%)] blur-2xl pointer-events-none" />
+
+        {/* Scrollable hub content */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="flex flex-col items-center px-4 md:px-8 pt-12 md:pt-16 pb-6">
+            {/* Greeting */}
+            <div className="mb-4 relative">
+              <div className="absolute inset-0 -m-8 rounded-full bg-[radial-gradient(circle,rgba(147,112,255,0.12)_0%,transparent_70%)] blur-2xl pointer-events-none" />
               <GhostEmptyState />
             </div>
-            <h1 className="text-[28px] md:text-[32px] font-bold text-fg mb-2 tracking-tight">
+            <h1 className="text-[32px] md:text-[40px] font-[200] text-fg mb-2 tracking-tight text-center">
               What do you want to <span className="text-gradient">create</span>?
             </h1>
             <p className="text-[14px] text-fg-muted mb-10 text-center max-w-md">
-              Tell me what you need — I'll figure out the rest
+              Choose a creation type below, or just describe what you need
             </p>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 w-full max-w-lg">
-              {SUGGESTIONS.map((s) => (
-                <button
-                  key={s.title}
-                  onClick={() => handleSend(s.prompt, [])}
-                  className="group flex items-center gap-3 px-4 py-3.5 rounded-xl bg-bg-elevated hover:bg-bg-surface border border-border hover:border-accent/30 text-left transition-all hover:scale-[1.03] active:scale-[0.97] hover:shadow-card"
-                  style={{ borderLeftWidth: 3, borderLeftColor: s.color }}
-                >
-                  <span style={{ color: s.color }}>{ICON_MAP[s.icon]}</span>
-                  <span className="text-[13px] text-fg-muted group-hover:text-fg font-medium">{s.title}</span>
-                </button>
-              ))}
+            {/* Agent tiles grouped by category */}
+            <div className="w-full max-w-4xl space-y-8">
+              {SKILL_CATEGORIES.map((cat) => {
+                const catSkills = SKILLS.filter((s) => s.category === cat);
+                const catColor = CATEGORY_COLORS[cat] || "#7c5cff";
+                return (
+                  <div key={cat}>
+                    {/* Category label */}
+                    <div className="flex items-center gap-2.5 mb-3 px-1">
+                      <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: catColor }} />
+                      <span className="text-[12px] font-medium uppercase tracking-wider" style={{ color: catColor }}>
+                        {cat}
+                      </span>
+                    </div>
+
+                    {/* Tiles grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {catSkills.map((skill) => (
+                        <SkillTile
+                          key={skill.id}
+                          skill={skill}
+                          onSelect={(prompt) => handleSend(prompt, [])}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
-        <MessageInput onSend={handleSend} />
+
+        {/* Prominent input bar */}
+        <MessageInput onSend={handleSend} isHub />
       </div>
     );
   }
 
+  // Active chat state
   return (
     <div className="flex-1 flex flex-col bg-bg h-full overflow-hidden">
-      {/* Header */}
-      <div className="px-4 md:px-8 py-3 md:py-3.5 sticky top-0 z-10 bg-bg/80 backdrop-blur-md border-b border-transparent" style={{borderImage: 'linear-gradient(to right, transparent, rgba(147,112,255,0.15), transparent) 1'}}>
+      {/* Minimal header */}
+      <div className="px-4 md:px-8 py-3 sticky top-0 z-10 bg-bg/80 backdrop-blur-md border-b border-transparent" style={{borderImage: 'linear-gradient(to right, transparent, rgba(147,112,255,0.15), transparent) 1'}}>
         <div className="max-w-full md:max-w-3xl mx-auto w-full flex items-center gap-2.5">
           <button
             onClick={toggleSidebar}
