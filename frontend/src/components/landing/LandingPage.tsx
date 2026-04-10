@@ -110,32 +110,32 @@ function ChatPreview() {
    Data
    ═══════════════════════════════════════════════════════ */
 const FEATURES: { icon: React.ComponentType<{ size?: number; className?: string }>; title: string; desc: string }[] = [
-  { icon: Video, title: "TikTok & Reels", desc: "Scroll-stopping short videos with captions, transitions, and trending hooks." },
-  { icon: Presentation, title: "Pitch Decks", desc: "Polished presentations that tell your story. From idea to slides in seconds." },
-  { icon: PenTool, title: "Designs & Posters", desc: "Event posters, flyers, social graphics. Describe it, Boo designs it." },
-  { icon: FileText, title: "Resumes & Docs", desc: "Professional resumes, essays, emails. Write better, faster." },
-  { icon: Film, title: "Video Editing", desc: "Captions, color grading, transitions, voiceovers. Drop your clip, get it polished." },
-  { icon: TrendingUp, title: "Research & Trends", desc: "Market analysis, competitor research, trend reports. Know what's happening." },
+  { icon: Video, title: "Content Creation", desc: "TikToks, thumbnails, captions, dating profiles — all your content needs." },
+  { icon: FileText, title: "Writing & Docs", desc: "Resumes, cover letters, emails, pitch decks. Write better, land more." },
+  { icon: PenTool, title: "Design & Visual", desc: "Posters, logos, memes, image editing. Describe it, Boo designs it." },
+  { icon: Presentation, title: "Learning & Study", desc: "Study guides, homework help, language practice, book summaries." },
+  { icon: TrendingUp, title: "Career & Business", desc: "Interview prep, LinkedIn, market research, business plans." },
+  { icon: Film, title: "Lifestyle & Fun", desc: "Meal plans, workouts, travel, gift ideas, trivia, stories, jokes." },
 ];
 
-const SKILLS_ROW1 = ["TikTok Videos", "Pitch Decks", "YouTube Thumbnails", "Resumes", "Social Posts", "Posters", "Memes", "Blog Posts", "Email Copy"];
-const SKILLS_ROW2 = ["Video Editing", "Voiceovers", "Logo Design", "Image Editing", "Market Research", "Business Plans", "Trend Reports", "Podcast Clips"];
+const SKILLS_ROW1 = ["TikTok Videos", "Pitch Decks", "Resumes", "Study Guides", "Meal Plans", "Social Posts", "Posters", "Memes", "Dating Profiles", "Cover Letters", "Interview Prep"];
+const SKILLS_ROW2 = ["Video Editing", "Workout Plans", "Travel Plans", "Logo Design", "Voiceovers", "Budget Plans", "Market Research", "Trivia Games", "Song Lyrics", "LinkedIn Optimizer"];
 
 const STATS = [
-  { value: "20+", label: "Creation Types" },
+  { value: "35+", label: "Skills" },
   { value: "Instant", label: "Results" },
-  { value: "Zero", label: "Design Skills Needed" },
+  { value: "Zero", label: "Learning Curve" },
   { value: "Free", label: "To Try" },
 ];
 
 const USE_CASES = [
   { emoji: "\uD83C\uDFAC", label: "Create a TikTok", color: "#EC4899" },
   { emoji: "\uD83D\uDCCA", label: "Make a deck", color: "#22C55E" },
-  { emoji: "\uD83C\uDFA8", label: "Design a poster", color: "#3B82F6" },
   { emoji: "\uD83D\uDCDD", label: "Write a resume", color: "#22C55E" },
-  { emoji: "\uD83D\uDE02", label: "Make a meme", color: "#EC4899" },
+  { emoji: "\uD83D\uDCAA", label: "Workout plan", color: "#F43F5E" },
+  { emoji: "\uD83D\uDCDA", label: "Study guide", color: "#06B6D4" },
   { emoji: "\uD83C\uDFB5", label: "Create a beat", color: "#F97316" },
-  { emoji: "\uD83D\uDCC8", label: "Research trends", color: "#EAB308" },
+  { emoji: "\uD83D\uDCC8", label: "Prep for interview", color: "#EAB308" },
   { emoji: "\u2709\uFE0F", label: "Write an email", color: "#22C55E" },
 ];
 

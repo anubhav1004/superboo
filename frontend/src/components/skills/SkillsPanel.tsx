@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Search, Video, Image, Share2, Mic, Layout, PenTool, Wand2, Smile, Presentation, FileText, BookOpen, Mail, Film, Headphones, Music, Scroll, BarChart2, Briefcase, TrendingUp, Search as SearchIcon } from "lucide-react";
+import { X, Search, Video, Image, Share2, Mic, Layout, PenTool, Wand2, Smile, Presentation, FileText, BookOpen, Mail, Film, Headphones, Music, Scroll, BarChart2, Briefcase, TrendingUp, Search as SearchIcon, Type, Heart, GraduationCap, HelpCircle, Globe, Bookmark, Utensils, Dumbbell, MapPin, Gift, Wallet, UserCheck, Feather } from "lucide-react";
 import { SKILLS, SKILL_CATEGORIES } from "../../data/skills";
 import type { Skill } from "../../types";
 import clsx from "clsx";
@@ -16,6 +16,11 @@ const ICON_MAP: Record<string, React.ComponentType<{ size?: number; className?: 
   "mail": Mail, "film": Film, "headphones": Headphones, "music": Music,
   "scroll": Scroll, "bar-chart-2": BarChart2, "briefcase": Briefcase,
   "trending-up": TrendingUp, "search": SearchIcon,
+  "type": Type, "heart": Heart, "graduation-cap": GraduationCap,
+  "help-circle": HelpCircle, "globe": Globe, "bookmark": Bookmark,
+  "utensils": Utensils, "dumbbell": Dumbbell, "map-pin": MapPin,
+  "gift": Gift, "wallet": Wallet, "user-check": UserCheck,
+  "linkedin": UserCheck, "feather": Feather,
 };
 
 const CATEGORY_COLORS: Record<string, string> = {

@@ -7,6 +7,8 @@ import {
   Trash2,
   Search,
   Settings as SettingsIcon,
+  Sparkles,
+  Plug,
 } from "lucide-react";
 
 function GhostIcon({ size = 24 }: { size?: number }) {
@@ -44,6 +46,8 @@ import { useChatStore } from "../../store/chat";
 
 interface Props {
   onOpenSettings: () => void;
+  onOpenSkills: () => void;
+  onOpenConnectors: () => void;
 }
 
 function timeAgo(ts: number): string {
@@ -59,6 +63,8 @@ function timeAgo(ts: number): string {
 
 export default function Sidebar({
   onOpenSettings,
+  onOpenSkills,
+  onOpenConnectors,
 }: Props) {
   const {
     sessions,
@@ -99,6 +105,20 @@ export default function Sidebar({
           title="New chat"
         >
           <Plus size={14} />
+        </button>
+        <button
+          onClick={onOpenSkills}
+          className="p-2.5 rounded-xl hover:bg-bg-surface text-fg-muted hover:text-fg transition-all hover:scale-105 active:scale-95"
+          title="Skills"
+        >
+          <Sparkles size={16} />
+        </button>
+        <button
+          onClick={onOpenConnectors}
+          className="p-2.5 rounded-xl hover:bg-bg-surface text-fg-muted hover:text-fg transition-all hover:scale-105 active:scale-95"
+          title="Connectors"
+        >
+          <Plug size={16} />
         </button>
         <div className="flex-1" />
         <button
@@ -154,6 +174,24 @@ export default function Sidebar({
         >
           <Plus size={14} />
           New
+        </button>
+      </div>
+
+      {/* Nav — Skills + Connect */}
+      <div className="px-3 pb-3 space-y-1">
+        <button
+          onClick={onOpenSkills}
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[12px] text-fg-muted hover:text-fg hover:bg-bg-surface transition-all hover:scale-[1.01] active:scale-[0.99]"
+        >
+          <Sparkles size={14} className="text-fg-dim" />
+          Skills
+        </button>
+        <button
+          onClick={onOpenConnectors}
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[12px] text-fg-muted hover:text-fg hover:bg-bg-surface transition-all hover:scale-[1.01] active:scale-[0.99]"
+        >
+          <Plug size={14} className="text-fg-dim" />
+          Connect
         </button>
       </div>
 
