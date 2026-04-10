@@ -4,6 +4,7 @@ import {
   Video, PenTool, FileText, Film,
   Play, BookOpen, Dumbbell, Sparkles, Music, MessageCircle,
 } from "lucide-react";
+import DynamicBoo from "./DynamicBoo";
 
 /* ═══════════════════════════════════════════════════════
    Ghost SVG
@@ -329,8 +330,8 @@ export default function LandingPage() {
             <span className="text-[14px] font-bold tracking-tight">Superboo</span>
           </div>
           <div className="flex items-center gap-6">
-            <a href="#features" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Features</a>
-            <a href="#how" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">How it works</a>
+            <a href="#section-features" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Features</a>
+            <a href="#section-how" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">How it works</a>
             <button onClick={() => nav("/chat")}
               className="text-[13px] px-5 py-2 rounded-full bg-gradient-to-r from-[#9370ff] to-[#EC4899] hover:opacity-90 text-white font-semibold transition-all shadow-lg shadow-purple-500/25">
               Try it free
@@ -342,7 +343,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════════════════
          1. HERO
          ═══════════════════════════════════════════════════════ */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-5 md:px-8">
+      <section id="section-hero" className="relative min-h-screen flex flex-col items-center justify-center px-5 md:px-8">
         {/* Animated mesh gradient */}
         <div className="hero-mesh-1" aria-hidden="true"/>
         <div className="hero-mesh-2" aria-hidden="true"/>
@@ -383,7 +384,7 @@ export default function LandingPage() {
               Try it free
               <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
             </button>
-            <a href="#features"
+            <a href="#section-features"
               className="hero-cta-secondary px-10 py-4 rounded-full text-white/70 hover:text-white text-[16px] font-semibold transition-all text-center">
               Watch it work
             </a>
@@ -406,7 +407,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════════════════
          2. USE CASE STRIP (marquee)
          ═══════════════════════════════════════════════════════ */}
-      <section className="py-4 overflow-hidden relative">
+      <section id="section-usecases" className="py-4 overflow-hidden relative">
         <div className="use-case-marquee">
           <div className="use-case-track">
             {[...USE_CASES, ...USE_CASES, ...USE_CASES].map((uc, i) => (
@@ -423,7 +424,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════════════════
          3. BENTO GRID
          ═══════════════════════════════════════════════════════ */}
-      <section id="features" className="py-24 md:py-36 px-5 md:px-8">
+      <section id="section-features" className="py-24 md:py-36 px-5 md:px-8">
         <div ref={bentoRef} className={`max-w-5xl mx-auto reveal ${bentoVis ? "revealed" : ""}`}>
           <div className="text-center mb-16">
             <h2 className="text-[36px] md:text-[52px] font-extrabold tracking-[-0.03em] mb-4">
@@ -477,7 +478,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════════════════
          4. HOW IT WORKS
          ═══════════════════════════════════════════════════════ */}
-      <section id="how" className="py-24 md:py-36 px-5 md:px-8 relative">
+      <section id="section-how" className="py-24 md:py-36 px-5 md:px-8 relative">
         <div className="how-bg" aria-hidden="true"/>
         <div ref={howRef} className={`max-w-3xl mx-auto reveal ${howVis ? "revealed" : ""} relative z-10`}>
           <div className="text-center mb-16">
@@ -492,7 +493,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════════════════
          5. TESTIMONIALS
          ═══════════════════════════════════════════════════════ */}
-      <section className="py-20 md:py-28 overflow-hidden">
+      <section id="section-testimonials" className="py-20 md:py-28 overflow-hidden">
         <div ref={testRef} className={`reveal ${testVis ? "revealed" : ""}`}>
           <div className="text-center mb-12 px-5">
             <h2 className="text-[28px] md:text-[40px] font-extrabold tracking-[-0.03em]">
@@ -516,7 +517,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════════════════
          6. SKILLS EXPLOSION
          ═══════════════════════════════════════════════════════ */}
-      <section className="py-24 md:py-36 px-5 md:px-8 relative overflow-hidden">
+      <section id="section-skills" className="py-24 md:py-36 px-5 md:px-8 relative overflow-hidden">
         <div className="skills-bg" aria-hidden="true"/>
         <div ref={skillsRef} className={`max-w-5xl mx-auto reveal ${skillsVis ? "revealed" : ""} relative z-10`}>
           <div className="text-center mb-16">
@@ -545,7 +546,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════════════════
          7. FINAL CTA
          ═══════════════════════════════════════════════════════ */}
-      <section className="py-28 md:py-40 px-5 md:px-8 relative min-h-[80vh] flex items-center justify-center">
+      <section id="section-cta" className="py-28 md:py-40 px-5 md:px-8 relative min-h-[80vh] flex items-center justify-center">
         <div className="cta-mesh-1" aria-hidden="true"/>
         <div className="cta-mesh-2" aria-hidden="true"/>
         {ctaHover && (
@@ -592,8 +593,8 @@ export default function LandingPage() {
           </div>
           <div className="flex items-center gap-5">
             <button onClick={() => nav("/chat")} className="text-[12px] text-white/30 hover:text-white/60 transition-colors bg-transparent border-none cursor-pointer">Chat</button>
-            <a href="#features" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Features</a>
-            <a href="#how" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">How it works</a>
+            <a href="#section-features" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Features</a>
+            <a href="#section-how" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">How it works</a>
             <span className="text-[10px] text-white/15 hidden md:inline">Press G for a surprise</span>
           </div>
         </div>
@@ -616,6 +617,9 @@ export default function LandingPage() {
           </div>
         </div>
       )}
+
+      {/* ─── Dynamic Boo ghost character ─── */}
+      <DynamicBoo />
 
       {/* ═══════════════════════════════════════════════════════
          STYLES
@@ -946,6 +950,96 @@ export default function LandingPage() {
           .skill-bubble-md { padding: 7px 14px; font-size: 12px; }
           .skill-bubble-sm { padding: 6px 12px; font-size: 11px; }
           .how-step-visual { width: 160px; height: 160px; }
+          .dynamic-boo { display: none !important; }
+        }
+
+        /* ── Dynamic Boo ── */
+        .dynamic-boo {
+          animation: booBreathe 3s ease-in-out infinite;
+          user-select: none;
+          -webkit-user-select: none;
+        }
+        .dynamic-boo-hover {
+          animation: booExcited 0.4s ease-in-out infinite;
+        }
+        .dynamic-boo-spin {
+          animation: booSpin 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        }
+        @keyframes booBreathe {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-6px); }
+        }
+        @keyframes booExcited {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-4px) scale(1.08); }
+        }
+        @keyframes booSpin {
+          0% { transform: rotate(0deg) scale(1); }
+          50% { transform: rotate(180deg) scale(1.15); }
+          100% { transform: rotate(360deg) scale(1); }
+        }
+
+        /* ── Speech bubble ── */
+        .boo-speech-bubble {
+          position: absolute;
+          bottom: calc(100% + 10px);
+          left: 50%;
+          transform: translateX(-50%);
+          background: rgba(20, 10, 40, 0.92);
+          border: 1px solid rgba(192, 132, 252, 0.3);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          color: white;
+          font-size: 13px;
+          font-weight: 600;
+          padding: 8px 14px;
+          border-radius: 14px;
+          white-space: nowrap;
+          pointer-events: none;
+          animation: bubbleFadeIn 0.3s ease-out;
+          box-shadow: 0 4px 20px -4px rgba(147, 112, 255, 0.3);
+        }
+        .boo-speech-pointer {
+          position: absolute;
+          bottom: -6px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 0; height: 0;
+          border-left: 6px solid transparent;
+          border-right: 6px solid transparent;
+          border-top: 6px solid rgba(20, 10, 40, 0.92);
+        }
+        @keyframes bubbleFadeIn {
+          from { opacity: 0; transform: translateX(-50%) translateY(6px); }
+          to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* ── Floating hearts ── */
+        .boo-float-heart {
+          position: absolute;
+          bottom: 100%;
+          font-size: 14px;
+          pointer-events: none;
+          animation: heartFloat 1.8s ease-out forwards;
+        }
+        @keyframes heartFloat {
+          0% { opacity: 1; transform: translateY(0) scale(0.5); }
+          100% { opacity: 0; transform: translateY(-50px) scale(1.2); }
+        }
+
+        /* ── Sparkle particles ── */
+        .boo-sparkle-particle {
+          position: absolute;
+          width: 4px; height: 4px;
+          border-radius: 50%;
+          background: white;
+          pointer-events: none;
+          animation: sparklePopBoo 0.6s ease-out forwards;
+        }
+        @keyframes sparklePopBoo {
+          0% { opacity: 1; transform: scale(0); }
+          50% { opacity: 1; transform: scale(1.5); }
+          100% { opacity: 0; transform: scale(0.5); }
         }
       `}</style>
     </div>
