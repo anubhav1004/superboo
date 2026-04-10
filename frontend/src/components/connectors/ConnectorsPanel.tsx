@@ -75,11 +75,12 @@ export default function ConnectorsPanel({ onClose }: Props) {
     <div
       key={c.id}
       className={clsx(
-        "group bg-bg-surface border rounded-2xl p-4 transition-all hover:scale-[1.02] active:scale-[0.98] hover-gradient-border",
+        "group border rounded-2xl p-4 transition-all hover:scale-[1.02] active:scale-[0.98] hover-gradient-border",
         c.status === "connected"
-          ? "border-border hover:shadow-[0_0_20px_-6px_rgba(147,112,255,0.2)]"
-          : "border-border opacity-80 hover:opacity-100"
+          ? "border-[rgba(255,255,255,0.08)] hover:shadow-[0_0_20px_-6px_rgba(147,112,255,0.2)]"
+          : "border-[rgba(255,255,255,0.08)] opacity-80 hover:opacity-100"
       )}
+      style={{background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(12px)'}}
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
@@ -149,7 +150,8 @@ export default function ConnectorsPanel({ onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="bg-bg-elevated border-0 md:border border-border rounded-none md:rounded-2xl w-full max-w-5xl h-full md:h-auto md:max-h-[85vh] flex flex-col overflow-hidden shadow-modal modal-enter"
+        className="border-0 md:border rounded-none md:rounded-2xl w-full max-w-5xl h-full md:h-auto md:max-h-[85vh] flex flex-col overflow-hidden shadow-modal modal-enter"
+        style={{background: 'rgba(19,13,34,0.95)', backdropFilter: 'blur(24px)', borderColor: 'rgba(255,255,255,0.08)'}}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

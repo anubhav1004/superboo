@@ -45,7 +45,7 @@ export default function ExecutionStatus({ steps }: { steps: ExecStep[] }) {
   const activeLabel = activeIdx >= 0 ? steps[activeIdx].label : "";
 
   return (
-    <div className="rounded-2xl border border-[#1f1f2a] bg-[#12121a] p-5 w-full fade-in">
+    <div className="rounded-2xl p-5 w-full fade-in" style={{background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)'}}>
       {/* Header with mini ghost */}
       <div className="flex items-center gap-2.5 mb-4">
         <MiniGhostBounce />
@@ -57,11 +57,12 @@ export default function ExecutionStatus({ steps }: { steps: ExecStep[] }) {
       {/* Horizontal progress bar with labeled dots */}
       <div className="relative px-2">
         {/* Connection line */}
-        <div className="absolute top-3 left-6 right-6 h-[2px] bg-[#1f1f2a] rounded-full" />
+        <div className="absolute top-3 left-6 right-6 h-[2px] rounded-full" style={{background: 'rgba(255,255,255,0.08)'}} />
         {/* Progress fill */}
         <div
-          className="absolute top-3 left-6 h-[2px] rounded-full bg-gradient-to-r from-[#9370ff] to-[#C084FC] transition-all duration-500 ease-out"
+          className="absolute top-3 left-6 h-[2px] rounded-full transition-all duration-500 ease-out"
           style={{
+            backgroundImage: 'linear-gradient(to right, #9370ff, #EC4899)',
             width: steps.length > 1
               ? `${(doneCount / (steps.length - 1)) * (100 - (12 / (steps.length)))}%`
               : "0%",
@@ -79,8 +80,8 @@ export default function ExecutionStatus({ steps }: { steps: ExecStep[] }) {
                   className={clsx(
                     "w-6 h-6 rounded-full flex items-center justify-center transition-all border-2",
                     step.state === "done" && "bg-[#4ade80] border-[#4ade80] step-done-burst",
-                    step.state === "active" && "bg-[#12121a] border-[#9370ff] shadow-[0_0_12px_-2px_rgba(147,112,255,0.5)]",
-                    step.state === "pending" && "bg-[#12121a] border-[#1f1f2a]"
+                    step.state === "active" && "border-[#9370ff] shadow-[0_0_12px_-2px_rgba(147,112,255,0.5)]",
+                    step.state === "pending" && "border-[rgba(255,255,255,0.08)]"
                   )}
                 >
                   {step.state === "done" ? (

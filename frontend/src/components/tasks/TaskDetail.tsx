@@ -92,13 +92,14 @@ export default function TaskDetail() {
     >
       <div
         className={clsx(
-          "bg-bg-elevated border-0 md:border rounded-none md:rounded-2xl w-full max-w-3xl h-full md:h-auto md:max-h-[85vh] flex flex-col overflow-hidden shadow-modal modal-enter",
+          "border-0 md:border rounded-none md:rounded-2xl w-full max-w-3xl h-full md:h-auto md:max-h-[85vh] flex flex-col overflow-hidden shadow-modal modal-enter",
           meta.border
         )}
         onClick={(e) => e.stopPropagation()}
+        style={{background: 'rgba(19,13,34,0.95)', backdropFilter: 'blur(24px)', borderColor: 'rgba(255,255,255,0.08)'}}
       >
         {/* Header */}
-        <div className={clsx("px-4 md:px-6 pt-5 pb-4 border-b border-border", meta.bg)}>
+        <div className={clsx("px-4 md:px-6 pt-5 pb-4 border-b border-[rgba(255,255,255,0.08)]", meta.bg)}>
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
@@ -144,11 +145,10 @@ export default function TaskDetail() {
             <div
               className={clsx(
                 "h-full rounded-full transition-all",
-                task.status === "running" && "bg-gradient-to-r from-accent to-accent-hover",
                 task.status === "completed" && "bg-[#4ade80]/70",
                 task.status === "cancelled" && "bg-[#f87171]/70"
               )}
-              style={{ width: `${task.progress}%` }}
+              style={{ width: `${task.progress}%`, ...(task.status === "running" ? {backgroundImage: 'linear-gradient(135deg, #9370ff, #EC4899)'} : {}) }}
             />
           </div>
         </div>

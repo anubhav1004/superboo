@@ -29,7 +29,7 @@ function TaskRow({ task, onClick }: { task: Task; onClick: () => void }) {
     <button
       onClick={onClick}
       className={clsx(
-        "w-full text-left border rounded-xl px-3.5 py-2.5 transition-all bg-transparent hover:bg-bg-surface/50 hover:scale-[1.01] active:scale-[0.99]",
+        "w-full text-left border rounded-xl px-3.5 py-2.5 transition-all hover:scale-[1.01] active:scale-[0.99]",
         task.status === "running" && "border-accent/30 hover:border-accent/50",
         task.status === "completed" && "border-[#4ade80]/30 hover:border-[#4ade80]/50",
         task.status === "cancelled" && "border-[#f87171]/30 hover:border-[#f87171]/50",

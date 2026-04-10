@@ -86,7 +86,7 @@ export default function Sidebar({
 
   if (!sidebarOpen) {
     return (
-      <div className="hidden md:flex w-14 border-r border-border bg-bg flex-col items-center py-5 gap-2">
+      <div className="hidden md:flex w-14 border-r border-[rgba(255,255,255,0.08)] flex-col items-center py-5 gap-2" style={{background: 'linear-gradient(to bottom, #100a20, #0c0118 40%)'}}>
         <button
           onClick={toggleSidebar}
           className="p-2.5 rounded-xl hover:bg-bg-surface text-fg-muted hover:text-fg transition-all hover:scale-105 active:scale-95"
@@ -142,18 +142,18 @@ export default function Sidebar({
         />
       )}
     <aside className={clsx(
-      "border-r border-border flex flex-col h-full",
+      "border-r border-[rgba(255,255,255,0.08)] flex flex-col h-full",
       isMobile
         ? "fixed inset-y-0 left-0 z-50 w-[240px] shadow-2xl"
         : "w-[240px]"
-    )} style={{background: 'linear-gradient(to bottom, #0c0c12, #0a0a0e 40%)'}}>
+    )} style={{background: 'linear-gradient(to bottom, #100a20, #0c0118 40%)'}}>
       {/* Brand */}
       <div className="px-4 pt-5 pb-4 flex items-center justify-between">
         <a href="/" className="flex items-center gap-2.5 group cursor-pointer no-underline">
           <div className="transition-transform group-hover:scale-110 group-hover:-translate-y-0.5">
             <GhostIcon size={24} />
           </div>
-          <span className="text-[15px] font-semibold bg-gradient-to-r from-[#c084fc] to-[#a78bfa] bg-clip-text text-transparent">
+          <span className="text-[15px] font-extrabold" style={{background: 'linear-gradient(135deg, #C084FC, #EC4899, #9370ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>
             Superboo
           </span>
         </a>
@@ -170,7 +170,8 @@ export default function Sidebar({
       <div className="px-3 pb-3">
         <button
           onClick={() => createSession()}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-full bg-gradient-to-r from-[#9370ff] to-[#C084FC] hover:from-[#a080ff] hover:to-[#d0a0ff] text-white text-[12px] font-semibold transition-all shadow-[0_0_16px_-4px_rgba(147,112,255,0.3)] hover:shadow-[0_0_24px_-4px_rgba(147,112,255,0.5)] hover:scale-[1.02] active:scale-[0.98]"
+          className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-full text-white text-[12px] font-semibold transition-all hover:scale-[1.02] active:scale-[0.98]"
+          style={{background: 'linear-gradient(135deg, #9370ff, #EC4899)', boxShadow: '0 0 30px -5px rgba(147,112,255,0.4)'}}
         >
           <Plus size={14} />
           New
@@ -181,14 +182,20 @@ export default function Sidebar({
       <div className="px-3 pb-3 space-y-1">
         <button
           onClick={onOpenSkills}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[12px] text-fg-muted hover:text-fg hover:bg-bg-surface transition-all hover:scale-[1.01] active:scale-[0.99]"
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[12px] text-fg-muted hover:text-fg transition-all hover:scale-[1.01] active:scale-[0.99]"
+          style={{background: 'transparent'}}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.border = '1px solid rgba(255,255,255,0.08)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.border = '1px solid transparent'; }}
         >
           <Sparkles size={14} className="text-fg-dim" />
           Skills
         </button>
         <button
           onClick={onOpenConnectors}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[12px] text-fg-muted hover:text-fg hover:bg-bg-surface transition-all hover:scale-[1.01] active:scale-[0.99]"
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[12px] text-fg-muted hover:text-fg transition-all hover:scale-[1.01] active:scale-[0.99]"
+          style={{background: 'transparent'}}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.border = '1px solid rgba(255,255,255,0.08)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.border = '1px solid transparent'; }}
         >
           <Plug size={14} className="text-fg-dim" />
           Connect
@@ -227,9 +234,12 @@ export default function Sidebar({
               className={clsx(
                 "group flex items-center gap-2.5 px-3 py-2 rounded-xl cursor-pointer transition-all hover:scale-[1.01]",
                 activeSessionId === s.id
-                  ? "bg-bg-surface border border-accent/20 shadow-card shadow-accent/5"
-                  : "border border-transparent text-fg-muted hover:bg-bg-elevated hover:text-fg"
+                  ? "border-l-2 border-l-[#EC4899] border border-[rgba(255,255,255,0.08)]"
+                  : "border border-transparent text-fg-muted hover:text-fg"
               )}
+              style={activeSessionId === s.id ? {background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(12px)'} : undefined}
+              onMouseEnter={(e) => { if (activeSessionId !== s.id) { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; } }}
+              onMouseLeave={(e) => { if (activeSessionId !== s.id) { e.currentTarget.style.background = 'transparent'; } }}
             >
               <MessageSquare
                 size={12}
@@ -257,9 +267,9 @@ export default function Sidebar({
       </div>
 
       {/* Footer — user + settings */}
-      <div className="px-3 py-3 flex items-center gap-2.5 border-t border-transparent" style={{borderImage: 'linear-gradient(to right, transparent, rgba(147,112,255,0.2), transparent) 1'}}>
+      <div className="px-3 py-3 flex items-center gap-2.5 border-t border-transparent" style={{borderImage: 'linear-gradient(to right, transparent, rgba(192,132,252,0.3), rgba(236,72,153,0.2), transparent) 1'}}>
         <div className="relative">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent via-[#c084fc] to-accent-hover flex items-center justify-center text-[12px] font-bold text-white flex-shrink-0 shadow-card">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold text-white flex-shrink-0" style={{background: 'linear-gradient(135deg, #9370ff, #EC4899)', boxShadow: '0 0 20px -4px rgba(147,112,255,0.4)'}}>
             A
           </div>
           {connection === "online" && (

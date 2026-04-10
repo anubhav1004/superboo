@@ -78,7 +78,8 @@ export default function Settings({ onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="bg-bg-elevated border-0 md:border border-border rounded-none md:rounded-2xl w-full max-w-xl h-full md:h-auto md:max-h-[85vh] flex flex-col overflow-hidden shadow-modal modal-enter"
+        className="border-0 md:border rounded-none md:rounded-2xl w-full max-w-xl h-full md:h-auto md:max-h-[85vh] flex flex-col overflow-hidden shadow-modal modal-enter"
+        style={{background: 'rgba(19,13,34,0.95)', backdropFilter: 'blur(24px)', borderColor: 'rgba(255,255,255,0.08)'}}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="px-4 md:px-6 pt-5 pb-4 flex items-center justify-between border-b border-border">
@@ -208,7 +209,8 @@ export default function Settings({ onClose }: Props) {
           </button>
           <button
             onClick={handleSave}
-            className="text-xs font-semibold px-5 py-2.5 rounded-full bg-gradient-to-r from-accent to-accent-hover hover:from-accent-hover hover:to-[#b39dff] text-white shadow-card hover:shadow-glow transition-all hover:scale-105 active:scale-95"
+            className="text-xs font-semibold px-5 py-2.5 rounded-full text-white transition-all hover:scale-105 active:scale-95"
+            style={{background: 'linear-gradient(135deg, #9370ff, #EC4899)', boxShadow: '0 0 30px -5px rgba(147,112,255,0.4)'}}
           >
             Save
           </button>

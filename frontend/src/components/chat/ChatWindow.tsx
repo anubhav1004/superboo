@@ -113,24 +113,30 @@ export default function ChatWindow() {
   /* ═══════ EMPTY STATE — Prompt-first workspace ═══════ */
   if (!session || session.messages.length === 0) {
     return (
-      <div className="flex-1 flex flex-col bg-bg h-full overflow-hidden">
+      <div className="flex-1 flex flex-col h-full overflow-hidden" style={{background: '#0c0118'}}>
         {/* Mobile header */}
-        <div className="flex md:hidden items-center px-4 py-3 border-b border-[#1f1f2a]/50">
+        <div className="flex md:hidden items-center px-4 py-3 border-b border-[rgba(255,255,255,0.08)]">
           <button onClick={toggleSidebar} className="p-2 -ml-1 rounded-xl hover:bg-bg-surface text-fg-muted hover:text-fg transition-all min-w-[44px] min-h-[44px] flex items-center justify-center">
             <Menu size={20} />
           </button>
         </div>
 
+        {/* Subtle mesh gradient blob for empty state */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full opacity-20" style={{background: 'radial-gradient(ellipse, rgba(147,112,255,0.3) 0%, rgba(236,72,153,0.15) 40%, transparent 70%)', filter: 'blur(80px)'}} />
+        </div>
+
         {/* Centered content — prompt bar is the hero */}
-        <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-6">
+        <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-6 relative z-10">
           <div className="w-full max-w-2xl flex flex-col items-center">
 
             {/* Ghost + greeting */}
-            <div className="ghost-float mb-6">
-              <BooAvatar size={56} />
+            <div className="ghost-float mb-6 relative">
+              <div className="absolute inset-[-12px] rounded-full" style={{background: 'radial-gradient(circle, rgba(147,112,255,0.3), transparent 70%)', filter: 'blur(12px)'}} />
+              <div className="relative"><BooAvatar size={56} /></div>
             </div>
-            <h1 className="text-[24px] md:text-[32px] font-[300] text-fg tracking-tight text-center mb-2">
-              What can Boo <span className="text-gradient">create</span> for you?
+            <h1 className="text-[24px] md:text-[32px] font-extrabold tracking-tight text-center mb-2" style={{background: 'linear-gradient(135deg, #C084FC, #EC4899, #9370ff, #60A5FA)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>
+              What can Boo create for you?
             </h1>
             <p className="text-[13px] text-fg-dim text-center mb-8 max-w-sm">
               Describe what you need in plain words — a video, a deck, a poster, anything.
@@ -147,7 +153,8 @@ export default function ChatWindow() {
                 <span className="text-[11px] text-fg-dim font-medium uppercase tracking-wider">Quick start</span>
                 <button
                   onClick={() => setCreatePanelOpen(true)}
-                  className="flex items-center gap-1 text-[11px] text-accent hover:text-accent-hover transition-colors"
+                  className="flex items-center gap-1 text-[11px] transition-colors"
+                  style={{background: 'linear-gradient(135deg, #C084FC, #EC4899, #9370ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}
                 >
                   All 20+ skills <ArrowRight size={10} />
                 </button>
@@ -157,8 +164,10 @@ export default function ChatWindow() {
                   <button
                     key={q.title}
                     onClick={() => handleSend(q.prompt, [])}
-                    className="group flex items-start gap-3 p-3 rounded-xl bg-[#12121a] border border-[#1f1f2a] hover:border-[color:var(--c)]/40 text-left transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-                    style={{ "--c": q.color } as React.CSSProperties}
+                    className="group flex items-start gap-3 p-3 rounded-xl text-left transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                    style={{ "--c": q.color, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', borderLeft: `2px solid ${q.color}` } as React.CSSProperties}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.borderLeftColor = q.color; e.currentTarget.style.boxShadow = `0 8px 30px -8px ${q.color}40`; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.borderLeftColor = q.color; e.currentTarget.style.boxShadow = 'none'; }}
                   >
                     <span className="text-xl flex-shrink-0 mt-0.5">{q.emoji}</span>
                     <div className="min-w-0">
@@ -177,9 +186,9 @@ export default function ChatWindow() {
 
   /* ═══════ ACTIVE CHAT ═══════ */
   return (
-    <div className="flex-1 flex flex-col bg-bg h-full overflow-hidden">
+    <div className="flex-1 flex flex-col h-full overflow-hidden" style={{background: '#0c0118'}}>
       {/* Header */}
-      <div className="px-4 md:px-6 py-3 sticky top-0 z-10 bg-bg/80 backdrop-blur-md border-b border-[#1f1f2a]/30">
+      <div className="px-4 md:px-6 py-3 sticky top-0 z-10 border-b border-[rgba(255,255,255,0.08)]" style={{background: 'rgba(12,1,24,0.8)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)'}}>
         <div className="max-w-3xl mx-auto w-full flex items-center gap-2.5">
           <button onClick={toggleSidebar} className="p-2 -ml-1 rounded-xl hover:bg-bg-surface text-fg-muted hover:text-fg transition-all min-w-[44px] min-h-[44px] flex items-center justify-center md:hidden">
             <Menu size={20} />
@@ -187,7 +196,7 @@ export default function ChatWindow() {
           <BooAvatar size={22} />
           <div className="text-[14px] text-fg font-medium truncate">{session.title}</div>
           <div className="flex-1" />
-          <button onClick={() => setCreatePanelOpen(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] text-fg-dim hover:text-fg border border-[#1f1f2a] hover:border-accent/30 transition-all">
+          <button onClick={() => setCreatePanelOpen(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] text-fg-dim hover:text-fg border border-[rgba(255,255,255,0.08)] hover:border-[rgba(147,112,255,0.4)] transition-all" style={{background: 'rgba(255,255,255,0.04)'}}>
             <Sparkles size={11} /> Skills
           </button>
         </div>

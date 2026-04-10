@@ -6,15 +6,15 @@ export default {
     extend: {
       colors: {
         bg: {
-          DEFAULT: "#0a0a0e",
-          elevated: "#12121a",
-          surface: "#1a1a24",
-          hover: "#22222e",
+          DEFAULT: "#0c0118",
+          elevated: "#130d22",
+          surface: "#1a1430",
+          hover: "#221a3a",
         },
         border: {
-          DEFAULT: "#1f1f2a",
-          strong: "#2a2a36",
-          subtle: "#16161e",
+          DEFAULT: "#241c3a",
+          strong: "#2f2548",
+          subtle: "#16101e",
         },
         fg: {
           DEFAULT: "#f0eef5",

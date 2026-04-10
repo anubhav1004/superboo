@@ -53,11 +53,12 @@ export default function GeneratingBox({ type, progress, label }: GeneratingBoxPr
   return (
     <div
       className={clsx(
-        "relative overflow-hidden rounded-2xl border border-accent/30",
+        "relative overflow-hidden rounded-2xl",
         "shadow-[0_0_30px_-6px_rgba(147,112,255,0.25)]",
         isWide ? "aspect-video" : "aspect-square",
         "max-w-md w-full"
       )}
+      style={{background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(147,112,255,0.3)', backdropFilter: 'blur(12px)'}}
     >
       {/* Shimmer background — purple tinted */}
       <div className="absolute inset-0 shimmer" />

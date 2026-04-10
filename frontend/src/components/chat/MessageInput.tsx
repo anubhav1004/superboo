@@ -19,11 +19,11 @@ interface Props {
 }
 
 const TRENDING_PILLS = [
-  { label: "TikTok video", prompt: "Create a 15-second TikTok about my new coffee shop opening this weekend" },
-  { label: "Pitch deck", prompt: "Create a 10-slide pitch deck for my AI-powered fitness app startup" },
-  { label: "Meme", prompt: "Create a funny meme about procrastinating on assignments using the Drake format" },
-  { label: "Resume", prompt: "Write a resume for a recent computer science graduate looking for frontend developer roles" },
-  { label: "Logo design", prompt: "Design a minimal logo for my streetwear brand called 'Drift'" },
+  { label: "TikTok video", prompt: "Create a 15-second TikTok about my new coffee shop opening this weekend", color: "#F97316" },
+  { label: "Pitch deck", prompt: "Create a 10-slide pitch deck for my AI-powered fitness app startup", color: "#22C55E" },
+  { label: "Meme", prompt: "Create a funny meme about procrastinating on assignments using the Drake format", color: "#EC4899" },
+  { label: "Resume", prompt: "Write a resume for a recent computer science graduate looking for frontend developer roles", color: "#3B82F6" },
+  { label: "Logo design", prompt: "Design a minimal logo for my streetwear brand called 'Drift'", color: "#8B5CF6" },
 ];
 
 export default function MessageInput({ onSend, disabled, isHub }: Props) {
@@ -107,7 +107,8 @@ export default function MessageInput({ onSend, disabled, isHub }: Props) {
             {files.map((f, i) => (
               <span
                 key={i}
-                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-bg-surface border border-border text-fg-muted fade-in-fast"
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full text-fg-muted fade-in-fast"
+                style={{background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)'}}
               >
                 {fileIcon(f)}
                 <span className="truncate max-w-[160px]">{f.name}</span>
@@ -124,22 +125,24 @@ export default function MessageInput({ onSend, disabled, isHub }: Props) {
           </div>
         )}
 
-        {/* Input container — larger and more prominent */}
+        {/* Input container — glassmorphism */}
         <div
           className={clsx(
-            "relative border rounded-2xl transition-all duration-200 ambient-glow noise-bg",
-            isHub ? "bg-[#12121a]" : "bg-bg-elevated",
-            focused
-              ? "border-accent/40 shadow-[0_0_32px_-4px_rgba(147,112,255,0.25)]"
-              : "border-border hover:border-border-strong",
+            "relative rounded-2xl transition-all duration-200 ambient-glow noise-bg",
             disabled && "opacity-60"
           )}
+          style={{
+            background: 'rgba(255,255,255,0.05)',
+            border: focused ? '1px solid rgba(147,112,255,0.4)' : '1px solid rgba(255,255,255,0.1)',
+            backdropFilter: 'blur(12px)',
+            boxShadow: focused ? '0 0 0 3px rgba(147,112,255,0.15)' : 'none',
+          }}
         >
           {/* Gradient focus line */}
           <div className={clsx(
             "h-[1px] mx-4 transition-opacity duration-300",
             focused ? "opacity-100" : "opacity-0"
-          )} style={{background: 'linear-gradient(to right, transparent, rgba(147,112,255,0.4), transparent)'}} />
+          )} style={{background: 'linear-gradient(to right, transparent, rgba(147,112,255,0.4), rgba(236,72,153,0.3), transparent)'}} />
 
           <textarea
             ref={textareaRef}
@@ -160,7 +163,10 @@ export default function MessageInput({ onSend, disabled, isHub }: Props) {
           <div className="flex items-center gap-1.5 px-3 pb-3 pt-1">
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-bg-surface text-fg-muted hover:text-fg transition-all hover:scale-110 active:scale-95"
+              className="w-9 h-9 flex items-center justify-center rounded-full text-fg-muted hover:text-fg transition-all hover:scale-110 active:scale-95"
+              style={{background: 'transparent'}}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               title="Attach file"
             >
               <Plus size={17} />
@@ -178,8 +184,11 @@ export default function MessageInput({ onSend, disabled, isHub }: Props) {
                 "w-9 h-9 flex items-center justify-center rounded-full transition-all relative",
                 recording
                   ? "bg-red-500/15 text-red-400 pulse-ring"
-                  : "hover:bg-bg-surface text-fg-muted hover:text-fg hover:scale-110 active:scale-95"
+                  : "text-fg-muted hover:text-fg hover:scale-110 active:scale-95"
               )}
+              style={!recording ? {background: 'transparent'} : undefined}
+              onMouseEnter={(e) => { if (!recording) e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
+              onMouseLeave={(e) => { if (!recording) e.currentTarget.style.background = 'transparent'; }}
               title="Voice input"
             >
               <Mic size={16} className={recording ? "pulse-dot" : ""} />
@@ -191,10 +200,11 @@ export default function MessageInput({ onSend, disabled, isHub }: Props) {
               className={clsx(
                 "w-10 h-10 flex items-center justify-center rounded-full transition-all",
                 canSend
-                  ? "bg-gradient-to-br from-[#9370ff] to-[#C084FC] text-white shadow-[0_0_20px_-2px_rgba(147,112,255,0.5)] hover:shadow-[0_0_28px_-2px_rgba(147,112,255,0.7)] hover:scale-110 active:scale-90"
+                  ? "text-white hover:scale-110 active:scale-90"
                   : "bg-bg-surface text-fg-dim cursor-not-allowed opacity-50",
                 sendBounce && "bounce-send"
               )}
+              style={canSend ? {background: 'linear-gradient(135deg, #9370ff, #EC4899)', boxShadow: '0 0 30px -5px rgba(147,112,255,0.4)'} : undefined}
               title="Send"
             >
               <ArrowUp size={18} />
@@ -209,9 +219,10 @@ export default function MessageInput({ onSend, disabled, isHub }: Props) {
               <button
                 key={pill.label}
                 onClick={() => onSend(pill.prompt, [])}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#12121a] border border-[#1f1f2a] hover:border-[#9370ff]/30 text-[11px] text-fg-muted hover:text-fg transition-all hover:scale-105 active:scale-95"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] text-fg-muted hover:text-fg transition-all hover:scale-105 active:scale-95"
+                style={{background: `${pill.color}15`, border: `1px solid ${pill.color}30`}}
               >
-                <Flame size={10} className="text-orange-400" />
+                <Flame size={10} style={{color: pill.color}} />
                 {pill.label}
               </button>
             ))}

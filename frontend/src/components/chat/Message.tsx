@@ -199,11 +199,11 @@ export default function Message({ msg }: { msg: MessageType }) {
       <div className="msg-slide-up px-4 md:px-8 py-3 md:py-4">
         <div className="max-w-full md:max-w-3xl mx-auto flex justify-end gap-3">
           <div className="max-w-[85%] md:max-w-[70%]">
-            <div className="bg-bg-surface border border-border rounded-2xl rounded-tr-md px-4 py-3 text-[14px] text-fg leading-relaxed">
+            <div className="rounded-2xl rounded-tr-md px-4 py-3 text-[14px] text-fg leading-relaxed" style={{background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)'}}>
               {msg.content}
             </div>
           </div>
-          <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-accent to-accent-hover flex items-center justify-center text-[11px] font-bold text-white mt-0.5">
+          <div className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white mt-0.5" style={{background: 'linear-gradient(135deg, #9370ff, #EC4899)'}}>
             A
           </div>
         </div>
@@ -221,7 +221,7 @@ export default function Message({ msg }: { msg: MessageType }) {
               <Wrench size={12} className="text-amber-400" />
             </div>
           ) : (
-            <div className="drop-shadow-[0_0_8px_rgba(147,112,255,0.4)]">
+            <div className="drop-shadow-[0_0_10px_rgba(147,112,255,0.5)]">
               <MiniGhost />
             </div>
           )}
@@ -231,7 +231,7 @@ export default function Message({ msg }: { msg: MessageType }) {
         <div className="flex-1 min-w-0">
           {/* Tool call block */}
           {msg.toolCall && (
-            <div className="mb-3 bg-bg-elevated border border-border rounded-2xl overflow-hidden">
+            <div className="mb-3 rounded-2xl overflow-hidden" style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)'}}>
               <button
                 onClick={() => setToolOpen(!toolOpen)}
                 className="w-full flex items-center gap-2.5 px-4 py-2.5 hover:bg-bg-surface transition-colors"
@@ -282,13 +282,14 @@ export default function Message({ msg }: { msg: MessageType }) {
                 "relative",
                 // Sparkpage-style card for bot messages with structured content
                 hasStructuredContent && !isTool
-                  ? "bg-[#12121a] border border-[#1f1f2a] rounded-2xl p-5 md:p-6"
+                  ? "rounded-2xl p-5 md:p-6"
                   : "prose-msg"
               )}
+              style={hasStructuredContent && !isTool ? {background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)'} : undefined}
             >
               {/* Colored top border for structured cards */}
               {hasStructuredContent && !isTool && (
-                <div className="absolute top-0 left-4 right-4 h-[2px] rounded-full bg-gradient-to-r from-[#9370ff] to-[#C084FC]" />
+                <div className="absolute top-0 left-4 right-4 h-[2px] rounded-full" style={{background: 'linear-gradient(to right, #9370ff, #EC4899)'}} />
               )}
               <div className={hasStructuredContent && !isTool ? "prose-msg" : ""}>
                 <ReactMarkdown rehypePlugins={[rehypeHighlight]}>

@@ -61,7 +61,8 @@ export default function SkillsPanel({ onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="bg-bg-elevated border-0 md:border border-border rounded-none md:rounded-2xl w-full max-w-3xl h-full md:h-[85vh] flex flex-col overflow-hidden shadow-modal modal-enter"
+        className="border-0 md:border rounded-none md:rounded-2xl w-full max-w-3xl h-full md:h-[85vh] flex flex-col overflow-hidden shadow-modal modal-enter"
+        style={{background: 'rgba(19,13,34,0.95)', backdropFilter: 'blur(24px)', borderColor: 'rgba(255,255,255,0.08)'}}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -135,7 +136,8 @@ export default function SkillsPanel({ onClose }: Props) {
               return (
                 <div
                   key={skill.id}
-                  className="relative rounded-xl border border-border bg-bg-surface hover:border-border-strong transition-all group overflow-hidden"
+                  className="relative rounded-xl transition-all group overflow-hidden"
+                  style={{background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)'}}
                 >
                   {/* Left colored accent bar */}
                   <div
@@ -173,7 +175,7 @@ export default function SkillsPanel({ onClose }: Props) {
                     <button
                       onClick={() => handleTryIt(skill)}
                       className="text-[11px] font-medium transition-colors hover:underline"
-                      style={{ color }}
+                      style={{ background: `linear-gradient(135deg, ${color}, #C084FC)`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
                     >
                       {"Try it \u2192"}
                     </button>

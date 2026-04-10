@@ -1,405 +1,167 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 
-/* ═══════════════════════════════════════════════════════
-   Section config — position, expression, extras
-   ═══════════════════════════════════════════════════════ */
-type Expression = "excited" | "curious" | "focused" | "happy" | "amazed" | "waving";
+type Mood = "idle" | "excited" | "happy" | "amazed" | "waving";
 
-interface SectionConfig {
-  position: { bottom?: string; top?: string; left?: string; right?: string };
-  expression: Expression;
-  extraClass?: string;
-}
-
-const SECTION_CONFIG: Record<string, SectionConfig> = {
-  "section-hero":         { position: { bottom: "80px", right: "32px" },  expression: "excited" },
-  "section-usecases":     { position: { bottom: "80px", left: "32px" },   expression: "curious" },
-  "section-features":     { position: { top: "100px", right: "32px" },    expression: "focused" },
-  "section-how":          { position: { bottom: "80px", right: "32px" },  expression: "focused" },
-  "section-testimonials": { position: { bottom: "80px", left: "32px" },   expression: "happy" },
-  "section-skills":       { position: { top: "100px", left: "32px" },     expression: "amazed" },
-  "section-cta":          { position: { bottom: "140px", right: "60px" }, expression: "waving" },
-};
-
-const DEFAULT_CONFIG: SectionConfig = {
-  position: { bottom: "80px", right: "32px" },
-  expression: "excited",
-};
-
-const BUBBLE_MESSAGES = [
-  "Boo! \uD83D\uDC7B",
-  "Let's create!",
-  "I got you!",
-  "What do you need?",
-  "Try clicking stuff!",
-  "I'm your AI boo!",
-  "Ask me anything!",
-  "Ready when you are!",
+const MESSAGES = [
+  "Boo! 👻", "Let's create!", "I got you!", "What do you need?",
+  "Try clicking stuff!", "I'm your AI boo!", "Ask me anything!", "Ready when you are!",
 ];
 
-/* ═══════════════════════════════════════════════════════
-   DynamicBoo Component
-   ═══════════════════════════════════════════════════════ */
 export default function DynamicBoo() {
-  const [currentSection, setCurrentSection] = useState("section-hero");
-  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
-  const [showBubble, setShowBubble] = useState(false);
-  const [bubbleText, setBubbleText] = useState("");
-  const [isHovered, setIsHovered] = useState(false);
-  const [isSpinning, setIsSpinning] = useState(false);
-  const [hearts, setHearts] = useState<number[]>([]);
-  const [sparkles, setSparkles] = useState<number[]>([]);
+  const [mood, setMood] = useState<Mood>("idle");
+  const [hovered, setHovered] = useState(false);
+  const [bubble, setBubble] = useState<string | null>(null);
+  const [spinning, setSpinning] = useState(false);
+  const [eyeOffset, setEyeOffset] = useState({ x: 0, y: 0 });
   const booRef = useRef<HTMLDivElement>(null);
-  const bubbleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const bubbleTimer = useRef<number>(0);
 
-  const config = SECTION_CONFIG[currentSection] || DEFAULT_CONFIG;
-
-  /* ── IntersectionObserver for section detection ── */
+  // Detect which section is visible → change mood (no position change)
   useEffect(() => {
-    const sectionIds = Object.keys(SECTION_CONFIG);
-    const observers: IntersectionObserver[] = [];
+    const sections: [string, Mood][] = [
+      ["section-hero", "idle"],
+      ["section-usecases", "excited"],
+      ["section-features", "idle"],
+      ["section-how", "idle"],
+      ["section-testimonials", "happy"],
+      ["section-skills", "amazed"],
+      ["section-cta", "waving"],
+    ];
 
-    sectionIds.forEach((id) => {
+    const observers: IntersectionObserver[] = [];
+    for (const [id, m] of sections) {
       const el = document.getElementById(id);
-      if (!el) return;
+      if (!el) continue;
       const obs = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
-            setCurrentSection(id);
-          }
-        },
-        { threshold: [0.3, 0.5, 0.7] }
+        ([e]) => { if (e.isIntersecting) setMood(m); },
+        { threshold: 0.4 }
       );
       obs.observe(el);
       observers.push(obs);
-    });
-
+    }
     return () => observers.forEach((o) => o.disconnect());
   }, []);
 
-  /* ── Mouse tracking for eye follow ── */
+  // Subtle eye tracking
   useEffect(() => {
-    const handleMouse = (e: MouseEvent) => {
-      if (!booRef.current) return;
-      const rect = booRef.current.getBoundingClientRect();
+    const onMove = (e: MouseEvent) => {
+      const boo = booRef.current;
+      if (!boo) return;
+      const rect = boo.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
       const dx = (e.clientX - cx) / window.innerWidth;
       const dy = (e.clientY - cy) / window.innerHeight;
-      setMouseOffset({ x: Math.max(-2, Math.min(2, dx * 4)), y: Math.max(-2, Math.min(2, dy * 4)) });
+      setEyeOffset({ x: dx * 2.5, y: dy * 2 });
     };
-    window.addEventListener("mousemove", handleMouse);
-    return () => window.removeEventListener("mousemove", handleMouse);
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => window.removeEventListener("mousemove", onMove);
   }, []);
 
-  /* ── Hearts floating effect for testimonials ── */
-  useEffect(() => {
-    if (config.expression !== "happy") {
-      setHearts([]);
-      return;
-    }
-    const interval = setInterval(() => {
-      setHearts((prev) => [...prev.slice(-4), Date.now()]);
-    }, 1200);
-    return () => clearInterval(interval);
-  }, [config.expression]);
-
-  /* ── Sparkles for hero ── */
-  useEffect(() => {
-    if (currentSection !== "section-hero" || !isHovered) {
-      setSparkles([]);
-      return;
-    }
-    const interval = setInterval(() => {
-      setSparkles((prev) => [...prev.slice(-5), Date.now()]);
-    }, 300);
-    return () => clearInterval(interval);
-  }, [currentSection, isHovered]);
-
-  /* ── Click handler ── */
   const handleClick = useCallback(() => {
-    if (bubbleTimer.current) clearTimeout(bubbleTimer.current);
-    setBubbleText(BUBBLE_MESSAGES[Math.floor(Math.random() * BUBBLE_MESSAGES.length)]);
-    setShowBubble(true);
-    setIsSpinning(true);
-    setTimeout(() => setIsSpinning(false), 600);
-    bubbleTimer.current = setTimeout(() => setShowBubble(false), 2500);
+    setSpinning(true);
+    setTimeout(() => setSpinning(false), 600);
+    clearTimeout(bubbleTimer.current);
+    setBubble(MESSAGES[Math.floor(Math.random() * MESSAGES.length)]);
+    bubbleTimer.current = window.setTimeout(() => setBubble(null), 2500);
   }, []);
 
-  /* ── Build position style ── */
-  const posStyle: React.CSSProperties = {
-    position: "fixed",
-    zIndex: 90,
-    transition: "all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)",
-    cursor: "pointer",
-    ...config.position,
-  };
+  // Dynamic eyes
+  const eyeL = { cx: 52 + eyeOffset.x, cy: 58 + eyeOffset.y, rx: mood === "amazed" ? 9 : mood === "happy" ? 7 : (mood === "excited" || hovered) ? 8 : 7, ry: mood === "amazed" ? 11 : mood === "happy" ? 4 : (mood === "excited" || hovered) ? 10 : 9 };
+  const eyeR = { cx: 76 + eyeOffset.x, cy: 58 + eyeOffset.y, rx: eyeL.rx, ry: eyeL.ry };
 
-  // Clear opposite sides when switching
-  if (config.position.left) { posStyle.right = "auto"; }
-  if (config.position.right) { posStyle.left = "auto"; }
-  if (config.position.top) { posStyle.bottom = "auto"; }
-  if (config.position.bottom) { posStyle.top = "auto"; }
+  // Dynamic mouth
+  const mouth = mood === "amazed"
+    ? <circle cx={64} cy={78} r={4} fill="#3B0764" />
+    : (mood === "happy" || mood === "excited" || mood === "waving" || hovered)
+    ? <path d="M56 74 Q64 84 72 74" fill="none" stroke="#3B0764" strokeWidth="2.5" strokeLinecap="round" />
+    : <ellipse cx={64} cy={76} rx={6} ry={4} fill="#3B0764" />;
+
+  const showBlush = mood === "happy" || (hovered && mood === "excited");
 
   return (
     <div
       ref={booRef}
-      style={posStyle}
       onClick={handleClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className={`dynamic-boo ${isHovered ? "dynamic-boo-hover" : ""} ${isSpinning ? "dynamic-boo-spin" : ""}`}
-    >
-      {/* Speech bubble */}
-      {showBubble && (
-        <div className="boo-speech-bubble">
-          {bubbleText}
-          <div className="boo-speech-pointer" />
-        </div>
-      )}
-
-      {/* Floating hearts (testimonials) */}
-      {hearts.map((id) => (
-        <div key={id} className="boo-float-heart" style={{ left: `${10 + Math.random() * 40}px` }}>
-          &#x2764;&#xFE0F;
-        </div>
-      ))}
-
-      {/* Sparkles on hover in hero */}
-      {sparkles.map((id) => (
-        <div
-          key={id}
-          className="boo-sparkle-particle"
-          style={{
-            left: `${Math.random() * 60}px`,
-            top: `${Math.random() * 60}px`,
-          }}
-        />
-      ))}
-
-      {/* The ghost SVG */}
-      <BooSVG
-        expression={config.expression}
-        mouseOffset={mouseOffset}
-        isHovered={isHovered}
-        tiltDirection={config.position.left ? "right" : "left"}
-      />
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════
-   The dynamic SVG ghost
-   ═══════════════════════════════════════════════════════ */
-function BooSVG({
-  expression,
-  mouseOffset,
-  isHovered,
-  tiltDirection,
-}: {
-  expression: Expression;
-  mouseOffset: { x: number; y: number };
-  isHovered: boolean;
-  tiltDirection: "left" | "right";
-}) {
-  const SIZE = 60;
-
-  /* Eye properties based on expression */
-  const getEyes = () => {
-    const baseLeftCx = 48 + mouseOffset.x;
-    const baseRightCx = 72 + mouseOffset.x;
-    const baseCy = 55 + mouseOffset.y;
-
-    switch (expression) {
-      case "excited":
-        return {
-          type: "ellipse" as const,
-          left: { cx: baseLeftCx, cy: baseCy, rx: isHovered ? 9 : 8, ry: isHovered ? 11 : 10 },
-          right: { cx: baseRightCx, cy: baseCy, rx: isHovered ? 9 : 8, ry: isHovered ? 11 : 10 },
-          wink: !isHovered,
-        };
-      case "curious":
-        return {
-          type: "ellipse" as const,
-          left: { cx: baseLeftCx - 1, cy: baseCy, rx: 7, ry: 9 },
-          right: { cx: baseRightCx - 1, cy: baseCy, rx: 7, ry: 9 },
-          wink: false,
-        };
-      case "focused":
-        return {
-          type: "ellipse" as const,
-          left: { cx: baseLeftCx, cy: baseCy + 1, rx: 6, ry: 7 },
-          right: { cx: baseRightCx, cy: baseCy + 1, rx: 6, ry: 7 },
-          wink: false,
-        };
-      case "happy":
-        return {
-          type: "happy" as const,
-          left: { cx: baseLeftCx, cy: baseCy, rx: 7, ry: 4 },
-          right: { cx: baseRightCx, cy: baseCy, rx: 7, ry: 4 },
-          wink: false,
-        };
-      case "amazed":
-        return {
-          type: "ellipse" as const,
-          left: { cx: baseLeftCx, cy: baseCy, rx: 9, ry: 11 },
-          right: { cx: baseRightCx, cy: baseCy, rx: 9, ry: 11 },
-          wink: false,
-        };
-      case "waving":
-        return {
-          type: "ellipse" as const,
-          left: { cx: baseLeftCx, cy: baseCy, rx: 7, ry: 9 },
-          right: { cx: baseRightCx, cy: baseCy, rx: 7, ry: 9 },
-          wink: false,
-        };
-    }
-  };
-
-  const getMouth = () => {
-    switch (expression) {
-      case "excited":
-        return <ellipse cx="60" cy="74" rx="9" ry="6" fill="#3B0764" />;
-      case "curious":
-        return <ellipse cx="60" cy="74" rx="5" ry="4" fill="#3B0764" />;
-      case "focused":
-        return (
-          <path d="M54 73 Q60 77 66 73" stroke="#3B0764" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-        );
-      case "happy":
-        return (
-          <path d="M50 71 Q60 80 70 71" stroke="#3B0764" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-        );
-      case "amazed":
-        return <circle cx="60" cy="75" r="5" fill="#3B0764" />;
-      case "waving":
-        return (
-          <path d="M52 72 Q60 78 68 72" stroke="#3B0764" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-        );
-    }
-  };
-
-  const eyes = getEyes();
-  const showBlush = expression === "happy";
-  const tilt = expression === "curious" ? (tiltDirection === "left" ? -8 : 8) : expression === "focused" ? (tiltDirection === "left" ? -4 : 4) : 0;
-
-  /* Arm positions */
-  const leftArmCy = expression === "waving" ? 58 : 68;
-  const rightArmCy = 68;
-
-  return (
-    <svg
-      width={SIZE}
-      height={SIZE}
-      viewBox="0 0 120 120"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
-        transform: `rotate(${tilt}deg)`,
-        transition: "transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
-        filter: isHovered ? "drop-shadow(0 0 12px rgba(192,132,252,0.6))" : "drop-shadow(0 0 6px rgba(192,132,252,0.3))",
+        position: "fixed", bottom: 24, right: 24, zIndex: 90, cursor: "pointer",
+        transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s",
+        transform: spinning ? "rotate(360deg) scale(1.1)" : hovered ? "scale(1.15)" : "scale(1)",
+        filter: hovered ? "drop-shadow(0 4px 30px rgba(147,112,255,0.5))" : "drop-shadow(0 4px 16px rgba(147,112,255,0.25))",
+        animation: "booBreath 3.5s ease-in-out infinite",
       }}
     >
-      <defs>
-        <radialGradient id="dynBooGrad" cx="50%" cy="30%" r="70%">
-          <stop offset="0%" stopColor="#F5E9FF" />
-          <stop offset="50%" stopColor="#C084FC" />
-          <stop offset="100%" stopColor="#6D28D9" />
-        </radialGradient>
-      </defs>
-
-      {/* Body */}
-      <path
-        d="M60 8 C86 8 104 28 104 52 C104 78 86 98 60 98 C53 98 49 89 44 98 C38 89 33 98 27 89 C21 80 18 68 18 52 C18 28 38 8 60 8 Z"
-        fill="url(#dynBooGrad)"
-      />
-
-      {/* Left arm */}
-      <ellipse cx="24" cy={leftArmCy} rx="9" ry="12" fill="url(#dynBooGrad)">
-        {expression === "waving" && (
-          <animateTransform
-            attributeName="transform"
-            type="rotate"
-            values="-15 24 68;15 24 68;-15 24 68"
-            dur="0.8s"
-            repeatCount="indefinite"
-          />
-        )}
-      </ellipse>
-
-      {/* Right arm */}
-      <ellipse cx="96" cy={rightArmCy} rx="9" ry="12" fill="url(#dynBooGrad)" />
-
-      {/* Highlight */}
-      <ellipse cx="60" cy="38" rx="28" ry="16" fill="white" opacity="0.2" />
-
-      {/* Eyes */}
-      {eyes.type === "happy" ? (
-        <>
-          {/* Happy closed eyes — curved arcs */}
-          <path
-            d={`M${eyes.left.cx - 6} ${eyes.left.cy} Q${eyes.left.cx} ${eyes.left.cy - 6} ${eyes.left.cx + 6} ${eyes.left.cy}`}
-            stroke="#3B0764"
-            strokeWidth="2.5"
-            fill="none"
-            strokeLinecap="round"
-          />
-          <path
-            d={`M${eyes.right.cx - 6} ${eyes.right.cy} Q${eyes.right.cx} ${eyes.right.cy - 6} ${eyes.right.cx + 6} ${eyes.right.cy}`}
-            stroke="#3B0764"
-            strokeWidth="2.5"
-            fill="none"
-            strokeLinecap="round"
-          />
-        </>
-      ) : (
-        <>
-          {/* Left eye */}
-          <ellipse
-            cx={eyes.left.cx}
-            cy={eyes.left.cy}
-            rx={eyes.left.rx}
-            ry={eyes.wink ? 1.5 : eyes.left.ry}
-            fill="#3B0764"
-            style={{ transition: "all 0.4s ease" }}
-          />
-          {/* Right eye */}
-          <ellipse
-            cx={eyes.right.cx}
-            cy={eyes.right.cy}
-            rx={eyes.right.rx}
-            ry={eyes.right.ry}
-            fill="#3B0764"
-            style={{ transition: "all 0.4s ease" }}
-          />
-          {/* Pupils / highlights */}
-          {!eyes.wink && (
-            <circle
-              cx={eyes.left.cx - 2 + mouseOffset.x * 0.3}
-              cy={eyes.left.cy - 3 + mouseOffset.y * 0.3}
-              r="2"
-              fill="white"
-              style={{ transition: "all 0.15s ease" }}
-            />
-          )}
-          <circle
-            cx={eyes.right.cx - 2 + mouseOffset.x * 0.3}
-            cy={eyes.right.cy - 3 + mouseOffset.y * 0.3}
-            r="2"
-            fill="white"
-            style={{ transition: "all 0.15s ease" }}
-          />
-        </>
+      {/* Speech bubble */}
+      {bubble && (
+        <div style={{
+          position: "absolute", bottom: "100%", right: 0, marginBottom: 10,
+          background: "rgba(255,255,255,0.95)", color: "#1a1a2e", fontSize: 13, fontWeight: 600,
+          padding: "8px 14px", borderRadius: 14, whiteSpace: "nowrap",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+          animation: "bubblePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        }}>
+          {bubble}
+          <div style={{
+            position: "absolute", bottom: -5, right: 18, width: 10, height: 10,
+            background: "rgba(255,255,255,0.95)", transform: "rotate(45deg)", borderRadius: 2,
+          }} />
+        </div>
       )}
 
-      {/* Blush */}
-      {showBlush && (
-        <>
-          <circle cx="40" cy="64" r="5" fill="#F472B6" opacity="0.4" />
-          <circle cx="80" cy="64" r="5" fill="#F472B6" opacity="0.4" />
-        </>
+      {/* Hearts for happy mood */}
+      {mood === "happy" && (
+        <div style={{ position: "absolute", bottom: "100%", left: "50%", transform: "translateX(-50%)", pointerEvents: "none" }}>
+          {[0, 1, 2].map((i) => (
+            <span key={i} style={{
+              position: "absolute", fontSize: 12,
+              animation: `heartUp 2s ease-out infinite ${i * 0.5}s`,
+            }}>❤️</span>
+          ))}
+        </div>
       )}
 
-      {/* Mouth */}
-      {getMouth()}
-    </svg>
+      {/* Ghost SVG */}
+      <svg width={60} height={60} viewBox="0 0 128 128">
+        <path d="M64 10 C92 10 112 32 112 58 C112 84 92 106 64 106 C56 106 52 96 46 106 C40 96 34 106 28 96 C22 86 20 74 20 58 C20 32 40 10 64 10 Z" fill="url(#bGr)" />
+        <ellipse cx={26} cy={70} rx={10} ry={14} fill="url(#bGr)"
+          style={{ transformOrigin: "26px 56px", transform: mood === "waving" ? "rotate(-30deg)" : "rotate(0deg)", transition: "transform 0.5s ease" }} />
+        <ellipse cx={102} cy={70} rx={10} ry={14} fill="url(#bGr)" />
+        <ellipse cx={eyeL.cx} cy={eyeL.cy} rx={eyeL.rx} ry={eyeL.ry} fill="#3B0764" style={{ transition: "all 0.35s ease" }} />
+        <ellipse cx={eyeR.cx} cy={eyeR.cy} rx={eyeR.rx} ry={eyeR.ry} fill="#3B0764" style={{ transition: "all 0.35s ease" }} />
+        <circle cx={eyeL.cx - 2} cy={eyeL.cy - 3} r={2.5} fill="white" style={{ transition: "all 0.35s ease" }} />
+        <circle cx={eyeR.cx - 2} cy={eyeR.cy - 3} r={2.5} fill="white" style={{ transition: "all 0.35s ease" }} />
+        <g style={{ transition: "all 0.35s ease" }}>{mouth}</g>
+        {showBlush && <>
+          <circle cx={42} cy={70} r={5} fill="#EC4899" opacity={0.3} />
+          <circle cx={86} cy={70} r={5} fill="#EC4899" opacity={0.3} />
+        </>}
+        <ellipse cx={64} cy={40} rx={30} ry={18} fill="white" opacity={0.2} />
+        <defs>
+          <radialGradient id="bGr" cx="50%" cy="30%" r="70%">
+            <stop offset="0%" stopColor="#F5E9FF" /><stop offset="50%" stopColor="#C084FC" /><stop offset="100%" stopColor="#6D28D9" />
+          </radialGradient>
+        </defs>
+      </svg>
+
+      <style>{`
+        @keyframes booBreath {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-6px); }
+        }
+        @keyframes bubblePop {
+          from { opacity: 0; transform: scale(0.7) translateY(6px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes heartUp {
+          0% { opacity: 1; transform: translateY(0) scale(1); }
+          100% { opacity: 0; transform: translateY(-36px) scale(0.4); }
+        }
+        @media (max-width: 768px) {
+          div[style*="position: fixed"][style*="bottom: 24"] { display: none !important; }
+        }
+      `}</style>
+    </div>
   );
 }
