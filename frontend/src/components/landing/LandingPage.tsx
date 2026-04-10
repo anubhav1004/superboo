@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Video, Presentation, PenTool, FileText, Film, TrendingUp } from "lucide-react";
+import {
+  Video, PenTool, FileText, Film,
+  Play, BookOpen, Dumbbell, Sparkles, Music, MessageCircle,
+} from "lucide-react";
 
 /* ═══════════════════════════════════════════════════════
    Ghost SVG
@@ -48,56 +51,52 @@ function useReveal<T extends HTMLElement>(): [React.RefObject<T | null>, boolean
 }
 
 /* ═══════════════════════════════════════════════════════
-   Animated chat preview (fake demo)
+   Chat Preview (floating glass card)
    ═══════════════════════════════════════════════════════ */
 function ChatPreview() {
   const lines = [
     { role: "user", text: "Make me a pitch deck for my AI fitness app" },
     { role: "bot", text: "On it! Creating your pitch deck..." },
-    { role: "bot", text: "Writing the narrative and key slides..." },
     { role: "bot", text: "Designing visuals and charts..." },
-    { role: "bot", text: "Your 10-slide pitch deck is ready! \uD83D\uDCCA" },
+    { role: "bot", text: "Your 10-slide pitch deck is ready!" },
   ];
   const [shown, setShown] = useState(0);
   useEffect(() => {
     if (shown >= lines.length) return;
-    const t = setTimeout(() => setShown((s) => s + 1), shown === 0 ? 800 : 1400);
+    const t = setTimeout(() => setShown((s) => s + 1), shown === 0 ? 800 : 1200);
     return () => clearTimeout(t);
   }, [shown, lines.length]);
 
   return (
-    <div className="w-full max-w-lg mx-auto rounded-2xl border border-[#1e1e26] bg-[#111116] overflow-hidden shadow-2xl">
-      {/* Title bar */}
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-[#1e1e26]">
+    <div className="chat-preview-card">
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
         <div className="flex gap-1.5">
           <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]"/>
           <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]"/>
           <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]"/>
         </div>
-        <span className="text-[11px] text-[#5a5a67] ml-2 font-mono">superboo.me/chat</span>
+        <span className="text-[11px] text-white/40 ml-2 font-mono">superboo.me/chat</span>
       </div>
-      {/* Messages */}
-      <div className="px-4 py-4 space-y-3 min-h-[200px]">
+      <div className="px-4 py-4 space-y-3 min-h-[160px]">
         {lines.slice(0, shown).map((l, i) => (
-          <div key={i} className="flex gap-2.5"
-            style={{ animation: "chatFadeIn 0.4s ease-out" }}>
+          <div key={i} className="flex gap-2.5" style={{ animation: "chatFadeIn 0.4s ease-out" }}>
             <div className={`w-5 h-5 rounded-full flex-shrink-0 mt-0.5 flex items-center justify-center text-[9px] ${
-              l.role === "user" ? "bg-[#1e1e26] text-[#8f8f9c]" : "bg-gradient-to-br from-[#7c5cff] to-[#C084FC] text-white"
+              l.role === "user" ? "bg-white/10 text-white/60" : "bg-gradient-to-br from-[#9370ff] to-[#EC4899] text-white"
             }`}>
               {l.role === "user" ? "Y" : "S"}
             </div>
-            <div className={`text-[12px] leading-relaxed ${l.role === "user" ? "text-[#ececef]" : "text-[#8f8f9c]"}`}>
+            <div className={`text-[12px] leading-relaxed ${l.role === "user" ? "text-white/90" : "text-white/60"}`}>
               {l.text}
             </div>
           </div>
         ))}
         {shown < lines.length && (
           <div className="flex gap-2.5">
-            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#7c5cff] to-[#C084FC] flex-shrink-0 mt-0.5"/>
+            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#9370ff] to-[#EC4899] flex-shrink-0 mt-0.5"/>
             <div className="flex gap-1 pt-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#7c5cff] animate-bounce" style={{animationDelay:"0ms"}}/>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#7c5cff] animate-bounce" style={{animationDelay:"150ms"}}/>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#7c5cff] animate-bounce" style={{animationDelay:"300ms"}}/>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#EC4899] animate-bounce" style={{animationDelay:"0ms"}}/>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#EC4899] animate-bounce" style={{animationDelay:"150ms"}}/>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#EC4899] animate-bounce" style={{animationDelay:"300ms"}}/>
             </div>
           </div>
         )}
@@ -107,36 +106,133 @@ function ChatPreview() {
 }
 
 /* ═══════════════════════════════════════════════════════
+   How It Works — animated step carousel
+   ═══════════════════════════════════════════════════════ */
+function HowItWorks() {
+  const [step, setStep] = useState(0);
+  const steps = [
+    { label: "You type", desc: "Tell Boo what you need in plain words", icon: MessageCircle },
+    { label: "Boo works", desc: "The ghost picks tools and creates it", icon: Sparkles },
+    { label: "You get it", desc: "Download your polished creation instantly", icon: Film },
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => setStep(s => (s + 1) % 3), 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const StepIcon = steps[step].icon;
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="how-step-visual">
+        {step === 1 && <div className="ghost-float"><Ghost size={80} id="howGhost" /></div>}
+        {step === 0 && (
+          <div className="how-typing-mock">
+            <div className="how-typing-cursor"/>
+            <span className="text-white/70 text-sm">Make me a TikTok about...</span>
+          </div>
+        )}
+        {step === 2 && (
+          <div className="how-result-mock">
+            <Play size={32} className="text-white/80" />
+            <span className="text-white/60 text-xs mt-2">pitch_deck.pdf</span>
+          </div>
+        )}
+        {step !== 0 && step !== 1 && step !== 2 && <StepIcon size={48} className="text-white/60" />}
+      </div>
+
+      <h3 className="text-2xl font-bold text-white mt-8 mb-2">{steps[step].label}</h3>
+      <p className="text-white/50 text-sm">{steps[step].desc}</p>
+
+      {/* Progress bar */}
+      <div className="flex gap-2 mt-8">
+        {steps.map((s, i) => (
+          <button key={i} onClick={() => setStep(i)} className="how-progress-segment" style={{ background: "transparent", border: "none", cursor: "pointer", padding: 0 }}>
+            <div className="w-20 h-1 rounded-full bg-white/10 overflow-hidden">
+              <div className={`h-full rounded-full transition-all duration-300 ${i === step ? "how-progress-fill" : i < step ? "bg-white/30 w-full" : ""}`}
+                style={{ width: i === step ? "100%" : i < step ? "100%" : "0%" }}/>
+            </div>
+            <span className={`text-[10px] mt-1 block text-center transition-colors ${i === step ? "text-white/80" : "text-white/30"}`}>{s.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
    Data
    ═══════════════════════════════════════════════════════ */
-const FEATURES: { icon: React.ComponentType<{ size?: number; className?: string }>; title: string; desc: string }[] = [
-  { icon: Video, title: "Content Creation", desc: "TikToks, thumbnails, captions, dating profiles — all your content needs." },
-  { icon: FileText, title: "Writing & Docs", desc: "Resumes, cover letters, emails, pitch decks. Write better, land more." },
-  { icon: PenTool, title: "Design & Visual", desc: "Posters, logos, memes, image editing. Describe it, Boo designs it." },
-  { icon: Presentation, title: "Learning & Study", desc: "Study guides, homework help, language practice, book summaries." },
-  { icon: TrendingUp, title: "Career & Business", desc: "Interview prep, LinkedIn, market research, business plans." },
-  { icon: Film, title: "Lifestyle & Fun", desc: "Meal plans, workouts, travel, gift ideas, trivia, stories, jokes." },
-];
-
-const SKILLS_ROW1 = ["TikTok Videos", "Pitch Decks", "Resumes", "Study Guides", "Meal Plans", "Social Posts", "Posters", "Memes", "Dating Profiles", "Cover Letters", "Interview Prep"];
-const SKILLS_ROW2 = ["Video Editing", "Workout Plans", "Travel Plans", "Logo Design", "Voiceovers", "Budget Plans", "Market Research", "Trivia Games", "Song Lyrics", "LinkedIn Optimizer"];
-
-const STATS = [
-  { value: "35+", label: "Skills" },
-  { value: "Instant", label: "Results" },
-  { value: "Zero", label: "Learning Curve" },
-  { value: "Free", label: "To Try" },
-];
-
 const USE_CASES = [
-  { emoji: "\uD83C\uDFAC", label: "Create a TikTok", color: "#EC4899" },
-  { emoji: "\uD83D\uDCCA", label: "Make a deck", color: "#22C55E" },
-  { emoji: "\uD83D\uDCDD", label: "Write a resume", color: "#22C55E" },
-  { emoji: "\uD83D\uDCAA", label: "Workout plan", color: "#F43F5E" },
-  { emoji: "\uD83D\uDCDA", label: "Study guide", color: "#06B6D4" },
-  { emoji: "\uD83C\uDFB5", label: "Create a beat", color: "#F97316" },
-  { emoji: "\uD83D\uDCC8", label: "Prep for interview", color: "#EAB308" },
-  { emoji: "\u2709\uFE0F", label: "Write an email", color: "#22C55E" },
+  { emoji: "\uD83C\uDFAC", label: "Create a TikTok", bg: "linear-gradient(135deg, #EC4899, #F472B6)" },
+  { emoji: "\uD83D\uDCCA", label: "Make a pitch deck", bg: "linear-gradient(135deg, #8B5CF6, #A78BFA)" },
+  { emoji: "\uD83D\uDCDD", label: "Write my resume", bg: "linear-gradient(135deg, #22C55E, #4ADE80)" },
+  { emoji: "\uD83D\uDCAA", label: "Workout plan", bg: "linear-gradient(135deg, #F43F5E, #FB7185)" },
+  { emoji: "\uD83D\uDCDA", label: "Study guide", bg: "linear-gradient(135deg, #06B6D4, #22D3EE)" },
+  { emoji: "\uD83C\uDFB5", label: "Write a song", bg: "linear-gradient(135deg, #F97316, #FB923C)" },
+  { emoji: "\uD83D\uDCC8", label: "Interview prep", bg: "linear-gradient(135deg, #EAB308, #FACC15)" },
+  { emoji: "\u2709\uFE0F", label: "Draft an email", bg: "linear-gradient(135deg, #3B82F6, #60A5FA)" },
+  { emoji: "\uD83C\uDFA8", label: "Design a poster", bg: "linear-gradient(135deg, #F43F5E, #EC4899)" },
+  { emoji: "\uD83D\uDE02", label: "Generate memes", bg: "linear-gradient(135deg, #22C55E, #06B6D4)" },
+  { emoji: "\uD83D\uDC98", label: "Dating profile", bg: "linear-gradient(135deg, #EC4899, #8B5CF6)" },
+  { emoji: "\uD83C\uDF73", label: "Meal planner", bg: "linear-gradient(135deg, #F97316, #EAB308)" },
+];
+
+const BENTO_ITEMS = [
+  { title: "Content Creation", desc: "TikToks, thumbnails, captions, scripts", span: "col-span-2", color: "#EC4899", icon: Video, accent: "from-[#EC4899]/20 to-[#F472B6]/10", mockType: "tiktok" as const },
+  { title: "Writing & Docs", desc: "Resumes, decks, cover letters", span: "col-span-1", color: "#3B82F6", icon: FileText, accent: "from-[#3B82F6]/20 to-[#60A5FA]/10", mockType: "resume" as const },
+  { title: "Design", desc: "Posters, logos, memes", span: "col-span-1", color: "#8B5CF6", icon: PenTool, accent: "from-[#8B5CF6]/20 to-[#A78BFA]/10", mockType: "design" as const },
+  { title: "Learning", desc: "Study guides, homework help", span: "col-span-1", color: "#06B6D4", icon: BookOpen, accent: "from-[#06B6D4]/20 to-[#22D3EE]/10", mockType: "learning" as const },
+  { title: "Lifestyle", desc: "Meal plans, workouts, travel", span: "col-span-1", color: "#22C55E", icon: Dumbbell, accent: "from-[#22C55E]/20 to-[#4ADE80]/10", mockType: "lifestyle" as const },
+  { title: "Fun & Creative", desc: "Music, stories, trivia, jokes", span: "col-span-2", color: "#F97316", icon: Music, accent: "from-[#F97316]/20 to-[#FB923C]/10", mockType: "fun" as const },
+];
+
+const TESTIMONIALS = [
+  { quote: "Made my entire pitch deck in 2 minutes", handle: "@startup_kid", color: "#EC4899" },
+  { quote: "My dating profile finally gets matches", handle: "@lonely_coder", color: "#8B5CF6" },
+  { quote: "Study guides saved my GPA", handle: "@college_life", color: "#06B6D4" },
+  { quote: "Best meal planner I've ever used", handle: "@fitfoodie", color: "#22C55E" },
+  { quote: "TikTok thumbnails in 30 seconds flat", handle: "@creator_vibes", color: "#F97316" },
+  { quote: "Wrote my resignation letter beautifully", handle: "@corporate_escape", color: "#F43F5E" },
+];
+
+const SKILL_BUBBLES = [
+  { name: "TikTok Videos", size: "lg", color: "#EC4899", desc: "Create scroll-stopping short videos" },
+  { name: "Pitch Decks", size: "lg", color: "#8B5CF6", desc: "Investor-ready presentations" },
+  { name: "Resumes", size: "lg", color: "#3B82F6", desc: "Land your dream job" },
+  { name: "Study Guides", size: "md", color: "#06B6D4", desc: "Ace every exam" },
+  { name: "Meal Plans", size: "md", color: "#22C55E", desc: "Eat better, feel better" },
+  { name: "Posters", size: "md", color: "#F97316", desc: "Eye-catching designs" },
+  { name: "Cover Letters", size: "sm", color: "#EAB308", desc: "Stand out from the pile" },
+  { name: "Memes", size: "lg", color: "#F43F5E", desc: "Peak internet humor" },
+  { name: "Dating Profiles", size: "md", color: "#EC4899", desc: "Swipe right material" },
+  { name: "Workout Plans", size: "md", color: "#22C55E", desc: "Get fit your way" },
+  { name: "Social Posts", size: "sm", color: "#3B82F6", desc: "Content that pops" },
+  { name: "Logos", size: "sm", color: "#8B5CF6", desc: "Brand identity in seconds" },
+  { name: "Voiceovers", size: "md", color: "#F97316", desc: "Professional audio" },
+  { name: "Travel Plans", size: "sm", color: "#06B6D4", desc: "Plan the perfect trip" },
+  { name: "Interview Prep", size: "lg", color: "#EAB308", desc: "Nail every question" },
+  { name: "Budget Plans", size: "sm", color: "#22C55E", desc: "Money management" },
+  { name: "Song Lyrics", size: "md", color: "#EC4899", desc: "Write your next hit" },
+  { name: "Market Research", size: "sm", color: "#3B82F6", desc: "Know your market" },
+  { name: "LinkedIn Bio", size: "sm", color: "#8B5CF6", desc: "Professional presence" },
+  { name: "Trivia Games", size: "md", color: "#F43F5E", desc: "Fun for everyone" },
+  { name: "Video Editing", size: "lg", color: "#F97316", desc: "Clips that captivate" },
+  { name: "Email Drafts", size: "sm", color: "#06B6D4", desc: "Perfect every send" },
+  { name: "Book Summaries", size: "sm", color: "#EAB308", desc: "Key insights fast" },
+  { name: "Business Plans", size: "md", color: "#22C55E", desc: "Launch with confidence" },
+  { name: "Thumbnails", size: "md", color: "#EC4899", desc: "Click-worthy images" },
+  { name: "Gift Ideas", size: "sm", color: "#F43F5E", desc: "Thoughtful surprises" },
+  { name: "Captions", size: "sm", color: "#3B82F6", desc: "Words that hook" },
+  { name: "Stories", size: "md", color: "#8B5CF6", desc: "Creative narratives" },
+  { name: "Jokes", size: "sm", color: "#F97316", desc: "Guaranteed laughs" },
+  { name: "Recipes", size: "sm", color: "#22C55E", desc: "Cook something new" },
+  { name: "Flashcards", size: "md", color: "#06B6D4", desc: "Study smarter" },
+  { name: "Presentations", size: "md", color: "#EAB308", desc: "Wow any audience" },
+  { name: "Image Editing", size: "sm", color: "#EC4899", desc: "Polish every photo" },
+  { name: "Scripts", size: "sm", color: "#F43F5E", desc: "Words for any scene" },
+  { name: "Newsletters", size: "sm", color: "#3B82F6", desc: "Engage your audience" },
 ];
 
 /* ═══════════════════════════════════════════════════════
@@ -205,11 +301,12 @@ export default function LandingPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { score, gameOver, started, jump } = useGame(canvasRef);
   const [showGame, setShowGame] = useState(false);
-  const [featRef, featVis] = useReveal<HTMLDivElement>();
+  const [bentoRef, bentoVis] = useReveal<HTMLDivElement>();
   const [howRef, howVis] = useReveal<HTMLDivElement>();
-  const [demoRef, demoVis] = useReveal<HTMLDivElement>();
+  const [testRef, testVis] = useReveal<HTMLDivElement>();
+  const [skillsRef, skillsVis] = useReveal<HTMLDivElement>();
   const [ctaRef, ctaVis] = useReveal<HTMLDivElement>();
-  const [useCaseRef, useCaseVis] = useReveal<HTMLDivElement>();
+  const [ctaHover, setCtaHover] = useState(false);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
@@ -222,131 +319,154 @@ export default function LandingPage() {
   }, [jump, showGame]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0e] text-[#ececef] overflow-x-hidden">
+    <div className="min-h-screen text-white overflow-x-hidden" style={{ background: "#0c0118" }}>
 
       {/* ─── Navbar ─── */}
       <nav className="fixed top-0 inset-x-0 z-50 nav-glass">
         <div className="max-w-6xl mx-auto px-5 md:px-8 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <Ghost size={22} id="navG" />
-            <span className="text-[14px] font-semibold tracking-tight">Superboo</span>
+            <span className="text-[14px] font-bold tracking-tight">Superboo</span>
           </div>
           <div className="flex items-center gap-6">
-            <a href="#features" className="text-[13px] text-[#8f8f9c] hover:text-white transition-colors hidden md:block">Features</a>
-            <a href="#how" className="text-[13px] text-[#8f8f9c] hover:text-white transition-colors hidden md:block">How it works</a>
+            <a href="#features" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Features</a>
+            <a href="#how" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">How it works</a>
             <button onClick={() => nav("/chat")}
-              className="text-[13px] px-4 py-1.5 rounded-lg bg-[#7c5cff] hover:bg-[#9379ff] text-white font-medium transition-all">
-              Open Chat
+              className="text-[13px] px-5 py-2 rounded-full bg-gradient-to-r from-[#9370ff] to-[#EC4899] hover:opacity-90 text-white font-semibold transition-all shadow-lg shadow-purple-500/25">
+              Try it free
             </button>
           </div>
         </div>
       </nav>
 
-      {/* ─── Hero ─── */}
+      {/* ═══════════════════════════════════════════════════════
+         1. HERO
+         ═══════════════════════════════════════════════════════ */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-5 md:px-8">
-        {/* Animated mesh */}
-        <div className="hero-mesh" aria-hidden="true"/>
+        {/* Animated mesh gradient */}
+        <div className="hero-mesh-1" aria-hidden="true"/>
         <div className="hero-mesh-2" aria-hidden="true"/>
-        {/* Noise */}
-        <div className="noise" aria-hidden="true"/>
-        {/* Stars */}
-        <div className="stars" aria-hidden="true">
-          {Array.from({length: 40}).map((_,i) => (
-            <div key={i} className="star" style={{
+        <div className="hero-mesh-3" aria-hidden="true"/>
+
+        {/* Sparkle particles */}
+        <div className="sparkles" aria-hidden="true">
+          {Array.from({length: 30}).map((_,i) => (
+            <div key={i} className="sparkle" style={{
               left: `${Math.random()*100}%`, top: `${Math.random()*100}%`,
-              animationDelay: `${Math.random()*4}s`, animationDuration: `${2+Math.random()*3}s`,
-              width: `${1+Math.random()*2}px`, height: `${1+Math.random()*2}px`,
+              animationDelay: `${Math.random()*5}s`,
+              animationDuration: `${3+Math.random()*4}s`,
+              width: `${1.5+Math.random()*2.5}px`, height: `${1.5+Math.random()*2.5}px`,
+              opacity: 0.2 + Math.random() * 0.5,
             }}/>
           ))}
         </div>
 
-        <div className="relative z-10 flex flex-col items-center text-center max-w-3xl">
-          <div className="ghost-float mb-10">
-            <Ghost size={100} id="heroG" />
+        <div className="relative z-10 flex flex-col items-center text-center max-w-4xl">
+          {/* Ghost with glow halo */}
+          <div className="ghost-float mb-8 relative">
+            <div className="ghost-halo" aria-hidden="true"/>
+            <Ghost size={140} id="heroG" />
           </div>
-          <h1 className="text-[48px] sm:text-[64px] md:text-[80px] font-[200] leading-[0.95] tracking-[-0.04em] mb-6">
-            <span className="grad-text">Super</span>boo
+
+          <h1 className="text-[48px] sm:text-[64px] md:text-[80px] font-extrabold leading-[0.95] tracking-[-0.04em] mb-6">
+            <span className="hero-gradient-text">Superboo</span>
           </h1>
-          <p className="text-[18px] md:text-[22px] text-[#ececef] leading-relaxed max-w-md mb-3 font-medium">
-            Tell Boo what you need. Get it done.
+          <p className="text-[20px] md:text-[26px] text-white/90 leading-relaxed max-w-lg mb-3 font-semibold">
+            Your AI that actually does stuff.
           </p>
-          <p className="text-[14px] md:text-[16px] text-[#8f8f9c] leading-relaxed max-w-md mb-10">
-            TikToks, decks, posters, resumes &mdash; just describe it.
+          <p className="text-[15px] md:text-[17px] text-white/50 leading-relaxed max-w-md mb-10">
+            TikToks, pitch decks, resumes, posters, meal plans &mdash; just tell Boo.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row gap-4">
             <button onClick={() => nav("/chat")}
-              className="group px-8 py-4 rounded-2xl bg-[#7c5cff] hover:bg-[#9379ff] text-white text-[14px] font-medium transition-all cta-glow-btn">
-              Start creating
+              className="group hero-cta-primary px-10 py-4 rounded-full text-white text-[16px] font-bold transition-all">
+              Try it free
               <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
             </button>
-            <a href="#use-cases"
-              className="px-8 py-4 rounded-2xl border border-[#222] hover:border-[#7c5cff]/50 text-[#8f8f9c] hover:text-white text-[14px] font-medium transition-all text-center">
-              See what Boo can make
+            <a href="#features"
+              className="hero-cta-secondary px-10 py-4 rounded-full text-white/70 hover:text-white text-[16px] font-semibold transition-all text-center">
+              Watch it work
             </a>
           </div>
         </div>
 
-        {/* Scroll pill */}
+        {/* Floating chat preview card */}
+        <div className="hidden lg:block absolute right-[5%] top-[55%] -translate-y-1/2 z-10 chat-float-card">
+          <ChatPreview />
+        </div>
+
+        {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
-          <div className="w-5 h-8 rounded-full border border-[#333] flex justify-center pt-1.5">
-            <div className="w-1 h-2 rounded-full bg-[#7c5cff] scroll-dot-anim"/>
+          <div className="w-5 h-8 rounded-full border border-white/20 flex justify-center pt-1.5">
+            <div className="w-1 h-2 rounded-full bg-[#EC4899] scroll-dot-anim"/>
           </div>
         </div>
       </section>
 
-      {/* ─── Use Case Tiles ─── */}
-      <section id="use-cases" className="py-16 md:py-20 px-5 md:px-8">
-        <div ref={useCaseRef} className={`max-w-3xl mx-auto reveal ${useCaseVis ? "revealed" : ""}`}>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {USE_CASES.map((uc) => (
-              <button
-                key={uc.label}
-                onClick={() => nav("/chat")}
-                className="use-case-tile group flex flex-col items-center justify-center gap-2 py-5 px-3 rounded-2xl border border-[#1a1a22] bg-[#0e0e13] transition-all hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
-                style={{ ["--uc-color" as string]: uc.color }}
-              >
-                <span className="text-2xl">{uc.emoji}</span>
-                <span className="text-[13px] text-[#8f8f9c] group-hover:text-white transition-colors font-medium">{uc.label}</span>
+      {/* ═══════════════════════════════════════════════════════
+         2. USE CASE STRIP (marquee)
+         ═══════════════════════════════════════════════════════ */}
+      <section className="py-4 overflow-hidden relative">
+        <div className="use-case-marquee">
+          <div className="use-case-track">
+            {[...USE_CASES, ...USE_CASES, ...USE_CASES].map((uc, i) => (
+              <button key={i} onClick={() => nav("/chat")} className="use-case-card group"
+                style={{ background: uc.bg }}>
+                <span className="text-3xl">{uc.emoji}</span>
+                <span className="text-[14px] font-bold text-white drop-shadow-sm">{uc.label}</span>
               </button>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── Stats Bar ─── */}
-      <section className="border-y border-[#1a1a22] bg-[#0c0c10]">
-        <div className="max-w-5xl mx-auto px-5 md:px-8 py-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-          {STATS.map((s) => (
-            <div key={s.label} className="text-center">
-              <div className="text-[28px] md:text-[32px] font-[200] tracking-tight grad-text">{s.value}</div>
-              <div className="text-[12px] text-[#5a5a67] uppercase tracking-widest mt-1">{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ─── Features ─── */}
-      <section id="features" className="py-28 md:py-36 px-5 md:px-8">
-        <div ref={featRef} className={`max-w-5xl mx-auto reveal ${featVis ? "revealed" : ""}`}>
-          <div className="text-center mb-16 md:mb-20">
-            <span className="text-[11px] text-[#7c5cff] uppercase tracking-[0.2em] font-medium">Capabilities</span>
-            <h2 className="text-[32px] md:text-[44px] font-[200] tracking-[-0.03em] mt-3 mb-4">
-              One AI. <span className="grad-text">Endless creations.</span>
+      {/* ═══════════════════════════════════════════════════════
+         3. BENTO GRID
+         ═══════════════════════════════════════════════════════ */}
+      <section id="features" className="py-24 md:py-36 px-5 md:px-8">
+        <div ref={bentoRef} className={`max-w-5xl mx-auto reveal ${bentoVis ? "revealed" : ""}`}>
+          <div className="text-center mb-16">
+            <h2 className="text-[36px] md:text-[52px] font-extrabold tracking-[-0.03em] mb-4">
+              One Boo. <span className="hero-gradient-text">Infinite possibilities.</span>
             </h2>
-            <p className="text-[#5a5a67] text-[15px] max-w-md mx-auto leading-relaxed">
-              Describe what you want. Boo picks the right tools and creates it for you.
+            <p className="text-white/40 text-[16px] max-w-md mx-auto">
+              Describe what you want. Boo picks the right tools and creates it.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {FEATURES.map((f, i) => {
-              const IconComp = f.icon;
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[180px] md:auto-rows-[200px]">
+            {BENTO_ITEMS.map((item, i) => {
+              const IconComp = item.icon;
               return (
-                <div key={i} className="feat-card group p-6 rounded-2xl border border-[#1a1a22] bg-[#0e0e13] hover:border-[#7c5cff]/40 transition-all duration-500">
-                  <div className="w-10 h-10 rounded-xl bg-[#7c5cff]/10 border border-[#7c5cff]/20 flex items-center justify-center mb-4 group-hover:bg-[#7c5cff]/20 transition-colors">
-                    <IconComp size={18} className="text-[#7c5cff]" />
+                <div key={i} className={`bento-card group ${item.span} relative rounded-3xl overflow-hidden cursor-pointer`}
+                  style={{ ["--bento-color" as string]: item.color }}>
+                  {/* Glass overlay */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${item.accent} backdrop-blur-sm`}/>
+                  <div className="absolute inset-0 bento-glass"/>
+                  {/* Content */}
+                  <div className="relative z-10 p-6 h-full flex flex-col justify-between">
+                    <div>
+                      <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
+                        style={{ background: `${item.color}30`, border: `1px solid ${item.color}40` }}>
+                        <IconComp size={22} style={{ color: item.color }}/>
+                      </div>
+                      <h3 className="text-[18px] font-bold text-white mb-1">{item.title}</h3>
+                      <p className="text-[13px] text-white/50">{item.desc}</p>
+                    </div>
+                    {/* Mock visuals for big cards */}
+                    {item.mockType === "tiktok" && (
+                      <div className="absolute right-6 bottom-6 w-16 h-28 rounded-xl border-2 border-white/20 flex items-center justify-center bg-black/30">
+                        <Play size={20} className="text-white/60"/>
+                      </div>
+                    )}
+                    {item.mockType === "fun" && (
+                      <div className="absolute right-6 bottom-6 flex gap-2">
+                        {["\uD83C\uDFB5", "\uD83C\uDFAD", "\uD83D\uDE02", "\u2728"].map((e, j) => (
+                          <span key={j} className="text-2xl opacity-40">{e}</span>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <h3 className="text-[15px] font-medium mb-2 text-white">{f.title}</h3>
-                  <p className="text-[13px] text-[#6a6a78] leading-relaxed">{f.desc}</p>
                 </div>
               );
             })}
@@ -354,111 +474,127 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Live Demo ─── */}
-      <section className="py-28 md:py-36 px-5 md:px-8 relative">
-        <div className="demo-glow" aria-hidden="true"/>
-        <div ref={demoRef} className={`max-w-5xl mx-auto reveal ${demoVis ? "revealed" : ""}`}>
-          <div className="text-center mb-14">
-            <span className="text-[11px] text-[#7c5cff] uppercase tracking-[0.2em] font-medium">See it in action</span>
-            <h2 className="text-[32px] md:text-[44px] font-[200] tracking-[-0.03em] mt-3 mb-4">
-              It works like <span className="grad-text">magic</span>
+      {/* ═══════════════════════════════════════════════════════
+         4. HOW IT WORKS
+         ═══════════════════════════════════════════════════════ */}
+      <section id="how" className="py-24 md:py-36 px-5 md:px-8 relative">
+        <div className="how-bg" aria-hidden="true"/>
+        <div ref={howRef} className={`max-w-3xl mx-auto reveal ${howVis ? "revealed" : ""} relative z-10`}>
+          <div className="text-center mb-16">
+            <h2 className="text-[36px] md:text-[52px] font-extrabold tracking-[-0.03em] mb-4">
+              It&apos;s <span className="hero-gradient-text">stupidly</span> simple.
             </h2>
-            <p className="text-[#5a5a67] text-[15px] max-w-md mx-auto">
-              One message. A polished creation. No design skills needed.
-            </p>
           </div>
-          {demoVis && <ChatPreview />}
+          <HowItWorks />
         </div>
       </section>
 
-      {/* ─── How it works ─── */}
-      <section id="how" className="py-28 md:py-36 px-5 md:px-8">
-        <div ref={howRef} className={`max-w-4xl mx-auto reveal ${howVis ? "revealed" : ""}`}>
-          <div className="text-center mb-16 md:mb-20">
-            <span className="text-[11px] text-[#7c5cff] uppercase tracking-[0.2em] font-medium">Process</span>
-            <h2 className="text-[32px] md:text-[44px] font-[200] tracking-[-0.03em] mt-3">
-              Three steps. <span className="grad-text">Zero friction.</span>
+      {/* ═══════════════════════════════════════════════════════
+         5. TESTIMONIALS
+         ═══════════════════════════════════════════════════════ */}
+      <section className="py-20 md:py-28 overflow-hidden">
+        <div ref={testRef} className={`reveal ${testVis ? "revealed" : ""}`}>
+          <div className="text-center mb-12 px-5">
+            <h2 className="text-[28px] md:text-[40px] font-extrabold tracking-[-0.03em]">
+              Loved by <span className="hero-gradient-text">creators, students, and hustlers</span>
             </h2>
           </div>
-          <div className="relative">
-            {/* Vertical line */}
-            <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#7c5cff]/30 to-transparent hidden md:block"/>
-            {[
-              { n:"01", t:"Tell Boo what you need", d:"Describe what you want in plain language. A TikTok, a resume, a poster — anything." },
-              { n:"02", t:"Boo creates it for you", d:"Boo picks the right tools and creates exactly what you described." },
-              { n:"03", t:"Download & share", d:"Get your creation instantly. Download, share, or post it directly." },
-            ].map((s, i) => (
-              <div key={i} className={`flex items-start gap-6 md:gap-10 mb-12 last:mb-0 ${i%2===1 ? "md:flex-row-reverse md:text-right" : ""}`}>
-                <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-[#7c5cff]/10 border border-[#7c5cff]/20 flex items-center justify-center">
-                  <span className="text-[#7c5cff] text-sm font-mono font-medium">{s.n}</span>
+          <div className="testimonial-marquee">
+            <div className="testimonial-track">
+              {[...TESTIMONIALS, ...TESTIMONIALS, ...TESTIMONIALS].map((t, i) => (
+                <div key={i} className="testimonial-card" style={{ ["--t-color" as string]: t.color }}>
+                  <div className="w-10 h-10 rounded-full mb-3" style={{ background: `linear-gradient(135deg, ${t.color}, ${t.color}88)` }}/>
+                  <p className="text-[14px] text-white/80 font-medium mb-2">&ldquo;{t.quote}&rdquo;</p>
+                  <span className="text-[12px] font-mono" style={{ color: t.color }}>{t.handle}</span>
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-[16px] font-medium text-white mb-2">{s.t}</h3>
-                  <p className="text-[14px] text-[#6a6a78] leading-relaxed max-w-sm">{s.d}</p>
-                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════
+         6. SKILLS EXPLOSION
+         ═══════════════════════════════════════════════════════ */}
+      <section className="py-24 md:py-36 px-5 md:px-8 relative overflow-hidden">
+        <div className="skills-bg" aria-hidden="true"/>
+        <div ref={skillsRef} className={`max-w-5xl mx-auto reveal ${skillsVis ? "revealed" : ""} relative z-10`}>
+          <div className="text-center mb-16">
+            <h2 className="text-[36px] md:text-[52px] font-extrabold tracking-[-0.03em] mb-4">
+              35+ skills. <span className="hero-gradient-text">One ghost.</span>
+            </h2>
+          </div>
+          <div className="skills-cloud">
+            {SKILL_BUBBLES.map((skill, i) => (
+              <div key={i}
+                className={`skill-bubble skill-bubble-${skill.size}`}
+                style={{
+                  ["--bubble-color" as string]: skill.color,
+                  animationDelay: `${i * 0.3}s`,
+                  animationDuration: `${8 + (i % 5) * 2}s`,
+                }}
+                title={skill.desc}
+              >
+                {skill.name}
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── Skills Marquee ─── */}
-      <section className="py-20 md:py-28 overflow-hidden">
-        <div className="text-center mb-12 px-5">
-          <h2 className="text-[28px] md:text-[36px] font-[200] tracking-[-0.03em]">
-            <span className="grad-text">20+ creations</span> and growing
-          </h2>
-        </div>
-        <div className="space-y-3">
-          <div className="marquee-row">
-            <div className="marquee-track-left">
-              {[...SKILLS_ROW1,...SKILLS_ROW1,...SKILLS_ROW1].map((s,i) => (
-                <span key={i} className="skill-pill">{s}</span>
-              ))}
-            </div>
+      {/* ═══════════════════════════════════════════════════════
+         7. FINAL CTA
+         ═══════════════════════════════════════════════════════ */}
+      <section className="py-28 md:py-40 px-5 md:px-8 relative min-h-[80vh] flex items-center justify-center">
+        <div className="cta-mesh-1" aria-hidden="true"/>
+        <div className="cta-mesh-2" aria-hidden="true"/>
+        {ctaHover && (
+          <div className="cta-confetti" aria-hidden="true">
+            {Array.from({length: 20}).map((_,i) => (
+              <div key={i} className="confetti-piece" style={{
+                left: `${30+Math.random()*40}%`,
+                animationDelay: `${Math.random()*0.5}s`,
+                animationDuration: `${1+Math.random()*1}s`,
+                background: ["#EC4899","#9370ff","#22C55E","#F97316","#06B6D4","#EAB308"][i%6],
+              }}/>
+            ))}
           </div>
-          <div className="marquee-row">
-            <div className="marquee-track-right">
-              {[...SKILLS_ROW2,...SKILLS_ROW2,...SKILLS_ROW2].map((s,i) => (
-                <span key={i} className="skill-pill">{s}</span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── CTA ─── */}
-      <section className="py-28 md:py-40 px-5 md:px-8 relative">
-        <div className="cta-mesh" aria-hidden="true"/>
+        )}
         <div ref={ctaRef} className={`relative z-10 flex flex-col items-center text-center reveal ${ctaVis ? "revealed" : ""}`}>
-          <div className="ghost-float mb-8">
-            <Ghost size={80} id="ctaG" />
+          <div className="ghost-float mb-8 relative">
+            <div className="ghost-rainbow-halo" aria-hidden="true"/>
+            <Ghost size={120} id="ctaG" />
           </div>
-          <h2 className="text-[36px] md:text-[52px] font-[200] tracking-[-0.03em] mb-4 leading-tight">
-            What will you<br/><span className="grad-text">create today</span>?
+          <h2 className="text-[40px] md:text-[64px] font-extrabold tracking-[-0.03em] mb-4 leading-tight">
+            What will <span className="hero-gradient-text">YOU</span> create?
           </h2>
-          <p className="text-[#5a5a67] text-[15px] max-w-sm mb-10">
-            Start a conversation. Boo handles the rest.
+          <p className="text-white/40 text-[16px] max-w-sm mb-10">
+            No signup required. No credit card. Just vibes.
           </p>
           <button onClick={() => nav("/chat")}
-            className="group px-10 py-4 rounded-2xl bg-[#7c5cff] hover:bg-[#9379ff] text-white text-[15px] font-medium transition-all cta-glow-btn">
-            Start creating
+            onMouseEnter={() => setCtaHover(true)}
+            onMouseLeave={() => setCtaHover(false)}
+            className="group hero-cta-primary px-12 py-5 rounded-full text-white text-[18px] font-bold transition-all">
+            Start creating &mdash; it&apos;s free
             <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
           </button>
         </div>
       </section>
 
-      {/* ─── Footer ─── */}
-      <footer className="border-t border-[#141418] py-8">
+      {/* ═══════════════════════════════════════════════════════
+         8. FOOTER
+         ═══════════════════════════════════════════════════════ */}
+      <footer className="border-t border-white/5 py-8">
         <div className="max-w-5xl mx-auto px-5 md:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Ghost size={16} id="footG"/>
-            <span className="text-[12px] text-[#5a5a67]">Superboo &copy; 2026</span>
+            <span className="text-[12px] text-white/30">Superboo &copy; 2026</span>
           </div>
           <div className="flex items-center gap-5">
-            <button onClick={() => nav("/chat")} className="text-[12px] text-[#5a5a67] hover:text-[#8f8f9c] transition-colors bg-transparent border-none cursor-pointer">Chat</button>
-            <a href="#features" className="text-[12px] text-[#5a5a67] hover:text-[#8f8f9c] transition-colors">Features</a>
-            <a href="#how" className="text-[12px] text-[#5a5a67] hover:text-[#8f8f9c] transition-colors">How it works</a>
+            <button onClick={() => nav("/chat")} className="text-[12px] text-white/30 hover:text-white/60 transition-colors bg-transparent border-none cursor-pointer">Chat</button>
+            <a href="#features" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Features</a>
+            <a href="#how" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">How it works</a>
+            <span className="text-[10px] text-white/15 hidden md:inline">Press G for a surprise</span>
           </div>
         </div>
       </footer>
@@ -466,161 +602,351 @@ export default function LandingPage() {
       {/* ─── Game Modal ─── */}
       {showGame && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85" style={{backdropFilter:"blur(12px)"}}>
-          <div className="bg-[#111116] border border-[#1e1e26] rounded-2xl p-6 max-w-[640px] w-full mx-4">
+          <div className="bg-[#111116] border border-white/10 rounded-2xl p-6 max-w-[640px] w-full mx-4">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <span className="text-[11px] text-[#5a5a67] uppercase tracking-wider font-mono">Ghost Runner</span>
-                {started && <span className="text-xs font-mono text-[#7c5cff]">Score: {score}</span>}
+                <span className="text-[11px] text-white/40 uppercase tracking-wider font-mono">Ghost Runner</span>
+                {started && <span className="text-xs font-mono text-[#9370ff]">Score: {score}</span>}
                 {gameOver && <span className="text-xs text-red-400">Game Over</span>}
               </div>
-              <button onClick={()=>setShowGame(false)} className="text-[#5a5a67] hover:text-white text-sm transition-colors bg-transparent border-none cursor-pointer">ESC</button>
+              <button onClick={()=>setShowGame(false)} className="text-white/40 hover:text-white text-sm transition-colors bg-transparent border-none cursor-pointer">ESC</button>
             </div>
-            <canvas ref={canvasRef} width={600} height={200} onClick={jump} className="rounded-xl border border-[#1e1e26] cursor-pointer w-full" style={{background:"#0a0a0e"}}/>
-            <p className="text-[11px] text-[#5a5a67] mt-3 text-center">SPACE or tap to jump</p>
+            <canvas ref={canvasRef} width={600} height={200} onClick={jump} className="rounded-xl border border-white/10 cursor-pointer w-full" style={{background:"#0a0a0e"}}/>
+            <p className="text-[11px] text-white/30 mt-3 text-center">SPACE or tap to jump</p>
           </div>
         </div>
       )}
 
-      {/* ─── Styles ─── */}
+      {/* ═══════════════════════════════════════════════════════
+         STYLES
+         ═══════════════════════════════════════════════════════ */}
       <style>{`
-        /* Typography */
-        .grad-text {
-          background: linear-gradient(135deg, #C084FC 0%, #7c5cff 50%, #a78bfa 100%);
+        /* ── Nav ── */
+        .nav-glass {
+          background: rgba(12,1,24,0.7);
+          backdrop-filter: blur(24px) saturate(180%);
+          -webkit-backdrop-filter: blur(24px) saturate(180%);
+          border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        /* ── Hero gradient text ── */
+        .hero-gradient-text {
+          background: linear-gradient(135deg, #C084FC 0%, #EC4899 40%, #9370ff 70%, #60A5FA 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
         }
 
-        /* Nav */
-        .nav-glass {
-          background: rgba(10,10,14,0.6);
-          backdrop-filter: blur(20px) saturate(180%);
-          -webkit-backdrop-filter: blur(20px) saturate(180%);
-          border-bottom: 1px solid rgba(255,255,255,0.04);
-        }
-
-        /* Hero backgrounds */
-        .hero-mesh {
-          position: absolute; top: 20%; left: 50%; width: 800px; height: 800px;
-          transform: translate(-50%,-50%);
-          background: radial-gradient(ellipse, rgba(124,92,255,0.12) 0%, rgba(192,132,252,0.06) 30%, transparent 65%);
-          filter: blur(100px); pointer-events: none;
-          animation: meshDrift 12s ease-in-out infinite;
+        /* ── Hero mesh backgrounds ── */
+        .hero-mesh-1 {
+          position: absolute; top: 10%; left: 30%; width: 900px; height: 900px;
+          background: radial-gradient(ellipse, rgba(147,112,255,0.25) 0%, rgba(236,72,153,0.15) 30%, transparent 60%);
+          filter: blur(120px); pointer-events: none;
+          animation: meshFloat1 12s ease-in-out infinite;
         }
         .hero-mesh-2 {
-          position: absolute; top: 60%; left: 30%; width: 500px; height: 500px;
-          background: radial-gradient(circle, rgba(109,40,217,0.1) 0%, transparent 60%);
+          position: absolute; top: 50%; left: 60%; width: 700px; height: 700px;
+          background: radial-gradient(ellipse, rgba(236,72,153,0.2) 0%, rgba(139,92,246,0.1) 40%, transparent 65%);
+          filter: blur(100px); pointer-events: none;
+          animation: meshFloat2 15s ease-in-out infinite;
+        }
+        .hero-mesh-3 {
+          position: absolute; top: 70%; left: 20%; width: 500px; height: 500px;
+          background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 60%);
           filter: blur(80px); pointer-events: none;
-          animation: meshDrift 15s ease-in-out infinite reverse;
+          animation: meshFloat3 18s ease-in-out infinite;
         }
-        @keyframes meshDrift {
+        @keyframes meshFloat1 {
+          0%,100% { transform: translate(-50%,-50%) scale(1); }
+          33% { transform: translate(-45%,-55%) scale(1.08); }
+          66% { transform: translate(-55%,-45%) scale(0.95); }
+        }
+        @keyframes meshFloat2 {
           0%,100% { transform: translate(-50%,-50%) scale(1) rotate(0deg); }
-          33% { transform: translate(-45%,-55%) scale(1.05) rotate(2deg); }
-          66% { transform: translate(-55%,-45%) scale(0.95) rotate(-2deg); }
+          50% { transform: translate(-55%,-48%) scale(1.1) rotate(3deg); }
+        }
+        @keyframes meshFloat3 {
+          0%,100% { transform: translate(-50%,-50%) scale(1); }
+          50% { transform: translate(-48%,-55%) scale(1.12); }
         }
 
-        /* Noise overlay */
-        .noise {
-          position: absolute; inset: 0; pointer-events: none; opacity: 0.03;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-          background-size: 128px;
+        /* ── Sparkle particles ── */
+        .sparkles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+        .sparkle {
+          position: absolute; border-radius: 50%;
+          background: white;
+          animation: sparkleFloat linear infinite;
+        }
+        @keyframes sparkleFloat {
+          0% { opacity: 0; transform: translateY(0) scale(0.5); }
+          25% { opacity: 1; transform: translateY(-20px) scale(1); }
+          50% { opacity: 0.6; transform: translateY(-40px) scale(0.8); }
+          75% { opacity: 1; transform: translateY(-60px) scale(1.1); }
+          100% { opacity: 0; transform: translateY(-80px) scale(0.5); }
         }
 
-        /* Stars */
-        .stars { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-        .star {
-          position: absolute; border-radius: 50%; background: white;
-          animation: twinkle 3s ease-in-out infinite;
+        /* ── Ghost glow halo ── */
+        .ghost-halo {
+          position: absolute; top: 50%; left: 50%;
+          width: 220px; height: 220px;
+          transform: translate(-50%,-50%);
+          background: radial-gradient(circle, rgba(147,112,255,0.4) 0%, rgba(236,72,153,0.2) 40%, transparent 70%);
+          filter: blur(40px);
+          animation: haloPulse 3s ease-in-out infinite;
         }
-        @keyframes twinkle {
-          0%,100% { opacity: 0.1; } 50% { opacity: 0.6; }
+        @keyframes haloPulse {
+          0%,100% { opacity: 0.6; transform: translate(-50%,-50%) scale(1); }
+          50% { opacity: 1; transform: translate(-50%,-50%) scale(1.15); }
         }
 
-        /* Float */
+        /* ── Ghost rainbow halo (CTA) ── */
+        .ghost-rainbow-halo {
+          position: absolute; top: 50%; left: 50%;
+          width: 280px; height: 280px;
+          transform: translate(-50%,-50%);
+          background: conic-gradient(from 0deg, #EC4899, #9370ff, #3B82F6, #22C55E, #F97316, #EC4899);
+          filter: blur(60px);
+          opacity: 0.4;
+          animation: rainbowSpin 8s linear infinite;
+        }
+        @keyframes rainbowSpin {
+          to { transform: translate(-50%,-50%) rotate(360deg); }
+        }
+
+        /* ── Ghost float ── */
         @keyframes ghost-float {
-          0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); }
+          0%,100% { transform: translateY(0); } 50% { transform: translateY(-16px); }
         }
         .ghost-float { animation: ghost-float 4s ease-in-out infinite; }
 
-        /* Scroll dot */
+        /* ── Scroll dot ── */
         @keyframes scrollDot {
           0%,100% { opacity: 0; transform: translateY(0); }
           50% { opacity: 1; transform: translateY(5px); }
         }
         .scroll-dot-anim { animation: scrollDot 2.5s ease-in-out infinite; }
 
-        /* CTA button glow */
-        .cta-glow-btn {
-          box-shadow: 0 0 30px -5px rgba(124,92,255,0.4), 0 0 80px -20px rgba(124,92,255,0.2);
+        /* ── Hero CTAs ── */
+        .hero-cta-primary {
+          background: linear-gradient(135deg, #9370ff, #EC4899);
+          box-shadow: 0 0 40px -5px rgba(147,112,255,0.5), 0 0 80px -20px rgba(236,72,153,0.3);
         }
-        .cta-glow-btn:hover {
-          box-shadow: 0 0 40px -5px rgba(124,92,255,0.5), 0 0 100px -20px rgba(124,92,255,0.3);
+        .hero-cta-primary:hover {
+          box-shadow: 0 0 60px -5px rgba(147,112,255,0.6), 0 0 120px -20px rgba(236,72,153,0.4);
+          transform: translateY(-2px);
+        }
+        .hero-cta-secondary {
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.12);
+          backdrop-filter: blur(12px);
+        }
+        .hero-cta-secondary:hover {
+          background: rgba(255,255,255,0.1);
+          border-color: rgba(255,255,255,0.25);
         }
 
-        /* Scroll reveal */
+        /* ── Chat preview floating card ── */
+        .chat-preview-card {
+          width: 320px;
+          border-radius: 20px;
+          border: 1px solid rgba(255,255,255,0.1);
+          background: rgba(255,255,255,0.06);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          overflow: hidden;
+          box-shadow: 0 25px 60px -12px rgba(0,0,0,0.5);
+        }
+        .chat-float-card {
+          transform: rotate(3deg);
+          animation: chatCardFloat 6s ease-in-out infinite;
+        }
+        @keyframes chatCardFloat {
+          0%,100% { transform: rotate(3deg) translateY(0); }
+          50% { transform: rotate(2deg) translateY(-12px); }
+        }
+        @keyframes chatFadeIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Use Case Strip (marquee) ── */
+        .use-case-marquee { overflow: hidden; padding: 8px 0; }
+        .use-case-track {
+          display: flex; gap: 16px; width: max-content;
+          animation: useCaseScroll 60s linear infinite;
+        }
+        .use-case-marquee:hover .use-case-track { animation-play-state: paused; }
+        @keyframes useCaseScroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-33.33%); }
+        }
+        .use-case-card {
+          display: flex; align-items: center; gap: 12px;
+          padding: 16px 28px; border-radius: 20px;
+          border: none; cursor: pointer;
+          white-space: nowrap; flex-shrink: 0;
+          transition: transform 0.3s, box-shadow 0.3s;
+          box-shadow: 0 4px 20px -4px rgba(0,0,0,0.3);
+        }
+        .use-case-card:hover {
+          transform: rotate(-2deg) scale(1.05);
+          box-shadow: 0 8px 30px -4px rgba(0,0,0,0.4);
+        }
+
+        /* ── Bento Grid ── */
+        .bento-card {
+          transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s;
+        }
+        .bento-card:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 20px 60px -12px var(--bento-color, rgba(147,112,255,0.3));
+        }
+        .bento-glass {
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.08);
+        }
+        .bento-card:hover .bento-glass {
+          border-color: rgba(255,255,255,0.15);
+          background: rgba(255,255,255,0.05);
+        }
+
+        /* ── How It Works ── */
+        .how-bg {
+          position: absolute; top: 50%; left: 50%; width: 800px; height: 600px;
+          transform: translate(-50%,-50%);
+          background: radial-gradient(ellipse, rgba(12,1,24,0.9) 0%, rgba(12,1,24,1) 60%);
+          pointer-events: none;
+        }
+        .how-step-visual {
+          width: 200px; height: 200px;
+          display: flex; align-items: center; justify-content: center;
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 32px;
+          backdrop-filter: blur(12px);
+        }
+        .how-typing-mock {
+          display: flex; align-items: center; gap: 4px;
+          padding: 12px 16px; border-radius: 12px;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.1);
+        }
+        .how-typing-cursor {
+          width: 2px; height: 16px; background: #EC4899;
+          animation: cursorBlink 1s step-end infinite;
+        }
+        @keyframes cursorBlink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+        .how-result-mock {
+          display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .how-progress-fill {
+          background: linear-gradient(90deg, #9370ff, #EC4899);
+          animation: progressFill 3s linear;
+        }
+        @keyframes progressFill { from { width: 0; } to { width: 100%; } }
+
+        /* ── Testimonials ── */
+        .testimonial-marquee { overflow: hidden; padding: 8px 0; }
+        .testimonial-track {
+          display: flex; gap: 16px; width: max-content;
+          animation: testScroll 45s linear infinite;
+        }
+        .testimonial-marquee:hover .testimonial-track { animation-play-state: paused; }
+        @keyframes testScroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-33.33%); }
+        }
+        .testimonial-card {
+          padding: 24px; border-radius: 20px; min-width: 260px;
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.08);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          flex-shrink: 0;
+          transition: border-color 0.3s, transform 0.3s;
+        }
+        .testimonial-card:hover {
+          border-color: var(--t-color, rgba(255,255,255,0.2));
+          transform: translateY(-4px);
+        }
+
+        /* ── Skills Cloud ── */
+        .skills-bg {
+          position: absolute; top: 50%; left: 50%; width: 900px; height: 600px;
+          transform: translate(-50%,-50%);
+          background: radial-gradient(ellipse, rgba(147,112,255,0.08) 0%, transparent 60%);
+          filter: blur(80px); pointer-events: none;
+        }
+        .skills-cloud {
+          display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
+          max-width: 900px; margin: 0 auto;
+        }
+        .skill-bubble {
+          display: inline-flex; align-items: center; justify-content: center;
+          border-radius: 50px;
+          font-weight: 600; white-space: nowrap;
+          background: color-mix(in srgb, var(--bubble-color) 15%, transparent);
+          border: 1px solid color-mix(in srgb, var(--bubble-color) 25%, transparent);
+          color: var(--bubble-color);
+          cursor: default;
+          animation: bubbleDrift ease-in-out infinite;
+          transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .skill-bubble:hover {
+          transform: scale(1.12);
+          box-shadow: 0 0 20px -4px var(--bubble-color);
+        }
+        .skill-bubble-sm { padding: 8px 16px; font-size: 12px; }
+        .skill-bubble-md { padding: 10px 22px; font-size: 13px; }
+        .skill-bubble-lg { padding: 12px 28px; font-size: 15px; }
+        @keyframes bubbleDrift {
+          0%,100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
+        }
+
+        /* ── CTA Section ── */
+        .cta-mesh-1 {
+          position: absolute; top: 30%; left: 40%; width: 700px; height: 700px;
+          background: radial-gradient(ellipse, rgba(147,112,255,0.2) 0%, transparent 60%);
+          filter: blur(100px); pointer-events: none;
+          animation: meshFloat1 10s ease-in-out infinite;
+        }
+        .cta-mesh-2 {
+          position: absolute; top: 60%; left: 60%; width: 500px; height: 500px;
+          background: radial-gradient(circle, rgba(236,72,153,0.15) 0%, transparent 60%);
+          filter: blur(80px); pointer-events: none;
+          animation: meshFloat2 12s ease-in-out infinite;
+        }
+
+        /* ── Confetti ── */
+        .cta-confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 5; }
+        .confetti-piece {
+          position: absolute; top: 40%;
+          width: 8px; height: 8px; border-radius: 2px;
+          animation: confettiFall 1.5s ease-out forwards;
+        }
+        @keyframes confettiFall {
+          0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+          100% { transform: translateY(-150px) rotate(720deg) scale(0); opacity: 0; }
+        }
+
+        /* ── Scroll reveal ── */
         .reveal {
           opacity: 0; transform: translateY(40px);
           transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
         }
         .revealed { opacity: 1; transform: translateY(0); }
 
-        /* Feature cards */
-        .feat-card { position: relative; overflow: hidden; }
-        .feat-card::before {
-          content: ''; position: absolute; inset: 0; border-radius: inherit;
-          background: radial-gradient(circle at var(--x,50%) var(--y,50%), rgba(124,92,255,0.06), transparent 60%);
-          opacity: 0; transition: opacity 0.5s;
-        }
-        .feat-card:hover::before { opacity: 1; }
-
-        /* Use case tiles */
-        .use-case-tile:hover {
-          border-color: var(--uc-color, #7c5cff);
-          box-shadow: 0 0 20px -8px var(--uc-color, #7c5cff);
-        }
-
-        /* Demo glow */
-        .demo-glow {
-          position: absolute; top: 50%; left: 50%; width: 600px; height: 400px;
-          transform: translate(-50%,-50%);
-          background: radial-gradient(ellipse, rgba(124,92,255,0.08) 0%, transparent 60%);
-          filter: blur(60px); pointer-events: none;
-        }
-
-        /* CTA mesh */
-        .cta-mesh {
-          position: absolute; top: 50%; left: 50%; width: 500px; height: 500px;
-          transform: translate(-50%,-50%);
-          background: radial-gradient(circle, rgba(124,92,255,0.12) 0%, transparent 60%);
-          filter: blur(80px); pointer-events: none;
-        }
-
-        /* Marquee */
-        .marquee-row { overflow: hidden; }
-        .marquee-track-left, .marquee-track-right {
-          display: flex; gap: 12px; width: max-content;
-        }
-        .marquee-track-left { animation: marqueeL 50s linear infinite; }
-        .marquee-track-right { animation: marqueeR 45s linear infinite; }
-        .marquee-row:hover .marquee-track-left,
-        .marquee-row:hover .marquee-track-right { animation-play-state: paused; }
-        @keyframes marqueeL { 0%{transform:translateX(0)} 100%{transform:translateX(-33.33%)} }
-        @keyframes marqueeR { 0%{transform:translateX(-33.33%)} 100%{transform:translateX(0)} }
-        .skill-pill {
-          display: inline-flex; align-items: center; padding: 10px 20px;
-          border-radius: 12px; border: 1px solid #1a1a22; background: #0e0e13;
-          font-size: 13px; color: #8f8f9c; white-space: nowrap; flex-shrink: 0;
-          transition: border-color 0.3s, color 0.3s;
-        }
-        .skill-pill:hover { border-color: rgba(124,92,255,0.4); color: #ececef; }
-
-        /* Chat preview */
-        @keyframes chatFadeIn {
-          from { opacity: 0; transform: translateY(8px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
         html { scroll-behavior: smooth; }
+
+        /* ── Mobile responsive ── */
+        @media (max-width: 768px) {
+          .skills-cloud { gap: 8px; }
+          .skill-bubble-lg { padding: 8px 18px; font-size: 13px; }
+          .skill-bubble-md { padding: 7px 14px; font-size: 12px; }
+          .skill-bubble-sm { padding: 6px 12px; font-size: 11px; }
+          .how-step-visual { width: 160px; height: 160px; }
+        }
       `}</style>
     </div>
   );
