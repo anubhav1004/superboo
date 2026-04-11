@@ -4,7 +4,7 @@ import { useUserStore } from "../../store/user";
 import Message from "./Message";
 import MessageInput from "./MessageInput";
 import CanvasPreview from "./CanvasPreview";
-import { sendChatWithPolling } from "../../lib/api";
+import { sendChatWithPolling, detectCreationType, createFile } from "../../lib/api";
 import { Menu, Sparkles, ArrowRight } from "lucide-react";
 
 /* ── Ghost SVG ── */
@@ -90,6 +90,24 @@ export default function ChatWindow() {
     };
 
     try {
+      // Check if this is a creation request — bypass agent, create directly
+      const creation = detectCreationType(text);
+      if (creation) {
+        setStep(1); // "Boo is on it..."
+        const result = await createFile(creation);
+        setStep(2);
+        if (result.ok && result.file_path) {
+          setStep(3);
+          const reply = `Done! Here's your ${result.file_type === "pptx" ? "presentation" : result.file_type === "docx" ? "document" : "spreadsheet"}:\n\n${result.file_path}`;
+          updateMessage(sid, asstId, { content: reply, streaming: false, execSteps: initSteps.map((s) => ({ ...s, state: "done" as const })) });
+          setTimeout(() => updateMessage(sid, asstId, { execSteps: undefined }), 2000);
+          setCanvasFile(result.file_path);
+          return;
+        } else if (result.error) {
+          // Fall through to agent if creation fails
+        }
+      }
+
       const uiContext = `[system: You are Superboo. IMPORTANT RULES:
 1. When user asks to CREATE something (deck, slides, document, spreadsheet, image), you MUST use the exec tool to run the creation script. Do NOT just write text — actually CREATE the file.
 2. For decks/slides: exec python3 /home/node/.openclaw/skills/generate-slides/scripts/create_slides.py --topic "..." --slides 10 --style modern --output /home/node/.openclaw/workspace/output/FILENAME.pptx

@@ -145,6 +145,66 @@ export async function sendChatWithPolling(
   return extractReply(res);
 }
 
+export interface CreateRequest {
+  type: "slides" | "document" | "spreadsheet";
+  topic: string;
+  details?: string;
+  num_slides?: number;
+  style?: string;
+  doc_type?: string;
+}
+
+export interface CreateResponse {
+  ok: boolean;
+  file_path: string;
+  file_name: string;
+  file_type: string;
+  error: string;
+}
+
+export async function createFile(req: CreateRequest): Promise<CreateResponse> {
+  const res = await fetch(`${config.url}/v1/create/`, {
+    method: "POST",
+    headers: headers(),
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) throw new Error(`Create failed: ${res.status}`);
+  return res.json();
+}
+
+// Detect if a message is a creation request
+export function detectCreationType(text: string): CreateRequest | null {
+  const lower = text.toLowerCase();
+
+  if (/\b(deck|slides?|presentation|pitch)\b/.test(lower)) {
+    const slideMatch = lower.match(/(\d+)\s*-?\s*slide/);
+    return {
+      type: "slides",
+      topic: text.replace(/^(create|make|build|generate)\s+(a\s+|me\s+)?/i, "").replace(/\d+-slide\s*/i, "").trim(),
+      num_slides: slideMatch ? parseInt(slideMatch[1]) : 10,
+      style: "modern",
+    };
+  }
+
+  if (/\b(resume|cv|cover letter|document|essay|letter|report|article)\b/.test(lower)) {
+    const docType = /resume|cv/i.test(lower) ? "resume" : /letter/i.test(lower) ? "letter" : /report/i.test(lower) ? "report" : "essay";
+    return {
+      type: "document",
+      topic: text.replace(/^(create|make|build|generate|write)\s+(a\s+|me\s+|my\s+)?/i, "").trim(),
+      doc_type: docType,
+    };
+  }
+
+  if (/\b(spreadsheet|excel|xlsx|budget|tracker|expense)\b/.test(lower)) {
+    return {
+      type: "spreadsheet",
+      topic: text.replace(/^(create|make|build|generate)\s+(a\s+|me\s+)?/i, "").trim(),
+    };
+  }
+
+  return null;
+}
+
 export function extractReply(res: ChatResponse): string {
   // Don't show raw polling messages
   if (res.status === "pending" && res.task_id) {
