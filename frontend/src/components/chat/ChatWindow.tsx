@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChatStore, uid } from "../../store/chat";
 import { useUserStore } from "../../store/user";
 import Message from "./Message";
 import MessageInput from "./MessageInput";
+import CanvasPreview from "./CanvasPreview";
 import { sendChatWithPolling } from "../../lib/api";
 import { Menu, Sparkles, ArrowRight } from "lucide-react";
 
@@ -50,6 +51,7 @@ export default function ChatWindow() {
     setCreatePanelOpen,
   } = useChatStore();
   const { user } = useUserStore();
+  const [canvasFile, setCanvasFile] = useState<string | null>(null);
 
   const session = sessions.find((s) => s.id === activeSessionId) ?? null;
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -88,7 +90,16 @@ export default function ChatWindow() {
     };
 
     try {
-      const uiContext = `[system: You are Superboo, a friendly AI that creates things for people. IMPORTANT: This message is from the Superboo Web UI. Reply directly as an assistant message. Do NOT use the send tool. Do NOT send to WhatsApp or Discord. Just reply inline. Include file paths for any media you generate.]\n`;
+      const uiContext = `[system: You are Superboo. IMPORTANT RULES:
+1. When user asks to CREATE something (deck, slides, document, spreadsheet, image), you MUST use the exec tool to run the creation script. Do NOT just write text — actually CREATE the file.
+2. For decks/slides: exec python3 /home/node/.openclaw/skills/generate-slides/scripts/create_slides.py --topic "..." --slides 10 --style modern --output /home/node/.openclaw/workspace/output/FILENAME.pptx
+3. For documents/resumes: exec python3 /home/node/.openclaw/skills/generate-document/scripts/create_doc.py --title "..." --type resume --output /home/node/.openclaw/workspace/output/FILENAME.docx
+4. For spreadsheets: exec python3 /home/node/.openclaw/skills/generate-spreadsheet/scripts/create_sheet.py --title "..." --output /home/node/.openclaw/workspace/output/FILENAME.xlsx
+5. For images: use nano-banana-pro or openai-image-gen skill
+6. First write a JSON outline/data file to /tmp/, then pass it to the script with --outline or --data-file or --content-file
+7. After creating, include the FULL file path in your response so the UI can render it
+8. Do NOT use the send tool. Do NOT send to WhatsApp. Reply inline only.
+9. Be brief — create the file, give the path, done.]\n`;
       const attachmentNote = files.length ? `[attachments: ${files.map((f) => f.name).join(", ")}]\n` : "";
 
       // Always use the main agent session — OpenClaw expects this format
@@ -109,6 +120,13 @@ export default function ChatWindow() {
 
       updateMessage(sid, asstId, { content: reply, streaming: false, execSteps: initSteps.map((s) => ({ ...s, state: "done" as const })) });
       setTimeout(() => updateMessage(sid, asstId, { execSteps: undefined }), 2000);
+
+      // Auto-open canvas if response contains a file path
+      const fileMatch = reply.match(/\/home\/node\/[^\s)"`]+\.(pptx|docx|xlsx|pdf|png|jpg|jpeg|mp4|mov|webm)/i)
+        || reply.match(/\/home\/anubhav\/[^\s)"`]+\.(pptx|docx|xlsx|pdf|png|jpg|jpeg|mp4|mov|webm)/i);
+      if (fileMatch) {
+        setCanvasFile(fileMatch[0]);
+      }
     } catch (err: unknown) {
       updateMessage(sid, asstId, { content: `**Oops!** Something went wrong.\n\n\`${err instanceof Error ? err.message : String(err)}\``, streaming: false, execSteps: undefined });
     }
@@ -190,7 +208,8 @@ export default function ChatWindow() {
 
   /* ═══════ ACTIVE CHAT ═══════ */
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden" style={{background: '#0c0118'}}>
+    <div className="flex-1 flex h-full overflow-hidden" style={{background: '#0c0118'}}>
+    <div className={`flex-1 flex flex-col h-full overflow-hidden ${canvasFile ? 'max-w-[calc(100%-420px)]' : ''}`}>
       {/* Header */}
       <div className="px-4 md:px-6 py-3 sticky top-0 z-10 border-b border-[rgba(255,255,255,0.08)]" style={{background: 'rgba(12,1,24,0.8)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)'}}>
         <div className="max-w-3xl mx-auto w-full flex items-center gap-2.5">
@@ -215,6 +234,14 @@ export default function ChatWindow() {
       </div>
 
       <MessageInput onSend={handleSend} />
+    </div>
+
+    {/* Canvas preview panel (right side) */}
+    {canvasFile && (
+      <div className="hidden md:block">
+        <CanvasPreview filePath={canvasFile} onClose={() => setCanvasFile(null)} />
+      </div>
+    )}
     </div>
   );
 }
