@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { useUserStore } from "../../store/user";
 
 /* ── Ghost SVG ── */
@@ -42,12 +42,7 @@ export default function AuthPage() {
 
   // Redirect if already logged in
   if (isAuthenticated) {
-    if (isOnboarded) {
-      nav("/chat", { replace: true });
-    } else {
-      nav("/onboarding", { replace: true });
-    }
-    return null;
+    return <Navigate to={isOnboarded ? "/chat" : "/onboarding"} replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

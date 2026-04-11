@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { useUserStore } from "../../store/user";
 
 /* ── Ghost SVG ── */
@@ -59,8 +59,7 @@ export default function OnboardingPage() {
   const [selectedRole, setSelectedRole] = useState("");
 
   if (!isAuthenticated || !user) {
-    nav("/login", { replace: true });
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   const toggleCategory = (id: string) => {

@@ -91,7 +91,8 @@ export default function ChatWindow() {
       const uiContext = `[system: You are Superboo, a friendly AI that creates things for people. IMPORTANT: This message is from the Superboo Web UI. Reply directly as an assistant message. Do NOT use the send tool. Do NOT send to WhatsApp or Discord. Just reply inline. Include file paths for any media you generate.]\n`;
       const attachmentNote = files.length ? `[attachments: ${files.map((f) => f.name).join(", ")}]\n` : "";
 
-      const sessionKey = user?.sessionId || "agent:main:main";
+      // Always use the main agent session — OpenClaw expects this format
+      const sessionKey = "agent:main:main";
       const reply = await sendChatWithPolling(
         uiContext + attachmentNote + text, sessionKey,
         (step, progress) => {

@@ -83,7 +83,7 @@ export async function sendChat(
   const res = await fetch(`${config.url}/v1/chat/send`, {
     method: "POST",
     headers: headers(),
-    body: JSON.stringify({ message, session_key: sessionKey, timeout_ms: 25000 }),
+    body: JSON.stringify({ message, session_key: sessionKey, timeout_ms: 15000 }),
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
