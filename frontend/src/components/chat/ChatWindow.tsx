@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useChatStore, uid } from "../../store/chat";
+import { useUserStore } from "../../store/user";
 import Message from "./Message";
 import MessageInput from "./MessageInput";
 import { sendChatWithPolling } from "../../lib/api";
@@ -48,6 +49,7 @@ export default function ChatWindow() {
     toggleSidebar,
     setCreatePanelOpen,
   } = useChatStore();
+  const { user } = useUserStore();
 
   const session = sessions.find((s) => s.id === activeSessionId) ?? null;
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -86,11 +88,12 @@ export default function ChatWindow() {
     };
 
     try {
-      const uiContext = `[system: You are Superboo, a friendly AI that creates things for people. Always include file paths for any media you generate. Be helpful and casual.]\n`;
+      const uiContext = `[system: You are Superboo, a friendly AI that creates things for people. IMPORTANT: This message is from the Superboo Web UI. Reply directly as an assistant message. Do NOT use the send tool. Do NOT send to WhatsApp or Discord. Just reply inline. Include file paths for any media you generate.]\n`;
       const attachmentNote = files.length ? `[attachments: ${files.map((f) => f.name).join(", ")}]\n` : "";
 
+      const sessionKey = user?.sessionId || "agent:main:main";
       const reply = await sendChatWithPolling(
-        uiContext + attachmentNote + text, "agent:main:main",
+        uiContext + attachmentNote + text, sessionKey,
         (step, progress) => {
           if (step === "sending") setStep(0);
           else if (step === "thinking") setStep(1);
@@ -136,7 +139,7 @@ export default function ChatWindow() {
               <div className="relative"><BooAvatar size={56} /></div>
             </div>
             <h1 className="text-[24px] md:text-[32px] font-extrabold tracking-tight text-center mb-2" style={{background: 'linear-gradient(135deg, #C084FC, #EC4899, #9370ff, #60A5FA)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>
-              What can Boo create for you?
+              What can Boo create for you{user?.name ? `, ${user.name}` : ""}?
             </h1>
             <p className="text-[13px] text-fg-dim text-center mb-8 max-w-sm">
               Describe what you need in plain words — a video, a deck, a poster, anything.

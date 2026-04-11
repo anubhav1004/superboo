@@ -43,6 +43,8 @@ function GhostIcon({ size = 24 }: { size?: number }) {
 }
 import clsx from "clsx";
 import { useChatStore } from "../../store/chat";
+import { useUserStore } from "../../store/user";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   onOpenSettings: () => void;
@@ -76,7 +78,17 @@ export default function Sidebar({
     deleteSession,
     connection,
   } = useChatStore();
+  const { user, logout } = useUserStore();
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
+
+  const userName = user?.name || "Guest";
+  const userInitial = userName.charAt(0).toUpperCase();
+
+  const handleSignOut = () => {
+    logout();
+    navigate("/login");
+  };
 
   const filtered = sessions.filter((s) =>
     s.title.toLowerCase().includes(query.toLowerCase())
@@ -270,7 +282,7 @@ export default function Sidebar({
       <div className="px-3 py-3 flex items-center gap-2.5 border-t border-transparent" style={{borderImage: 'linear-gradient(to right, transparent, rgba(192,132,252,0.3), rgba(236,72,153,0.2), transparent) 1'}}>
         <div className="relative">
           <div className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold text-white flex-shrink-0" style={{background: 'linear-gradient(135deg, #9370ff, #EC4899)', boxShadow: '0 0 20px -4px rgba(147,112,255,0.4)'}}>
-            A
+            {userInitial}
           </div>
           {connection === "online" && (
             <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#4ade80] border-2 border-bg green-pulse" />
@@ -283,11 +295,18 @@ export default function Sidebar({
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-[12px] text-fg font-medium truncate">Anubhav</div>
+          <div className="text-[12px] text-fg font-medium truncate">{userName}</div>
           <div className="text-[10px] text-fg-dim">
             {connection === "online" ? "Online" : connection === "offline" ? "Offline" : "Connecting..."}
           </div>
         </div>
+        <button
+          onClick={handleSignOut}
+          className="p-1.5 rounded-xl hover:bg-red-400/10 text-fg-dim hover:text-red-400 transition-all hover:scale-105 active:scale-95 text-[10px] font-medium"
+          title="Sign out"
+        >
+          Sign out
+        </button>
         <button
           onClick={onOpenSettings}
           className="p-1.5 rounded-xl hover:bg-bg-surface text-fg-dim hover:text-fg transition-all hover:scale-105 active:scale-95"

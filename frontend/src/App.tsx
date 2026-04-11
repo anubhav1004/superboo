@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useChatStore } from "./store/chat";
+import { useUserStore } from "./store/user";
 import Sidebar from "./components/sidebar/Sidebar";
 import ChatWindow from "./components/chat/ChatWindow";
 import SkillsPanel from "./components/skills/SkillsPanel";
@@ -7,8 +8,26 @@ import ConnectorsPanel from "./components/connectors/ConnectorsPanel";
 import TaskDetail from "./components/tasks/TaskDetail";
 import Settings from "./components/layout/Settings";
 import LandingPage from "./components/landing/LandingPage";
+import AuthPage from "./components/auth/AuthPage";
+import OnboardingPage from "./components/auth/OnboardingPage";
 import { useHealth } from "./hooks/useHealth";
 import { useKeyboard } from "./hooks/useKeyboard";
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useUserStore();
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  return <>{children}</>;
+}
+
+function OnboardingGuard({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useUserStore();
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  return <>{children}</>;
+}
 
 function ChatLayout() {
   const {
@@ -45,7 +64,23 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/chat" element={<ChatLayout />} />
+        <Route path="/login" element={<AuthPage />} />
+        <Route
+          path="/onboarding"
+          element={
+            <OnboardingGuard>
+              <OnboardingPage />
+            </OnboardingGuard>
+          }
+        />
+        <Route
+          path="/chat"
+          element={
+            <ProtectedRoute>
+              <ChatLayout />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

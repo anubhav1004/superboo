@@ -1,6 +1,9 @@
 // Dynamic config — can be overridden at runtime via settings
+// Use /api proxy in production (avoids HTTPS→HTTP mixed content block)
+// Falls back to direct bridge URL for local dev
+const IS_PROD = typeof window !== "undefined" && window.location.protocol === "https:";
 const DEFAULT_BRIDGE_URL =
-  import.meta.env.VITE_BRIDGE_URL || "http://34.100.138.134:8100";
+  IS_PROD ? "/api" : (import.meta.env.VITE_BRIDGE_URL || "http://34.100.138.134:8100");
 const DEFAULT_BRIDGE_TOKEN =
   import.meta.env.VITE_BRIDGE_TOKEN || "oc-bridge-2026-anubhav-secret";
 
@@ -10,7 +13,8 @@ export interface ApiConfig {
 }
 
 let config: ApiConfig = {
-  url: localStorage.getItem("oc_bridge_url") || DEFAULT_BRIDGE_URL,
+  // In production (HTTPS), always use /api proxy — ignore stale localStorage
+  url: IS_PROD ? "/api" : (localStorage.getItem("oc_bridge_url") || DEFAULT_BRIDGE_URL),
   token: localStorage.getItem("oc_bridge_token") || DEFAULT_BRIDGE_TOKEN,
 };
 
@@ -79,7 +83,7 @@ export async function sendChat(
   const res = await fetch(`${config.url}/v1/chat/send`, {
     method: "POST",
     headers: headers(),
-    body: JSON.stringify({ message, session_key: sessionKey, timeout_ms: 120000 }),
+    body: JSON.stringify({ message, session_key: sessionKey, timeout_ms: 25000 }),
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");

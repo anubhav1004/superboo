@@ -55,16 +55,17 @@ export default function ExecutionStatus({ steps }: { steps: ExecStep[] }) {
       </div>
 
       {/* Horizontal progress bar with labeled dots */}
-      <div className="relative px-2">
-        {/* Connection line */}
-        <div className="absolute top-3 left-6 right-6 h-[2px] rounded-full" style={{background: 'rgba(255,255,255,0.08)'}} />
+      <div className="relative px-2 overflow-hidden">
+        {/* Connection line (contained within dot centers) */}
+        <div className="absolute top-3 h-[2px] rounded-full" style={{background: 'rgba(255,255,255,0.08)', left: 'calc(12.5%)', right: 'calc(12.5%)'}} />
         {/* Progress fill */}
         <div
-          className="absolute top-3 left-6 h-[2px] rounded-full transition-all duration-500 ease-out"
+          className="absolute top-3 h-[2px] rounded-full transition-all duration-500 ease-out"
           style={{
             backgroundImage: 'linear-gradient(to right, #9370ff, #EC4899)',
+            left: 'calc(12.5%)',
             width: steps.length > 1
-              ? `${(doneCount / (steps.length - 1)) * (100 - (12 / (steps.length)))}%`
+              ? `calc(${(doneCount / (steps.length - 1)) * 75}%)`
               : "0%",
           }}
         />

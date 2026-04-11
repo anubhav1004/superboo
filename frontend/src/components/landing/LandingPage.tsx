@@ -332,7 +332,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-6">
             <a href="#section-features" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Features</a>
             <a href="#section-how" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">How it works</a>
-            <button onClick={() => nav("/chat")}
+            <button onClick={() => nav("/login")}
               className="text-[13px] px-5 py-2 rounded-full bg-gradient-to-r from-[#9370ff] to-[#EC4899] hover:opacity-90 text-white font-semibold transition-all shadow-lg shadow-purple-500/25">
               Try it free
             </button>
@@ -379,7 +379,7 @@ export default function LandingPage() {
             TikToks, pitch decks, resumes, posters, meal plans &mdash; just tell Boo.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <button onClick={() => nav("/chat")}
+            <button onClick={() => nav("/login")}
               className="group hero-cta-primary px-10 py-4 rounded-full text-white text-[16px] font-bold transition-all">
               Try it free
               <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
@@ -411,7 +411,7 @@ export default function LandingPage() {
         <div className="use-case-marquee">
           <div className="use-case-track">
             {[...USE_CASES, ...USE_CASES, ...USE_CASES].map((uc, i) => (
-              <button key={i} onClick={() => nav("/chat")} className="use-case-card group"
+              <button key={i} onClick={() => nav("/login")} className="use-case-card group"
                 style={{ background: uc.bg }}>
                 <span className="text-3xl">{uc.emoji}</span>
                 <span className="text-[14px] font-bold text-white drop-shadow-sm">{uc.label}</span>
@@ -572,7 +572,7 @@ export default function LandingPage() {
           <p className="text-white/40 text-[16px] max-w-sm mb-10">
             No signup required. No credit card. Just vibes.
           </p>
-          <button onClick={() => nav("/chat")}
+          <button onClick={() => nav("/login")}
             onMouseEnter={() => setCtaHover(true)}
             onMouseLeave={() => setCtaHover(false)}
             className="group hero-cta-primary px-12 py-5 rounded-full text-white text-[18px] font-bold transition-all">
@@ -592,7 +592,7 @@ export default function LandingPage() {
             <span className="text-[12px] text-white/30">Superboo &copy; 2026</span>
           </div>
           <div className="flex items-center gap-5">
-            <button onClick={() => nav("/chat")} className="text-[12px] text-white/30 hover:text-white/60 transition-colors bg-transparent border-none cursor-pointer">Chat</button>
+            <button onClick={() => nav("/login")} className="text-[12px] text-white/30 hover:text-white/60 transition-colors bg-transparent border-none cursor-pointer">Chat</button>
             <a href="#section-features" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Features</a>
             <a href="#section-how" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">How it works</a>
             <span className="text-[10px] text-white/15 hidden md:inline">Press G for a surprise</span>
