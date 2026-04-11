@@ -79,6 +79,8 @@ export default function Sidebar({
     setActiveSession,
     deleteSession,
     connection,
+    guideModeActive,
+    toggleGuideMode,
   } = useChatStore();
   const { user, logout } = useUserStore();
   const navigate = useNavigate();
@@ -256,6 +258,22 @@ export default function Sidebar({
               <span>Connect</span>
             </button>
           </div>
+        </div>
+
+        <div className="px-4 pb-4">
+          <button
+            onClick={toggleGuideMode}
+            className="desktop-utility-button"
+            style={{
+              width: "100%",
+              background: guideModeActive ? "rgba(147,112,255,0.2)" : undefined,
+              borderColor: guideModeActive ? "rgba(147,112,255,0.4)" : undefined,
+            }}
+            type="button"
+          >
+            <span style={{ fontSize: 14 }}>{"\ud83e\udded"}</span>
+            <span>Guide</span>
+          </button>
         </div>
 
         <div className="px-4 pb-3">

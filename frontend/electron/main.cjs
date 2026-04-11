@@ -254,6 +254,40 @@ function createMainWindow() {
       ::-webkit-scrollbar-thumb:hover {
         background: rgba(255,255,255,0.2);
       }
+
+      /* ── Desktop compact input ── */
+      /* Make textarea single-line height, compact */
+      .desktop-app textarea {
+        min-height: 20px !important;
+        max-height: 120px !important;
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+        font-size: 13px !important;
+        line-height: 1.4 !important;
+      }
+
+      /* Compact input container */
+      .desktop-app .input-container,
+      .desktop-app [class*="MessageInput"] {
+        padding-bottom: 12px !important;
+      }
+
+      /* Hide the "Return to send / Shift-Return" hint */
+      .desktop-app [class*="text-fg-dim"][class*="text-\\[10px\\]"] {
+        display: none !important;
+      }
+
+      /* Smaller send button */
+      .desktop-app button[title="Send"] {
+        width: 32px !important;
+        height: 32px !important;
+      }
+
+      /* Compact Skills/Connect floaters */
+      .desktop-app .floater-pills {
+        font-size: 10px !important;
+        padding: 3px 8px !important;
+      }
     `);
   });
 }

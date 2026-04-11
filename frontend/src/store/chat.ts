@@ -21,6 +21,7 @@ interface ChatState {
   settingsOpen: boolean;
   tasks: Task[];
   activeTaskId: string | null;
+  guideModeActive: boolean;
   agentId: string;
   model: string;
   connection: ConnectionStatus;
@@ -41,6 +42,7 @@ interface ChatState {
   setConnectorsOpen: (open: boolean) => void;
   setSettingsOpen: (open: boolean) => void;
   setAgent: (id: string, model: string) => void;
+  toggleGuideMode: () => void;
   setConnection: (status: ConnectionStatus, latency?: number) => void;
 
   openTask: (id: string) => void;
@@ -90,6 +92,7 @@ export const useChatStore = create<ChatState>()(
       settingsOpen: false,
       tasks: SEED_TASKS,
       activeTaskId: null,
+      guideModeActive: false,
       agentId: "heisenberg",
       model: "zai/glm-5",
       connection: "checking",
@@ -161,6 +164,7 @@ export const useChatStore = create<ChatState>()(
         })),
 
       toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
+      toggleGuideMode: () => set((s) => ({ guideModeActive: !s.guideModeActive })),
       setCreatePanelOpen: (open) => set({ createPanelOpen: open }),
       setConnectorsOpen: (open) => set({ connectorsOpen: open }),
       setSettingsOpen: (open) => set({ settingsOpen: open }),

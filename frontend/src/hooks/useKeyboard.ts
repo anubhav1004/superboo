@@ -8,6 +8,7 @@ export function useKeyboard() {
     setCreatePanelOpen,
     setConnectorsOpen,
     setSettingsOpen,
+    toggleGuideMode,
   } = useChatStore();
 
   useEffect(() => {
@@ -37,6 +38,9 @@ export function useKeyboard() {
       } else if (e.key === ",") {
         e.preventDefault();
         setSettingsOpen(true);
+      } else if (e.key === "g" && !inEditable) {
+        e.preventDefault();
+        toggleGuideMode();
       }
     };
     window.addEventListener("keydown", onKey);
@@ -47,5 +51,6 @@ export function useKeyboard() {
     setCreatePanelOpen,
     setConnectorsOpen,
     setSettingsOpen,
+    toggleGuideMode,
   ]);
 }
