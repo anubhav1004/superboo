@@ -1,0 +1,5 @@
+release
+dist-desktop
+*.dmg
+*.blockmap
+node_modules
