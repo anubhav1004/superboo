@@ -149,7 +149,7 @@ export const CONNECTORS: Connector[] = [
     category: "dev",
     status: "connected",
     description: "FastAPI bridge for chat and file serving.",
-    credentials: "oc-bridge-2026-anubhav-secret",
+    credentials: "configured",
   },
 ];
 
