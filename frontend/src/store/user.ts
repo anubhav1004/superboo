@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { getConfig } from "../lib/api";
 
 export interface User {
   id: string;
@@ -7,22 +8,14 @@ export interface User {
   email: string;
   interests: string[];
   role: string;
-  createdAt: number;
+  plan: string;
+  createdAt: string;
   sessionId: string;
-}
-
-interface StoredUser {
-  id: string;
-  name: string;
-  email: string;
-  password: string; // btoa encoded
-  interests: string[];
-  role: string;
-  createdAt: number;
 }
 
 export interface UserState {
   user: User | null;
+  token: string | null;
   isAuthenticated: boolean;
   isOnboarded: boolean;
 
@@ -34,130 +27,79 @@ export interface UserState {
   completeOnboarding: () => void;
 }
 
-function getStoredUsers(): StoredUser[] {
-  try {
-    const raw = localStorage.getItem("superboo-users");
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveStoredUsers(users: StoredUser[]) {
-  localStorage.setItem("superboo-users", JSON.stringify(users));
-}
-
-function generateId(): string {
-  return `u_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
-}
-
-function generateSessionId(): string {
-  return `session_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+async function authFetch(path: string, body: object) {
+  const cfg = getConfig();
+  const res = await fetch(`${cfg.url}/v1/auth${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Auth request failed: ${res.status}`);
+  return res.json();
 }
 
 export const useUserStore = create<UserState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
+      token: null,
       isAuthenticated: false,
       isOnboarded: false,
 
       signup: async (name: string, email: string, password: string) => {
-        const users = getStoredUsers();
-        const existing = users.find((u) => u.email === email);
-        if (existing) {
-          throw new Error("An account with this email already exists.");
-        }
-
-        const id = generateId();
-        const now = Date.now();
-        const encoded = btoa(password);
-
-        const storedUser: StoredUser = {
-          id,
-          name,
-          email,
-          password: encoded,
-          interests: [],
-          role: "",
-          createdAt: now,
-        };
-        users.push(storedUser);
-        saveStoredUsers(users);
+        const res = await authFetch("/signup", { name, email, password });
+        if (!res.ok) throw new Error(res.error || "Signup failed");
 
         const user: User = {
-          id,
-          name,
-          email,
-          interests: [],
-          role: "",
-          createdAt: now,
-          sessionId: generateSessionId(),
+          ...res.user,
+          sessionId: `session_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
         };
-
-        set({ user, isAuthenticated: true, isOnboarded: false });
+        set({ user, token: res.token, isAuthenticated: true, isOnboarded: false });
       },
 
       login: async (email: string, password: string) => {
-        const users = getStoredUsers();
-        const found = users.find((u) => u.email === email);
-        if (!found) {
-          throw new Error("No account found with this email.");
-        }
-        if (found.password !== btoa(password)) {
-          throw new Error("Incorrect password.");
-        }
+        const res = await authFetch("/login", { email, password });
+        if (!res.ok) throw new Error(res.error || "Login failed");
 
         const user: User = {
-          id: found.id,
-          name: found.name,
-          email: found.email,
-          interests: found.interests,
-          role: found.role,
-          createdAt: found.createdAt,
-          sessionId: generateSessionId(),
+          ...res.user,
+          sessionId: `session_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
         };
-
-        const onboarded = found.interests.length > 0 && found.role !== "";
-        set({ user, isAuthenticated: true, isOnboarded: onboarded });
+        set({
+          user,
+          token: res.token,
+          isAuthenticated: true,
+          isOnboarded: res.user.onboarded,
+        });
       },
 
       logout: () => {
-        set({ user: null, isAuthenticated: false, isOnboarded: false });
+        set({ user: null, token: null, isAuthenticated: false, isOnboarded: false });
       },
 
       setInterests: (interests: string[]) => {
-        set((state) => {
-          if (!state.user) return state;
-          const updated = { ...state.user, interests };
-          // Sync to stored users
-          const users = getStoredUsers();
-          const idx = users.findIndex((u) => u.id === updated.id);
-          if (idx >= 0) {
-            users[idx] = { ...users[idx], interests };
-            saveStoredUsers(users);
-          }
-          return { user: updated };
-        });
+        const state = get();
+        if (!state.user) return;
+        const updated = { ...state.user, interests };
+        set({ user: updated });
+        // Sync to DB
+        authFetch(`/update/${state.user.id}`, { interests }).catch(() => {});
       },
 
       setRole: (role: string) => {
-        set((state) => {
-          if (!state.user) return state;
-          const updated = { ...state.user, role };
-          // Sync to stored users
-          const users = getStoredUsers();
-          const idx = users.findIndex((u) => u.id === updated.id);
-          if (idx >= 0) {
-            users[idx] = { ...users[idx], role };
-            saveStoredUsers(users);
-          }
-          return { user: updated };
-        });
+        const state = get();
+        if (!state.user) return;
+        const updated = { ...state.user, role };
+        set({ user: updated });
+        authFetch(`/update/${state.user.id}`, { role }).catch(() => {});
       },
 
       completeOnboarding: () => {
+        const state = get();
         set({ isOnboarded: true });
+        if (state.user) {
+          authFetch(`/update/${state.user.id}`, { onboarded: true }).catch(() => {});
+        }
       },
     }),
     {
@@ -165,6 +107,7 @@ export const useUserStore = create<UserState>()(
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => ({
         user: s.user,
+        token: s.token,
         isAuthenticated: s.isAuthenticated,
         isOnboarded: s.isOnboarded,
       }),
