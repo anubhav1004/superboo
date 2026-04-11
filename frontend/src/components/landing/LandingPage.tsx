@@ -331,6 +331,7 @@ export default function LandingPage() {
           </div>
           <div className="flex items-center gap-6">
             <a href="#section-features" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Features</a>
+            <a href="/bots" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Bots</a>
             <a href="#section-how" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">How it works</a>
             <button onClick={() => nav("/login")}
               className="text-[13px] px-5 py-2 rounded-full bg-gradient-to-r from-[#9370ff] to-[#EC4899] hover:opacity-90 text-white font-semibold transition-all shadow-lg shadow-purple-500/25">
@@ -594,6 +595,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-5">
             <button onClick={() => nav("/login")} className="text-[12px] text-white/30 hover:text-white/60 transition-colors bg-transparent border-none cursor-pointer">Chat</button>
             <a href="#section-features" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Features</a>
+            <a href="/bots" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Bots</a>
             <a href="#section-how" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">How it works</a>
             <span className="text-[10px] text-white/15 hidden md:inline">Press G for a surprise</span>
           </div>

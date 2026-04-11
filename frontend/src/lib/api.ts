@@ -163,7 +163,7 @@ export interface CreateResponse {
 }
 
 export async function createFile(req: CreateRequest): Promise<CreateResponse> {
-  const res = await fetch(`${config.url}/v1/create/`, {
+  const res = await fetch(`${config.url}/v1/create`, {
     method: "POST",
     headers: headers(),
     body: JSON.stringify(req),
