@@ -332,6 +332,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-6">
             <a href="#section-features" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Features</a>
             <a href="/bots" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Bots</a>
+            <a href="/agent" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">24x7 Agent</a>
             <a href="#section-how" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">How it works</a>
             <button onClick={() => nav("/login")}
               className="text-[13px] px-5 py-2 rounded-full bg-gradient-to-r from-[#9370ff] to-[#EC4899] hover:opacity-90 text-white font-semibold transition-all shadow-lg shadow-purple-500/25">

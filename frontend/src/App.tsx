@@ -12,6 +12,7 @@ import AuthPage from "./components/auth/AuthPage";
 import OnboardingPage from "./components/auth/OnboardingPage";
 import BotMarketplace from "./components/bots/BotMarketplace";
 import BotChat from "./components/bots/BotChat";
+import AgentPage from "./components/agent/AgentPage";
 import { useHealth } from "./hooks/useHealth";
 import { useKeyboard } from "./hooks/useKeyboard";
 
@@ -75,6 +76,7 @@ export default function App() {
             </OnboardingGuard>
           }
         />
+        <Route path="/agent" element={<AgentPage />} />
         <Route path="/bots" element={<BotMarketplace />} />
         <Route path="/bots/:id" element={<BotChat />} />
         <Route
