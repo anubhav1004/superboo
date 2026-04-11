@@ -331,12 +331,11 @@ export default function LandingPage() {
           </div>
           <div className="flex items-center gap-6">
             <a href="#section-features" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Features</a>
-            <a href="/bots" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Bots</a>
             <a href="/agent" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">24x7 Agent</a>
-            <a href="#section-how" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">How it works</a>
+            <a href="/pricing" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Pricing</a>
             <button onClick={() => nav("/login")}
               className="text-[13px] px-5 py-2 rounded-full bg-gradient-to-r from-[#9370ff] to-[#EC4899] hover:opacity-90 text-white font-semibold transition-all shadow-lg shadow-purple-500/25">
-              Try it free
+              Get started
             </button>
           </div>
         </div>
@@ -380,12 +379,15 @@ export default function LandingPage() {
           <p className="text-[15px] md:text-[17px] text-white/50 leading-relaxed max-w-md mb-10">
             TikToks, pitch decks, resumes, posters, meal plans &mdash; just tell Boo.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <button onClick={() => nav("/login")}
-              className="group hero-cta-primary px-10 py-4 rounded-full text-white text-[16px] font-bold transition-all">
-              Try it free
-              <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
-            </button>
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <div className="flex flex-col items-center">
+              <button onClick={() => nav("/login")}
+                className="group hero-cta-primary px-10 py-4 rounded-full text-white text-[16px] font-bold transition-all">
+                Try it free
+                <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
+              </button>
+              <span className="text-[12px] text-white/30 mt-2">(No credit card)</span>
+            </div>
             <a href="#section-features"
               className="hero-cta-secondary px-10 py-4 rounded-full text-white/70 hover:text-white text-[16px] font-semibold transition-all text-center">
               Watch it work
@@ -594,10 +596,10 @@ export default function LandingPage() {
             <span className="text-[12px] text-white/30">Superboo &copy; 2026</span>
           </div>
           <div className="flex items-center gap-5">
-            <button onClick={() => nav("/login")} className="text-[12px] text-white/30 hover:text-white/60 transition-colors bg-transparent border-none cursor-pointer">Chat</button>
-            <a href="#section-features" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Features</a>
-            <a href="/bots" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Bots</a>
-            <a href="#section-how" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">How it works</a>
+            <a href="/" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Home</a>
+            <a href="/agent" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Agent</a>
+            <a href="/pricing" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Pricing</a>
+            <button onClick={() => nav("/chat")} className="text-[12px] text-white/30 hover:text-white/60 transition-colors bg-transparent border-none cursor-pointer">Chat</button>
             <span className="text-[10px] text-white/15 hidden md:inline">Press G for a surprise</span>
           </div>
         </div>

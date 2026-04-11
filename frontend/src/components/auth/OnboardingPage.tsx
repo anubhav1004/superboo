@@ -291,7 +291,7 @@ export default function OnboardingPage() {
                 boxShadow: "0 0 30px -5px rgba(147,112,255,0.4)",
               }}
             >
-              Start creating &rarr;
+              Start with Free plan &rarr;
             </button>
           </div>
         )}

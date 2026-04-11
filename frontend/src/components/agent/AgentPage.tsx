@@ -93,8 +93,9 @@ export default function AgentPage() {
             <span className="text-[14px] font-bold tracking-tight text-white">Superboo</span>
           </a>
           <div className="flex items-center gap-6">
-            <a href="/" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Home</a>
-            <a href="/bots" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Bots</a>
+            <a href="/#section-features" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Features</a>
+            <a href="/agent" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">24x7 Agent</a>
+            <a href="/pricing" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Pricing</a>
             <button onClick={() => nav("/login")}
               className="text-[13px] px-5 py-2 rounded-full text-white font-semibold transition-all"
               style={{ background: "linear-gradient(135deg, #9370ff, #EC4899)" }}>
@@ -361,7 +362,8 @@ export default function AgentPage() {
           </div>
           <div className="flex items-center gap-5">
             <a href="/" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Home</a>
-            <a href="/bots" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Bots</a>
+            <a href="/agent" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Agent</a>
+            <a href="/pricing" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Pricing</a>
             <a href="/chat" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Chat</a>
           </div>
         </div>

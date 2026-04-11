@@ -126,13 +126,6 @@ export default function Sidebar({
           <Sparkles size={16} />
         </button>
         <button
-          onClick={() => navigate("/bots")}
-          className="p-2.5 rounded-xl hover:bg-bg-surface text-fg-muted hover:text-fg transition-all hover:scale-105 active:scale-95"
-          title="Bots"
-        >
-          <span className="text-[14px]">{"\uD83E\uDD16"}</span>
-        </button>
-        <button
           onClick={onOpenConnectors}
           className="p-2.5 rounded-xl hover:bg-bg-surface text-fg-muted hover:text-fg transition-all hover:scale-105 active:scale-95"
           title="Connectors"
@@ -208,16 +201,6 @@ export default function Sidebar({
         >
           <Sparkles size={14} className="text-fg-dim" />
           {"\u2728"} Skills
-        </button>
-        <button
-          onClick={() => navigate("/bots")}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[12px] text-fg-muted hover:text-fg transition-all hover:scale-[1.01] active:scale-[0.99]"
-          style={{background: 'transparent'}}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.border = '1px solid rgba(255,255,255,0.08)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.border = '1px solid transparent'; }}
-        >
-          <span className="text-[14px]">{"\uD83E\uDD16"}</span>
-          {"\uD83E\uDD16"} Bots
         </button>
         <button
           onClick={onOpenConnectors}

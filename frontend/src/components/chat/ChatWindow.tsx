@@ -196,7 +196,7 @@ export default function ChatWindow() {
                   className="flex items-center gap-1 text-[11px] transition-colors"
                   style={{background: 'linear-gradient(135deg, #C084FC, #EC4899, #9370ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}
                 >
-                  All 20+ skills <ArrowRight size={10} />
+                  All 35+ skills <ArrowRight size={10} />
                 </button>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5">

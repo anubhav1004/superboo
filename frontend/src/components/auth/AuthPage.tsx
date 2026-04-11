@@ -265,9 +265,14 @@ export default function AuthPage() {
           </button>
         </form>
 
+        {/* Free plan note */}
+        <p className="text-[11px] text-center mt-4" style={{ color: "rgba(255,255,255,0.25)" }}>
+          Free plan. No credit card required.
+        </p>
+
         {/* Toggle link */}
         <p
-          className="text-[13px] text-center mt-6"
+          className="text-[13px] text-center mt-4"
           style={{ color: "rgba(255,255,255,0.4)" }}
         >
           {mode === "login" ? (
