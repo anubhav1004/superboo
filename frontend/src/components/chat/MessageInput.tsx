@@ -1,17 +1,20 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, type CSSProperties } from "react";
 import {
-  Plus,
-  Mic,
   ArrowUp,
-  X,
-  FileText,
-  Image as ImageIcon,
-  Video,
   Code,
+  FileText,
   Flame,
+  Image as ImageIcon,
+  Mic,
+  Plug,
+  Plus,
+  Sparkles,
+  Video,
+  X,
 } from "lucide-react";
 import clsx from "clsx";
 import { useChatStore } from "../../store/chat";
+import { isDesktopApp } from "../../lib/desktop";
 
 interface Props {
   onSend: (text: string, files: File[]) => void;
@@ -20,11 +23,31 @@ interface Props {
 }
 
 const TRENDING_PILLS = [
-  { label: "TikTok video", prompt: "Create a 15-second TikTok about my new coffee shop opening this weekend", color: "#F97316" },
-  { label: "Pitch deck", prompt: "Create a 10-slide pitch deck for my AI-powered fitness app startup", color: "#22C55E" },
-  { label: "Meme", prompt: "Create a funny meme about procrastinating on assignments using the Drake format", color: "#EC4899" },
-  { label: "Resume", prompt: "Write a resume for a recent computer science graduate looking for frontend developer roles", color: "#3B82F6" },
-  { label: "Logo design", prompt: "Design a minimal logo for my streetwear brand called 'Drift'", color: "#8B5CF6" },
+  {
+    label: "TikTok video",
+    prompt: "Create a 15-second TikTok about my new coffee shop opening this weekend",
+    color: "#FF8A5B",
+  },
+  {
+    label: "Pitch deck",
+    prompt: "Create a 10-slide pitch deck for my AI-powered fitness app startup",
+    color: "#69D8C4",
+  },
+  {
+    label: "Meme",
+    prompt: "Create a funny meme about procrastinating on assignments using the Drake format",
+    color: "#F48E8C",
+  },
+  {
+    label: "Resume",
+    prompt: "Write a resume for a recent computer science graduate looking for frontend developer roles",
+    color: "#7BC0FF",
+  },
+  {
+    label: "Logo design",
+    prompt: "Design a minimal logo for my streetwear brand called 'Drift'",
+    color: "#F3C969",
+  },
 ];
 
 export default function MessageInput({ onSend, disabled, isHub }: Props) {
@@ -39,11 +62,13 @@ export default function MessageInput({ onSend, disabled, isHub }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
+  const desktop = isDesktopApp();
+
   useEffect(() => {
-    const ta = textareaRef.current;
-    if (!ta) return;
-    ta.style.height = "auto";
-    ta.style.height = Math.min(ta.scrollHeight, 240) + "px";
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = "auto";
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 240)}px`;
   }, [text]);
 
   const handleSend = () => {
@@ -56,9 +81,9 @@ export default function MessageInput({ onSend, disabled, isHub }: Props) {
     setFiles([]);
   };
 
-  const handleKey = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
+  const handleKey = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
       handleSend();
     }
   };
@@ -74,52 +99,67 @@ export default function MessageInput({ onSend, disabled, isHub }: Props) {
       setRecording(false);
       return;
     }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mr = new MediaRecorder(stream);
+      const recorder = new MediaRecorder(stream);
       const chunks: Blob[] = [];
-      mr.ondataavailable = (e) => chunks.push(e.data);
-      mr.onstop = async () => {
+      recorder.ondataavailable = (event) => chunks.push(event.data);
+      recorder.onstop = async () => {
         new Blob(chunks, { type: "audio/webm" });
         setText((prev) => prev + " [voice memo recorded]");
-        stream.getTracks().forEach((t) => t.stop());
+        stream.getTracks().forEach((track) => track.stop());
       };
-      mr.start();
-      mediaRecorderRef.current = mr;
+      recorder.start();
+      mediaRecorderRef.current = recorder;
       setRecording(true);
     } catch (err) {
       console.error("mic error", err);
     }
   };
 
-  const fileIcon = (f: File) => {
-    if (f.type.startsWith("image/")) return <ImageIcon size={12} />;
-    if (f.type.startsWith("video/")) return <Video size={12} />;
-    if (f.name.match(/\.(js|ts|py|go|rs|tsx|jsx)$/)) return <Code size={12} />;
+  const fileIcon = (file: File) => {
+    if (file.type.startsWith("image/")) return <ImageIcon size={12} />;
+    if (file.type.startsWith("video/")) return <Video size={12} />;
+    if (file.name.match(/\.(js|ts|py|go|rs|tsx|jsx)$/)) return <Code size={12} />;
     return <FileText size={12} />;
   };
 
   const canSend = !disabled && (text.trim() || files.length > 0);
 
   return (
-    <div className={clsx("px-4 md:px-8 pb-4 md:pb-6 pt-2", isHub && "pb-5 md:pb-8")}>
-      <div className="max-w-full md:max-w-3xl mx-auto">
-        {/* Files */}
+    <div
+      className={clsx(
+        desktop ? "px-0" : "px-4 md:px-8 pt-2 pb-4 md:pb-6",
+        isHub && desktop && "w-full",
+        isHub && !desktop && "pb-5 md:pb-8"
+      )}
+    >
+      <div className={clsx(desktop ? "w-full" : "max-w-full md:max-w-3xl mx-auto")}>
         {files.length > 0 && (
-          <div className="flex gap-1.5 mb-2 flex-wrap px-1">
-            {files.map((f, i) => (
+          <div className={clsx("flex flex-wrap gap-2", desktop ? "mb-3" : "mb-2 px-1")}>
+            {files.map((file, index) => (
               <span
-                key={i}
-                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full text-fg-muted fade-in-fast"
-                style={{background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)'}}
+                key={`${file.name}-${index}`}
+                className={clsx(
+                  "fade-in-fast inline-flex items-center gap-1.5 rounded-full text-xs",
+                  desktop ? "desktop-file-chip" : "px-3 py-1.5 text-fg-muted"
+                )}
+                style={
+                  desktop
+                    ? undefined
+                    : {
+                        background: "rgba(255,255,255,0.04)",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                      }
+                }
               >
-                {fileIcon(f)}
-                <span className="truncate max-w-[160px]">{f.name}</span>
+                {fileIcon(file)}
+                <span className="truncate max-w-[180px]">{file.name}</span>
                 <button
-                  onClick={() =>
-                    setFiles((prev) => prev.filter((_, j) => j !== i))
-                  }
+                  onClick={() => setFiles((prev) => prev.filter((_, i) => i !== index))}
                   className="hover:text-red-400 transition-colors"
+                  type="button"
                 >
                   <X size={11} />
                 </button>
@@ -128,131 +168,216 @@ export default function MessageInput({ onSend, disabled, isHub }: Props) {
           </div>
         )}
 
-        {/* Input container — glassmorphism */}
         <div
           className={clsx(
-            "relative rounded-2xl transition-all duration-200 ambient-glow noise-bg",
+            desktop
+              ? "desktop-composer"
+              : "relative rounded-2xl transition-all duration-200 ambient-glow noise-bg",
             disabled && "opacity-60"
           )}
-          style={{
-            background: 'rgba(255,255,255,0.05)',
-            border: focused ? '1px solid rgba(147,112,255,0.4)' : '1px solid rgba(255,255,255,0.1)',
-            backdropFilter: 'blur(12px)',
-            boxShadow: focused ? '0 0 0 3px rgba(147,112,255,0.15)' : 'none',
-          }}
+          style={
+            desktop
+              ? undefined
+              : {
+                  background: "rgba(255,255,255,0.05)",
+                  border: focused
+                    ? "1px solid rgba(147,112,255,0.4)"
+                    : "1px solid rgba(255,255,255,0.1)",
+                  backdropFilter: "blur(12px)",
+                  boxShadow: focused ? "0 0 0 3px rgba(147,112,255,0.15)" : "none",
+                }
+          }
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
         >
-          {/* Floater buttons — Skills & Connect */}
-          <div className={clsx(
-            "absolute top-2 right-3 z-10 flex items-center gap-1.5 transition-opacity duration-200",
-            (focused || hovered) ? "opacity-100" : "opacity-0 pointer-events-none"
-          )}>
+          <div
+            className={clsx(
+              desktop
+                ? "desktop-composer__tools"
+                : "absolute top-2 right-3 z-10 flex items-center gap-1.5 transition-opacity duration-200",
+              !desktop &&
+                ((focused || hovered) ? "opacity-100" : "opacity-0 pointer-events-none")
+            )}
+          >
             <button
               type="button"
-              onMouseDown={(e) => e.preventDefault()}
+              onMouseDown={(event) => event.preventDefault()}
               onClick={() => setCreatePanelOpen(true)}
-              className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] text-fg-dim hover:text-fg transition-all hover:scale-105 active:scale-95"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+              className={desktop ? "desktop-floating-chip" : "flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] text-fg-dim hover:text-fg transition-all hover:scale-105 active:scale-95"}
+              style={
+                desktop
+                  ? undefined
+                  : {
+                      background: "rgba(255,255,255,0.06)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                    }
+              }
             >
-              <span className="text-[11px]">{"\u2728"}</span> Skills
+              <Sparkles size={12} />
+              <span>Skills</span>
             </button>
             <button
               type="button"
-              onMouseDown={(e) => e.preventDefault()}
+              onMouseDown={(event) => event.preventDefault()}
               onClick={() => setConnectorsOpen(true)}
-              className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] text-fg-dim hover:text-fg transition-all hover:scale-105 active:scale-95"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+              className={desktop ? "desktop-floating-chip" : "flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] text-fg-dim hover:text-fg transition-all hover:scale-105 active:scale-95"}
+              style={
+                desktop
+                  ? undefined
+                  : {
+                      background: "rgba(255,255,255,0.06)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                    }
+              }
             >
-              <span className="text-[11px]">{"\uD83D\uDD0C"}</span> Connect
+              <Plug size={12} />
+              <span>Connect</span>
             </button>
           </div>
 
-          {/* Gradient focus line */}
-          <div className={clsx(
-            "h-[1px] mx-4 transition-opacity duration-300",
-            focused ? "opacity-100" : "opacity-0"
-          )} style={{background: 'linear-gradient(to right, transparent, rgba(147,112,255,0.4), rgba(236,72,153,0.3), transparent)'}} />
+          {!desktop && (
+            <div
+              className={clsx(
+                "h-[1px] mx-4 transition-opacity duration-300",
+                focused ? "opacity-100" : "opacity-0"
+              )}
+              style={{
+                background:
+                  "linear-gradient(to right, transparent, rgba(147,112,255,0.4), rgba(236,72,153,0.3), transparent)",
+              }}
+            />
+          )}
 
           <textarea
             ref={textareaRef}
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(event) => setText(event.target.value)}
             onKeyDown={handleKey}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
-            placeholder="Describe what you want to create..."
+            placeholder={
+              desktop
+                ? "Message Superboo or ask it to build something..."
+                : "Describe what you want to create..."
+            }
             rows={1}
             className={clsx(
-              "w-full bg-transparent text-fg placeholder:text-fg-dim resize-none focus:outline-none leading-relaxed relative z-[1]",
-              isHub ? "text-[15px] px-5 pt-4 pb-1" : "text-[14px] px-5 pt-3 pb-1"
+              desktop
+                ? "desktop-composer__input"
+                : "w-full bg-transparent text-fg placeholder:text-fg-dim resize-none focus:outline-none leading-relaxed relative z-[1]",
+              !desktop && (isHub ? "text-[15px] px-5 pt-4 pb-1" : "text-[14px] px-5 pt-3 pb-1")
             )}
             disabled={disabled}
           />
 
-          <div className="flex items-center gap-1.5 px-3 pb-3 pt-1">
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="w-9 h-9 flex items-center justify-center rounded-full text-fg-muted hover:text-fg transition-all hover:scale-110 active:scale-95"
-              style={{background: 'transparent'}}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-              title="Attach file"
-            >
-              <Plus size={17} />
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              onChange={(e) => handleFiles(e.target.files)}
-              className="hidden"
-            />
-            <button
-              onClick={toggleRecording}
-              className={clsx(
-                "w-9 h-9 flex items-center justify-center rounded-full transition-all relative",
-                recording
-                  ? "bg-red-500/15 text-red-400 pulse-ring"
-                  : "text-fg-muted hover:text-fg hover:scale-110 active:scale-95"
-              )}
-              style={!recording ? {background: 'transparent'} : undefined}
-              onMouseEnter={(e) => { if (!recording) e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
-              onMouseLeave={(e) => { if (!recording) e.currentTarget.style.background = 'transparent'; }}
-              title="Voice input"
-            >
-              <Mic size={16} className={recording ? "pulse-dot" : ""} />
-            </button>
+          <div className={desktop ? "desktop-composer__footer" : "flex items-center gap-1.5 px-3 pb-3 pt-1"}>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className={desktop ? "desktop-round-button" : "w-9 h-9 flex items-center justify-center rounded-full text-fg-muted hover:text-fg transition-all hover:scale-110 active:scale-95"}
+                style={!desktop ? { background: "transparent" } : undefined}
+                onMouseEnter={(event) => {
+                  if (!desktop) event.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                }}
+                onMouseLeave={(event) => {
+                  if (!desktop) event.currentTarget.style.background = "transparent";
+                }}
+                title="Attach file"
+                type="button"
+              >
+                <Plus size={desktop ? 15 : 17} />
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                onChange={(event) => handleFiles(event.target.files)}
+                className="hidden"
+              />
+
+              <button
+                onClick={toggleRecording}
+                className={clsx(
+                  desktop ? "desktop-round-button" : "w-9 h-9 flex items-center justify-center rounded-full transition-all relative",
+                  recording
+                    ? "bg-red-500/15 text-red-400 pulse-ring"
+                    : desktop
+                      ? "text-white/72"
+                      : "text-fg-muted hover:text-fg hover:scale-110 active:scale-95"
+                )}
+                style={!desktop && !recording ? { background: "transparent" } : undefined}
+                onMouseEnter={(event) => {
+                  if (!desktop && !recording) {
+                    event.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                  }
+                }}
+                onMouseLeave={(event) => {
+                  if (!desktop && !recording) {
+                    event.currentTarget.style.background = "transparent";
+                  }
+                }}
+                title="Voice input"
+                type="button"
+              >
+                <Mic size={desktop ? 15 : 16} className={recording ? "pulse-dot" : ""} />
+              </button>
+            </div>
+
+            {desktop && (
+              <div className="desktop-composer__hint">
+                <span>Return to send</span>
+                <span>Shift-Return for newline</span>
+              </div>
+            )}
+
             <div className="flex-1" />
+
             <button
               onClick={handleSend}
               disabled={!canSend}
               className={clsx(
-                "w-10 h-10 flex items-center justify-center rounded-full transition-all",
-                canSend
-                  ? "text-white hover:scale-110 active:scale-90"
-                  : "bg-bg-surface text-fg-dim cursor-not-allowed opacity-50",
-                sendBounce && "bounce-send"
+                desktop ? "desktop-send-button" : "w-10 h-10 flex items-center justify-center rounded-full transition-all",
+                !desktop &&
+                  (canSend
+                    ? "text-white hover:scale-110 active:scale-90"
+                    : "bg-bg-surface text-fg-dim cursor-not-allowed opacity-50"),
+                sendBounce && "bounce-send",
+                !canSend && desktop && "desktop-send-button--disabled"
               )}
-              style={canSend ? {background: 'linear-gradient(135deg, #9370ff, #EC4899)', boxShadow: '0 0 30px -5px rgba(147,112,255,0.4)'} : undefined}
+              style={
+                !desktop && canSend
+                  ? {
+                      background: "linear-gradient(135deg, #9370ff, #EC4899)",
+                      boxShadow: "0 0 30px -5px rgba(147,112,255,0.4)",
+                    }
+                  : undefined
+              }
               title="Send"
+              type="button"
             >
-              <ArrowUp size={18} />
+              <ArrowUp size={desktop ? 15 : 18} />
             </button>
           </div>
         </div>
 
-        {/* Trending pills (only in hub state) */}
         {isHub && (
-          <div className="flex gap-2 mt-3 flex-wrap justify-center">
+          <div className={desktop ? "desktop-trending-row" : "flex gap-2 mt-3 flex-wrap justify-center"}>
             {TRENDING_PILLS.map((pill) => (
               <button
                 key={pill.label}
                 onClick={() => onSend(pill.prompt, [])}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] text-fg-muted hover:text-fg transition-all hover:scale-105 active:scale-95"
-                style={{background: `${pill.color}15`, border: `1px solid ${pill.color}30`}}
+                className={desktop ? "desktop-trending-pill" : "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] text-fg-muted hover:text-fg transition-all hover:scale-105 active:scale-95"}
+                style={
+                  desktop
+                    ? ({ "--pill-accent": pill.color } as CSSProperties)
+                    : ({
+                        background: `${pill.color}15`,
+                        border: `1px solid ${pill.color}30`,
+                      } as CSSProperties)
+                }
+                type="button"
               >
-                <Flame size={10} style={{color: pill.color}} />
+                <Flame size={10} style={{ color: pill.color }} />
                 {pill.label}
               </button>
             ))}

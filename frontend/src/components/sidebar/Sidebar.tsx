@@ -1,15 +1,21 @@
 import { useState } from "react";
 import {
-  Plus,
+  LogOut,
   MessageSquare,
-  PanelLeftClose,
   PanelLeft,
-  Trash2,
-  Search,
-  Settings as SettingsIcon,
-  Sparkles,
+  PanelLeftClose,
+  Plus,
   Plug,
+  Search,
+  Settings2,
+  Sparkles,
+  Trash2,
 } from "lucide-react";
+import clsx from "clsx";
+import { useNavigate } from "react-router-dom";
+import { useChatStore } from "../../store/chat";
+import { useUserStore } from "../../store/user";
+import { isDesktopApp } from "../../lib/desktop";
 
 function GhostIcon({ size = 24 }: { size?: number }) {
   return (
@@ -25,26 +31,22 @@ function GhostIcon({ size = 24 }: { size?: number }) {
       />
       <ellipse cx="26" cy="70" rx="10" ry="14" fill="url(#ghostGradSidebar)" />
       <ellipse cx="102" cy="70" rx="10" ry="14" fill="url(#ghostGradSidebar)" />
-      <ellipse cx="52" cy="58" rx="7" ry="9" fill="#3B0764" />
-      <ellipse cx="76" cy="58" rx="7" ry="9" fill="#3B0764" />
-      <ellipse cx="64" cy="76" rx="8" ry="5" fill="#3B0764" />
+      <ellipse cx="52" cy="58" rx="7" ry="9" fill="#38151F" />
+      <ellipse cx="76" cy="58" rx="7" ry="9" fill="#38151F" />
+      <ellipse cx="64" cy="76" rx="8" ry="5" fill="#38151F" />
       <circle cx="50" cy="54" r="2.5" fill="white" />
       <circle cx="74" cy="54" r="2.5" fill="white" />
       <ellipse cx="64" cy="40" rx="30" ry="18" fill="white" opacity="0.25" />
       <defs>
         <radialGradient id="ghostGradSidebar" cx="50%" cy="30%" r="70%">
-          <stop offset="0%" stopColor="#F5E9FF" />
-          <stop offset="50%" stopColor="#C084FC" />
-          <stop offset="100%" stopColor="#6D28D9" />
+          <stop offset="0%" stopColor="#FFF4EA" />
+          <stop offset="52%" stopColor="#F48E8C" />
+          <stop offset="100%" stopColor="#E76464" />
         </radialGradient>
       </defs>
     </svg>
   );
 }
-import clsx from "clsx";
-import { useChatStore } from "../../store/chat";
-import { useUserStore } from "../../store/user";
-import { useNavigate } from "react-router-dom";
 
 interface Props {
   onOpenSettings: () => void;
@@ -55,12 +57,12 @@ interface Props {
 function timeAgo(ts: number): string {
   const diff = Date.now() - ts;
   const sec = Math.floor(diff / 1000);
-  if (sec < 60) return "just now";
+  if (sec < 60) return "now";
   const min = Math.floor(sec / 60);
-  if (min < 60) return `${min}m ago`;
+  if (min < 60) return `${min}m`;
   const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr}h ago`;
-  return `${Math.floor(hr / 24)}d ago`;
+  if (hr < 24) return `${hr}h`;
+  return `${Math.floor(hr / 24)}d`;
 }
 
 export default function Sidebar({
@@ -82,63 +84,98 @@ export default function Sidebar({
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
 
+  const desktop = isDesktopApp();
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const filtered = sessions.filter((session) =>
+    session.title.toLowerCase().includes(query.toLowerCase())
+  );
+
   const userName = user?.name || "Guest";
   const userInitial = userName.charAt(0).toUpperCase();
+  const plan = user?.plan || "Free";
+  const connectionLabel =
+    connection === "online"
+      ? "Bridge live"
+      : connection === "offline"
+        ? "Bridge offline"
+        : "Checking";
+
+  const handleCreateSession = () => {
+    createSession();
+    if (isMobile && sidebarOpen) {
+      toggleSidebar();
+    }
+  };
+
+  const handleSelectSession = (id: string) => {
+    setActiveSession(id);
+    if (isMobile && sidebarOpen) {
+      toggleSidebar();
+    }
+  };
 
   const handleSignOut = () => {
     logout();
     navigate("/login");
   };
 
-  const filtered = sessions.filter((s) =>
-    s.title.toLowerCase().includes(query.toLowerCase())
-  );
-
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
-
-  if (!sidebarOpen) {
+  if (!sidebarOpen && !isMobile) {
     return (
-      <div className="hidden md:flex w-14 border-r border-[rgba(255,255,255,0.08)] flex-col items-center py-5 gap-2" style={{background: 'linear-gradient(to bottom, #100a20, #0c0118 40%)'}}>
+      <div
+        className={clsx(
+          "hidden md:flex h-full flex-col items-center gap-3 rounded-[18px] border p-3",
+          desktop
+            ? "desktop-sidebar-rail"
+            : "w-14 border-[rgba(255,255,255,0.08)] bg-[rgba(18,10,32,0.85)]"
+        )}
+      >
         <button
           onClick={toggleSidebar}
-          className="p-2.5 rounded-xl hover:bg-bg-surface text-fg-muted hover:text-fg transition-all hover:scale-105 active:scale-95"
+          className="desktop-rail-button"
           title="Expand sidebar"
+          type="button"
         >
-          <PanelLeft size={18} />
+          <PanelLeft size={16} />
         </button>
-        <div className="h-2" />
-        <div className="transition-transform hover:scale-110 active:scale-95">
-          <GhostIcon size={24} />
+
+        <div className="desktop-rail-logo">
+          <GhostIcon size={22} />
         </div>
-        <div className="h-2" />
+
         <button
-          onClick={() => createSession()}
-          className="p-2 rounded-full bg-gradient-to-br from-accent to-accent-hover text-white shadow-card transition-all hover:scale-110 active:scale-95"
+          onClick={handleCreateSession}
+          className="desktop-rail-button desktop-rail-button--accent"
           title="New chat"
+          type="button"
         >
-          <Plus size={14} />
+          <Plus size={15} />
         </button>
         <button
           onClick={onOpenSkills}
-          className="p-2.5 rounded-xl hover:bg-bg-surface text-fg-muted hover:text-fg transition-all hover:scale-105 active:scale-95"
+          className="desktop-rail-button"
           title="Skills"
+          type="button"
         >
-          <Sparkles size={16} />
+          <Sparkles size={15} />
         </button>
         <button
           onClick={onOpenConnectors}
-          className="p-2.5 rounded-xl hover:bg-bg-surface text-fg-muted hover:text-fg transition-all hover:scale-105 active:scale-95"
+          className="desktop-rail-button"
           title="Connectors"
+          type="button"
         >
-          <Plug size={16} />
+          <Plug size={15} />
         </button>
+
         <div className="flex-1" />
+
         <button
           onClick={onOpenSettings}
-          className="p-2.5 rounded-xl hover:bg-bg-surface text-fg-muted hover:text-fg transition-all hover:scale-105 active:scale-95"
+          className="desktop-rail-button"
           title="Settings"
+          type="button"
         >
-          <SettingsIcon size={16} />
+          <Settings2 size={15} />
         </button>
       </div>
     );
@@ -146,176 +183,192 @@ export default function Sidebar({
 
   return (
     <>
-      {/* Mobile backdrop */}
-      {isMobile && (
+      {isMobile && sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-black/55 backdrop-blur-sm md:hidden"
           onClick={toggleSidebar}
         />
       )}
-    <aside className={clsx(
-      "border-r border-[rgba(255,255,255,0.08)] flex flex-col h-full",
-      isMobile
-        ? "fixed inset-y-0 left-0 z-50 w-[240px] shadow-2xl"
-        : "w-[240px]"
-    )} style={{background: 'linear-gradient(to bottom, #100a20, #0c0118 40%)'}}>
-      {/* Brand */}
-      <div className="px-4 pt-5 pb-4 flex items-center justify-between">
-        <a href="/" className="flex items-center gap-2.5 group cursor-pointer no-underline">
-          <div className="transition-transform group-hover:scale-110 group-hover:-translate-y-0.5">
-            <GhostIcon size={24} />
+
+      <aside
+        className={clsx(
+          "flex h-full flex-col overflow-hidden",
+          isMobile
+            ? "fixed inset-y-0 left-0 z-50 w-[280px]"
+            : "w-[292px]",
+          desktop ? "desktop-sidebar-panel" : "bg-[rgba(16,10,32,0.9)] border-r border-white/10"
+        )}
+      >
+        <div className="flex items-center gap-3 px-4 pb-4 pt-5">
+          <button
+            onClick={() => navigate("/chat")}
+            className="flex min-w-0 flex-1 items-center gap-3 rounded-[16px] text-left"
+            type="button"
+          >
+            <div className="desktop-brand-mark">
+              <GhostIcon size={24} />
+            </div>
+            <div className="min-w-0">
+              <div className="desktop-sidebar-title">Superboo</div>
+              <div className="desktop-sidebar-subtitle">Desktop workspace</div>
+            </div>
+          </button>
+
+          {!isMobile && (
+            <button
+              onClick={toggleSidebar}
+              className="desktop-ghost-button"
+              title="Collapse sidebar"
+              type="button"
+            >
+              <PanelLeftClose size={15} />
+            </button>
+          )}
+        </div>
+
+        <div className="px-4 pb-4">
+          <button
+            onClick={handleCreateSession}
+            className="desktop-primary-button"
+            type="button"
+          >
+            <Plus size={16} />
+            <span>New chat</span>
+          </button>
+        </div>
+
+        <div className="px-4 pb-4">
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={onOpenSkills}
+              className="desktop-utility-button"
+              type="button"
+            >
+              <Sparkles size={14} />
+              <span>Skills</span>
+            </button>
+            <button
+              onClick={onOpenConnectors}
+              className="desktop-utility-button"
+              type="button"
+            >
+              <Plug size={14} />
+              <span>Connect</span>
+            </button>
           </div>
-          <span className="text-[15px] font-extrabold" style={{background: 'linear-gradient(135deg, #C084FC, #EC4899, #9370ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>
-            Superboo
-          </span>
-        </a>
-        <button
-          onClick={toggleSidebar}
-          className="p-1.5 rounded-lg hover:bg-bg-surface text-fg-dim hover:text-fg transition-all hover:scale-105 active:scale-95"
-          title="Collapse"
-        >
-          <PanelLeftClose size={15} />
-        </button>
-      </div>
+        </div>
 
-      {/* New chat pill */}
-      <div className="px-3 pb-3">
-        <button
-          onClick={() => createSession()}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-full text-white text-[12px] font-semibold transition-all hover:scale-[1.02] active:scale-[0.98]"
-          style={{background: 'linear-gradient(135deg, #9370ff, #EC4899)', boxShadow: '0 0 30px -5px rgba(147,112,255,0.4)'}}
-        >
-          <Plus size={14} />
-          New
-        </button>
-      </div>
-
-      {/* Nav — Skills + Connect */}
-      <div className="px-3 pb-3 space-y-1">
-        <button
-          onClick={onOpenSkills}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[12px] text-fg-muted hover:text-fg transition-all hover:scale-[1.01] active:scale-[0.99]"
-          style={{background: 'transparent'}}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.border = '1px solid rgba(255,255,255,0.08)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.border = '1px solid transparent'; }}
-        >
-          <Sparkles size={14} className="text-fg-dim" />
-          {"\u2728"} Skills
-        </button>
-        <button
-          onClick={onOpenConnectors}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[12px] text-fg-muted hover:text-fg transition-all hover:scale-[1.01] active:scale-[0.99]"
-          style={{background: 'transparent'}}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.border = '1px solid rgba(255,255,255,0.08)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.border = '1px solid transparent'; }}
-        >
-          <Plug size={14} className="text-fg-dim" />
-          {"\uD83D\uDD0C"} Connect
-        </button>
-      </div>
-
-      {/* History */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="px-4 pb-2 text-[10px] text-fg-dim font-medium uppercase tracking-wider">Chats</div>
-
-        <div className="px-3 pb-2">
-          <div className="relative">
-            <Search
-              size={12}
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-dim pointer-events-none"
-            />
+        <div className="px-4 pb-3">
+          <label className="desktop-section-label" htmlFor="superboo-chat-search">
+            Recent chats
+          </label>
+          <div className="desktop-search-shell">
+            <Search size={14} className="desktop-search-icon" />
             <input
+              id="superboo-chat-search"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search..."
-              className="w-full bg-bg-elevated border border-border rounded-full pl-7 pr-3 py-1.5 text-[11px] text-fg placeholder:text-fg-dim focus:outline-none focus:border-accent/40 focus:shadow-[0_0_0_3px_rgba(147,112,255,0.1)] transition-all"
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search conversations"
+              className="desktop-search-input"
             />
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-2 pb-3 space-y-1">
-          {filtered.length === 0 && (
-            <div className="text-[11px] text-fg-dim px-3 py-6 text-center">
-              {sessions.length === 0 ? "No chats yet" : "No results"}
-            </div>
-          )}
-          {filtered.map((s) => (
-            <div
-              key={s.id}
-              onClick={() => setActiveSession(s.id)}
-              className={clsx(
-                "group flex items-center gap-2.5 px-3 py-2 rounded-xl cursor-pointer transition-all hover:scale-[1.01]",
-                activeSessionId === s.id
-                  ? "border-l-2 border-l-[#EC4899] border border-[rgba(255,255,255,0.08)]"
-                  : "border border-transparent text-fg-muted hover:text-fg"
-              )}
-              style={activeSessionId === s.id ? {background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(12px)'} : undefined}
-              onMouseEnter={(e) => { if (activeSessionId !== s.id) { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; } }}
-              onMouseLeave={(e) => { if (activeSessionId !== s.id) { e.currentTarget.style.background = 'transparent'; } }}
-            >
-              <MessageSquare
-                size={12}
+        <div className="flex-1 overflow-y-auto px-3 pb-4">
+          <div className="space-y-1.5">
+            {filtered.length === 0 && (
+              <div className="desktop-empty-list">
+                {sessions.length === 0 ? "No chats yet" : "No matching chats"}
+              </div>
+            )}
+
+            {filtered.map((session) => {
+              const active = activeSessionId === session.id;
+              return (
+                <div
+                  key={session.id}
+                  onClick={() => handleSelectSession(session.id)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      handleSelectSession(session.id);
+                    }
+                  }}
+                  className={clsx(
+                    "desktop-session-card",
+                    active && "desktop-session-card--active"
+                  )}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <div className="desktop-session-icon">
+                    <MessageSquare size={14} />
+                  </div>
+                  <div className="min-w-0 flex-1 text-left">
+                    <div className="desktop-session-title">{session.title}</div>
+                    <div className="desktop-session-meta">
+                      <span>{timeAgo(session.updatedAt)}</span>
+                      <span>{Math.max(session.messages.length, 1)} items</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      deleteSession(session.id);
+                    }}
+                    className="desktop-session-delete"
+                    title="Delete chat"
+                    type="button"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="px-3 pb-3">
+          <div className="desktop-user-card">
+            <div className="desktop-user-avatar-wrap">
+              <div className="desktop-user-avatar">{userInitial}</div>
+              <span
                 className={clsx(
-                  "flex-shrink-0",
-                  activeSessionId === s.id ? "text-accent-hover" : "text-fg-dim"
+                  "desktop-user-presence",
+                  connection === "online" && "desktop-user-presence--online",
+                  connection === "offline" && "desktop-user-presence--offline",
+                  connection === "checking" && "desktop-user-presence--checking"
                 )}
               />
-              <div className="flex-1 min-w-0">
-                <span className="text-[11px] truncate block">{s.title}</span>
-                <span className="text-[10px] text-fg-dim">{timeAgo(s.updatedAt)}</span>
-              </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deleteSession(s.id);
-                }}
-                className="opacity-0 group-hover:opacity-100 text-fg-dim hover:text-red-400 transition-all p-1 rounded-lg hover:bg-red-400/10"
-              >
-                <Trash2 size={11} />
-              </button>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Footer — user + settings */}
-      <div className="px-3 py-3 flex items-center gap-2.5 border-t border-transparent" style={{borderImage: 'linear-gradient(to right, transparent, rgba(192,132,252,0.3), rgba(236,72,153,0.2), transparent) 1'}}>
-        <div className="relative">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold text-white flex-shrink-0" style={{background: 'linear-gradient(135deg, #9370ff, #EC4899)', boxShadow: '0 0 20px -4px rgba(147,112,255,0.4)'}}>
-            {userInitial}
+            <div className="min-w-0 flex-1">
+              <div className="desktop-user-name">{userName}</div>
+              <div className="desktop-user-meta">
+                <span>{plan}</span>
+                <span>{connectionLabel}</span>
+              </div>
+            </div>
+
+            <button
+              onClick={onOpenSettings}
+              className="desktop-ghost-button"
+              title="Settings"
+              type="button"
+            >
+              <Settings2 size={15} />
+            </button>
+            <button
+              onClick={handleSignOut}
+              className="desktop-ghost-button desktop-ghost-button--danger"
+              title="Sign out"
+              type="button"
+            >
+              <LogOut size={15} />
+            </button>
           </div>
-          {connection === "online" && (
-            <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#4ade80] border-2 border-bg green-pulse" />
-          )}
-          {connection === "offline" && (
-            <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#f87171] border-2 border-bg" />
-          )}
-          {connection === "checking" && (
-            <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#fbbf24] border-2 border-bg pulse-dot" />
-          )}
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="text-[12px] text-fg font-medium truncate">{userName}</div>
-          <div className="text-[10px] text-fg-dim">
-            {connection === "online" ? "Online" : connection === "offline" ? "Offline" : "Connecting..."}
-          </div>
-        </div>
-        <button
-          onClick={handleSignOut}
-          className="p-1.5 rounded-xl hover:bg-red-400/10 text-fg-dim hover:text-red-400 transition-all hover:scale-105 active:scale-95 text-[10px] font-medium"
-          title="Sign out"
-        >
-          Sign out
-        </button>
-        <button
-          onClick={onOpenSettings}
-          className="p-1.5 rounded-xl hover:bg-bg-surface text-fg-dim hover:text-fg transition-all hover:scale-105 active:scale-95"
-          title="Settings"
-        >
-          <SettingsIcon size={14} />
-        </button>
-      </div>
-    </aside>
+      </aside>
     </>
   );
 }

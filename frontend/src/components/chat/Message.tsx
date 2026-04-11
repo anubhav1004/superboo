@@ -9,6 +9,7 @@ import type { MediaItem } from "./MediaPreview";
 import ExecutionStatus from "./ExecutionStatus";
 
 import { getConfig } from "../../lib/api";
+import { isDesktopApp } from "../../lib/desktop";
 
 const VIDEO_EXTS = /\.(mp4|mov|webm|avi|mkv)$/i;
 const IMAGE_EXTS = /\.(png|jpg|jpeg|gif|webp|svg|bmp)$/i;
@@ -149,6 +150,7 @@ function MiniGhost() {
 export default function Message({ msg }: { msg: MessageType }) {
   const [toolOpen, setToolOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const desktop = isDesktopApp();
 
   const copy = () => {
     navigator.clipboard.writeText(msg.content);
@@ -196,14 +198,27 @@ export default function Message({ msg }: { msg: MessageType }) {
   // User messages — right-aligned bubble
   if (isUser) {
     return (
-      <div className="msg-slide-up px-4 md:px-8 py-3 md:py-4">
-        <div className="max-w-full md:max-w-3xl mx-auto flex justify-end gap-3">
-          <div className="max-w-[85%] md:max-w-[70%]">
-            <div className="rounded-2xl rounded-tr-md px-4 py-3 text-[14px] text-fg leading-relaxed" style={{background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)'}}>
+      <div className={clsx("msg-slide-up py-3 md:py-4", desktop ? "px-6" : "px-4 md:px-8")}>
+        <div className={clsx("mx-auto flex justify-end gap-3", desktop ? "max-w-[860px]" : "max-w-full md:max-w-3xl")}>
+          <div className={clsx("max-w-[85%]", desktop ? "md:max-w-[72%]" : "md:max-w-[70%]")}>
+            <div
+              className={clsx(
+                "rounded-2xl rounded-tr-md px-4 py-3 text-[14px] leading-relaxed",
+                desktop ? "desktop-user-message" : "text-fg"
+              )}
+              style={
+                desktop
+                  ? undefined
+                  : {
+                      background: "rgba(255,255,255,0.06)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                    }
+              }
+            >
               {msg.content}
             </div>
           </div>
-          <div className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white mt-0.5" style={{background: 'linear-gradient(135deg, #9370ff, #EC4899)'}}>
+          <div className={clsx("flex-shrink-0 mt-0.5 flex items-center justify-center text-[11px] font-bold text-white", desktop ? "desktop-user-avatar" : "w-7 h-7 rounded-full")} style={desktop ? undefined : {background: 'linear-gradient(135deg, #9370ff, #EC4899)'}}>
             A
           </div>
         </div>
@@ -212,16 +227,16 @@ export default function Message({ msg }: { msg: MessageType }) {
   }
 
   return (
-    <div className="msg-slide-up group px-4 md:px-8 py-3 md:py-4">
-      <div className="max-w-full md:max-w-3xl mx-auto flex gap-3 md:gap-3.5">
+    <div className={clsx("msg-slide-up group py-3 md:py-4", desktop ? "px-6" : "px-4 md:px-8")}>
+      <div className={clsx("mx-auto flex gap-3 md:gap-3.5", desktop ? "max-w-[860px]" : "max-w-full md:max-w-3xl")}>
         {/* Ghost avatar */}
         <div className="flex-shrink-0 mt-0.5">
           {isTool ? (
-            <div className="w-7 h-7 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+            <div className={clsx("flex items-center justify-center rounded-full", desktop ? "desktop-tool-avatar" : "w-7 h-7 bg-amber-500/10 border border-amber-500/20")}>
               <Wrench size={12} className="text-amber-400" />
             </div>
           ) : (
-            <div className="drop-shadow-[0_0_10px_rgba(147,112,255,0.5)]">
+            <div className={desktop ? "desktop-assistant-avatar" : "drop-shadow-[0_0_10px_rgba(147,112,255,0.5)]"}>
               <MiniGhost />
             </div>
           )}
@@ -231,10 +246,10 @@ export default function Message({ msg }: { msg: MessageType }) {
         <div className="flex-1 min-w-0">
           {/* Tool call block */}
           {msg.toolCall && (
-            <div className="mb-3 rounded-2xl overflow-hidden" style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)'}}>
+            <div className={clsx("mb-3 overflow-hidden rounded-2xl", desktop && "desktop-tool-card")} style={desktop ? undefined : {background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)'}}>
               <button
                 onClick={() => setToolOpen(!toolOpen)}
-                className="w-full flex items-center gap-2.5 px-4 py-2.5 hover:bg-bg-surface transition-colors"
+                className={clsx("w-full flex items-center gap-2.5 px-4 py-2.5 transition-colors", desktop ? "hover:bg-white/[0.04]" : "hover:bg-bg-surface")}
               >
                 <span className="text-base">&#128295;</span>
                 <span className="text-[12px] font-mono text-fg font-medium">
@@ -280,16 +295,29 @@ export default function Message({ msg }: { msg: MessageType }) {
             <div
               className={clsx(
                 "relative",
-                // Sparkpage-style card for bot messages with structured content
                 hasStructuredContent && !isTool
-                  ? "rounded-2xl p-5 md:p-6"
-                  : "prose-msg"
+                  ? clsx("rounded-2xl p-5 md:p-6", desktop && "desktop-structured-message")
+                  : clsx("prose-msg", desktop && "desktop-prose-message")
               )}
-              style={hasStructuredContent && !isTool ? {background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)'} : undefined}
+              style={
+                hasStructuredContent && !isTool && !desktop
+                  ? {
+                      background: "rgba(255,255,255,0.03)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      backdropFilter: "blur(12px)",
+                    }
+                  : undefined
+              }
             >
-              {/* Colored top border for structured cards */}
               {hasStructuredContent && !isTool && (
-                <div className="absolute top-0 left-4 right-4 h-[2px] rounded-full" style={{background: 'linear-gradient(to right, #9370ff, #EC4899)'}} />
+                <div
+                  className="absolute top-0 left-4 right-4 h-[2px] rounded-full"
+                  style={{
+                    background: desktop
+                      ? "linear-gradient(to right, #69D8C4, #F48E8C, #F3C969)"
+                      : "linear-gradient(to right, #9370ff, #EC4899)",
+                  }}
+                />
               )}
               <div className={hasStructuredContent && !isTool ? "prose-msg" : ""}>
                 <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
@@ -300,7 +328,12 @@ export default function Message({ msg }: { msg: MessageType }) {
               {!msg.streaming && (
                 <button
                   onClick={copy}
-                  className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-bg-elevated border border-border text-fg-dim hover:text-fg hover:border-accent/30 text-[10px] transition-all shadow-card"
+                  className={clsx(
+                    "absolute -top-1 -right-1 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] transition-all shadow-card",
+                    desktop
+                      ? "desktop-copy-pill opacity-100 md:opacity-0 md:group-hover:opacity-100"
+                      : "opacity-0 group-hover:opacity-100 bg-bg-elevated border border-border text-fg-dim hover:text-fg hover:border-accent/30"
+                  )}
                   title="Copy"
                 >
                   {copied ? <Check size={10} /> : <Copy size={10} />}
