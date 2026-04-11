@@ -1,10 +1,6 @@
 import { BrowserRouter, HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import {
-  Activity,
-  Command,
-  Cpu,
   Plus,
-  Plug,
   Settings2,
 } from "lucide-react";
 import { useChatStore } from "./store/chat";
@@ -45,7 +41,6 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
 function DesktopTitleBar({
   onOpenSettings,
   onOpenSkills,
-  onOpenConnectors,
 }: {
   onOpenSettings: () => void;
   onOpenSkills: () => void;
@@ -56,80 +51,47 @@ function DesktopTitleBar({
     activeSessionId,
     createSession,
     connection,
-    latency,
-    model,
   } = useChatStore();
-  const { user } = useUserStore();
 
   const session = sessions.find((item) => item.id === activeSessionId) ?? null;
-  const statusLabel =
-    connection === "online"
-      ? latency
-        ? `${latency} ms`
-        : "Connected"
-      : connection === "offline"
-        ? "Offline"
-        : "Checking";
 
   return (
-    <header className="desktop-titlebar app-drag">
-      <div className="desktop-titlebar__brand">
-        <div className="desktop-titlebar__logo">S</div>
-        <div className="desktop-titlebar__copy">
-          <span className="desktop-titlebar__title">Superboo</span>
-          <span className="desktop-titlebar__subtitle">
-            {session?.title || "Your desktop AI studio"}
-          </span>
-        </div>
+    <header className="app-drag" style={{
+      height: 48, display: "flex", alignItems: "center", justifyContent: "space-between",
+      padding: "0 16px 0 80px", /* 80px left for traffic lights */
+      borderBottom: "1px solid rgba(255,255,255,0.06)",
+      background: "rgba(12,1,24,0.6)", backdropFilter: "blur(20px)",
+      fontSize: 13, color: "rgba(255,255,255,0.7)", flexShrink: 0,
+    }}>
+      {/* Left: ghost + title */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <svg width={20} height={20} viewBox="0 0 128 128">
+          <path d="M64 10 C92 10 112 32 112 58 C112 84 92 106 64 106 C56 106 52 96 46 106 C40 96 34 106 28 96 C22 86 20 74 20 58 C20 32 40 10 64 10 Z" fill="url(#gTB)"/>
+          <ellipse cx="52" cy="58" rx="7" ry="9" fill="#3B0764"/><ellipse cx="76" cy="58" rx="7" ry="9" fill="#3B0764"/>
+          <circle cx="50" cy="54" r="2.5" fill="white"/><circle cx="74" cy="54" r="2.5" fill="white"/>
+          <defs><radialGradient id="gTB" cx="50%" cy="30%" r="70%"><stop offset="0%" stopColor="#F5E9FF"/><stop offset="50%" stopColor="#C084FC"/><stop offset="100%" stopColor="#6D28D9"/></radialGradient></defs>
+        </svg>
+        <span style={{ fontWeight: 600, color: "white", letterSpacing: "-0.01em" }}>
+          {session?.title || "Superboo"}
+        </span>
+        {connection === "online" && (
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#4ade80", flexShrink: 0 }} />
+        )}
       </div>
 
-      <div className="desktop-titlebar__center">
-        <button
-          onClick={onOpenSkills}
-          className="desktop-command-pill app-no-drag"
-          type="button"
-        >
-          <Command size={14} />
-          <span>Create with skills</span>
-          <kbd>Shift-Command-K</kbd>
+      {/* Right: minimal actions */}
+      <div className="app-no-drag" style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <button onClick={onOpenSkills} type="button" title="Skills (⇧⌘K)"
+          style={{ padding: "5px 12px", borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.6)", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
+          ✨ Skills
         </button>
-      </div>
-
-      <div className="desktop-titlebar__actions app-no-drag">
-        <div className="desktop-status-pill" data-state={connection}>
-          <Activity size={13} />
-          <span>{statusLabel}</span>
-        </div>
-        <div className="desktop-status-pill">
-          <Cpu size={13} />
-          <span>{model}</span>
-        </div>
-        <div className="desktop-status-pill desktop-status-pill--muted">
-          <span>{user?.plan || "Free"} plan</span>
-        </div>
-        <button
-          onClick={() => createSession()}
-          className="desktop-icon-button"
-          title="New chat"
-          type="button"
-        >
-          <Plus size={15} />
+        <button onClick={() => createSession()} type="button" title="New chat (⌘N)"
+          style={{ padding: 6, borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.5)", cursor: "pointer", display: "flex", alignItems: "center" }}>
+          <Plus size={14} />
         </button>
-        <button
-          onClick={onOpenConnectors}
-          className="desktop-icon-button"
-          title="Connectors"
-          type="button"
-        >
-          <Plug size={15} />
-        </button>
-        <button
-          onClick={onOpenSettings}
-          className="desktop-icon-button"
-          title="Settings"
-          type="button"
-        >
-          <Settings2 size={15} />
+        <button onClick={onOpenSettings} type="button" title="Settings (⌘,)"
+          style={{ padding: 6, borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.5)", cursor: "pointer", display: "flex", alignItems: "center" }}>
+          <Settings2 size={14} />
         </button>
       </div>
     </header>
