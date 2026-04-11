@@ -55,6 +55,11 @@ export interface Skill {
   examplePrompt: string;
   outputPreview: string;
   trending?: boolean;
+  connector?: {
+    name: string;
+    icon: string;
+    free: boolean;
+  };
 }
 
 export type TaskStatus = "running" | "completed" | "cancelled";

@@ -200,7 +200,7 @@ export default function Sidebar({
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.border = '1px solid transparent'; }}
         >
           <Sparkles size={14} className="text-fg-dim" />
-          Skills
+          {"\u2728"} Skills
         </button>
         <button
           onClick={onOpenConnectors}
@@ -210,7 +210,7 @@ export default function Sidebar({
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.border = '1px solid transparent'; }}
         >
           <Plug size={14} className="text-fg-dim" />
-          Connect
+          {"\uD83D\uDD0C"} Connect
         </button>
       </div>
 

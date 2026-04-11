@@ -167,9 +167,20 @@ export default function SkillsPanel({ onClose }: Props) {
                     </h3>
 
                     {/* Description */}
-                    <p className="text-[12px] text-fg-muted leading-relaxed line-clamp-2 mb-3">
+                    <p className="text-[12px] text-fg-muted leading-relaxed line-clamp-2 mb-2">
                       {skill.description}
                     </p>
+
+                    {/* Connector pill */}
+                    {skill.connector && (
+                      <div className="flex items-center gap-1 mb-2">
+                        <span className="inline-flex items-center gap-1 text-[10px] text-fg-dim px-2 py-0.5 rounded-full" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                          <span className="text-[11px]">{skill.connector.icon}</span>
+                          {skill.connector.name}
+                          {skill.connector.free && <span className="text-[#4ade80]">&middot; Free</span>}
+                        </span>
+                      </div>
+                    )}
 
                     {/* Try it button */}
                     <button

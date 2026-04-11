@@ -8,6 +8,7 @@ export const CONNECTORS: Connector[] = [
     category: "social",
     status: "connected",
     description: "Post TikToks directly. Auto-captions, trending sounds, scheduling.",
+    icon: "\uD83D\uDCF1",
   },
   {
     id: "instagram",
@@ -15,6 +16,7 @@ export const CONNECTORS: Connector[] = [
     category: "social",
     status: "connected",
     description: "Share posts, reels, and stories. Auto-hashtags and scheduling.",
+    icon: "\uD83D\uDCF8",
   },
   {
     id: "youtube",
@@ -22,6 +24,7 @@ export const CONNECTORS: Connector[] = [
     category: "social",
     status: "configured",
     description: "Upload videos, create thumbnails, manage your channel.",
+    icon: "\u25B6\uFE0F",
   },
   {
     id: "spotify",
@@ -29,6 +32,7 @@ export const CONNECTORS: Connector[] = [
     category: "social",
     status: "disconnected",
     description: "Distribute podcasts and music directly to Spotify.",
+    icon: "\uD83C\uDFA7",
   },
   {
     id: "google-slides",
@@ -36,6 +40,7 @@ export const CONNECTORS: Connector[] = [
     category: "data",
     status: "connected",
     description: "Export pitch decks and presentations to Google Slides.",
+    icon: "\uD83D\uDCCA",
   },
   {
     id: "google-drive",
@@ -43,6 +48,7 @@ export const CONNECTORS: Connector[] = [
     category: "data",
     status: "connected",
     description: "Save all your creations to Drive automatically.",
+    icon: "\uD83D\uDCBE",
   },
   {
     id: "notion",
@@ -50,6 +56,7 @@ export const CONNECTORS: Connector[] = [
     category: "data",
     status: "configured",
     description: "Export documents, research, and plans to Notion.",
+    icon: "\uD83D\uDCDD",
   },
   {
     id: "canva",
@@ -57,6 +64,7 @@ export const CONNECTORS: Connector[] = [
     category: "data",
     status: "disconnected",
     description: "Import and export designs between Superboo and Canva.",
+    icon: "\uD83C\uDFA8",
   },
   {
     id: "twitter-x",
@@ -64,6 +72,7 @@ export const CONNECTORS: Connector[] = [
     category: "social",
     status: "connected",
     description: "Post tweets, threads, and images. Auto-scheduling.",
+    icon: "\uD83D\uDC26",
   },
   {
     id: "linkedin",
@@ -71,6 +80,7 @@ export const CONNECTORS: Connector[] = [
     category: "social",
     status: "configured",
     description: "Share professional posts and articles.",
+    icon: "\uD83D\uDCBC",
   },
   {
     id: "whatsapp",
@@ -78,6 +88,7 @@ export const CONNECTORS: Connector[] = [
     category: "social",
     status: "connected",
     description: "Send creations directly to WhatsApp contacts and groups.",
+    icon: "\uD83D\uDCAC",
   },
   {
     id: "email-smtp",
@@ -85,6 +96,7 @@ export const CONNECTORS: Connector[] = [
     category: "data",
     status: "connected",
     description: "Send emails directly from Superboo.",
+    icon: "\uD83D\uDCE7",
   },
 
   // ── Developer / Advanced ──
@@ -94,6 +106,7 @@ export const CONNECTORS: Connector[] = [
     category: "dev",
     status: "connected",
     description: "AI agent gateway powering Superboo.",
+    icon: "\uD83D\uDC7B",
     credentials: "OC_BRIDGE_TOKEN",
   },
   {
@@ -102,6 +115,7 @@ export const CONNECTORS: Connector[] = [
     category: "ai",
     status: "connected",
     description: "Gemini 3.1 Pro for scripts, images, and video generation.",
+    icon: "\u2728",
     credentials: "GEMINI_API_KEY",
   },
   {
@@ -110,6 +124,7 @@ export const CONNECTORS: Connector[] = [
     category: "ai",
     status: "connected",
     description: "Primary language model.",
+    icon: "\uD83E\uDD16",
     credentials: "Z_AI_API_KEY",
   },
   {
@@ -118,6 +133,7 @@ export const CONNECTORS: Connector[] = [
     category: "ai",
     status: "connected",
     description: "Natural voice generation for voiceovers.",
+    icon: "\uD83C\uDF99\uFE0F",
     credentials: "ELEVENLABS_API_KEY",
   },
   {
@@ -126,6 +142,7 @@ export const CONNECTORS: Connector[] = [
     category: "dev",
     status: "connected",
     description: "Version control and deployment.",
+    icon: "\uD83D\uDC19",
     credentials: "GH_TOKEN",
   },
   {
@@ -134,6 +151,7 @@ export const CONNECTORS: Connector[] = [
     category: "deployment",
     status: "connected",
     description: "Frontend hosting and deployment.",
+    icon: "\u25B2",
     credentials: "VERCEL_TOKEN",
   },
   {
@@ -142,6 +160,7 @@ export const CONNECTORS: Connector[] = [
     category: "dev",
     status: "connected",
     description: "Backend compute infrastructure.",
+    icon: "\u2601\uFE0F",
   },
   {
     id: "bridge-api",
@@ -149,6 +168,7 @@ export const CONNECTORS: Connector[] = [
     category: "dev",
     status: "connected",
     description: "FastAPI bridge for chat and file serving.",
+    icon: "\uD83D\uDD17",
     credentials: "configured",
   },
 ];

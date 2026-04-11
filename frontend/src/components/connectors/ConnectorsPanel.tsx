@@ -86,13 +86,13 @@ export default function ConnectorsPanel({ onClose }: Props) {
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
           <div
             className={clsx(
-              "w-9 h-9 rounded-xl flex items-center justify-center text-[12px] font-bold flex-shrink-0",
+              "w-9 h-9 rounded-xl flex items-center justify-center text-[16px] flex-shrink-0",
               c.status === "connected"
-                ? "bg-gradient-to-br from-accent/30 to-accent/10 text-accent-hover border border-accent/30"
-                : "bg-bg-elevated text-fg-dim border border-border"
+                ? "bg-gradient-to-br from-accent/30 to-accent/10 border border-accent/30"
+                : "bg-bg-elevated border border-border"
             )}
           >
-            {c.name.charAt(0)}
+            {c.icon || c.name.charAt(0)}
           </div>
           <span className="text-[13px] font-semibold text-fg truncate">
             {c.name}
@@ -119,13 +119,13 @@ export default function ConnectorsPanel({ onClose }: Props) {
     >
       <div
         className={clsx(
-          "w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-bold flex-shrink-0",
+          "w-8 h-8 rounded-lg flex items-center justify-center text-[14px] flex-shrink-0",
           c.status === "connected"
-            ? "bg-accent/15 text-accent-hover border border-accent/25"
-            : "bg-bg-elevated text-fg-dim border border-border"
+            ? "bg-accent/15 border border-accent/25"
+            : "bg-bg-elevated border border-border"
         )}
       >
-        {c.name.charAt(0)}
+        {c.icon || c.name.charAt(0)}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">

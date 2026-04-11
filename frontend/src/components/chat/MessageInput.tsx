@@ -11,6 +11,7 @@ import {
   Flame,
 } from "lucide-react";
 import clsx from "clsx";
+import { useChatStore } from "../../store/chat";
 
 interface Props {
   onSend: (text: string, files: File[]) => void;
@@ -27,10 +28,12 @@ const TRENDING_PILLS = [
 ];
 
 export default function MessageInput({ onSend, disabled, isHub }: Props) {
+  const { setCreatePanelOpen, setConnectorsOpen } = useChatStore();
   const [text, setText] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [recording, setRecording] = useState(false);
   const [focused, setFocused] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const [sendBounce, setSendBounce] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -137,7 +140,34 @@ export default function MessageInput({ onSend, disabled, isHub }: Props) {
             backdropFilter: 'blur(12px)',
             boxShadow: focused ? '0 0 0 3px rgba(147,112,255,0.15)' : 'none',
           }}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
         >
+          {/* Floater buttons — Skills & Connect */}
+          <div className={clsx(
+            "absolute top-2 right-3 z-10 flex items-center gap-1.5 transition-opacity duration-200",
+            (focused || hovered) ? "opacity-100" : "opacity-0 pointer-events-none"
+          )}>
+            <button
+              type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => setCreatePanelOpen(true)}
+              className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] text-fg-dim hover:text-fg transition-all hover:scale-105 active:scale-95"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+            >
+              <span className="text-[11px]">{"\u2728"}</span> Skills
+            </button>
+            <button
+              type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => setConnectorsOpen(true)}
+              className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] text-fg-dim hover:text-fg transition-all hover:scale-105 active:scale-95"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+            >
+              <span className="text-[11px]">{"\uD83D\uDD0C"}</span> Connect
+            </button>
+          </div>
+
           {/* Gradient focus line */}
           <div className={clsx(
             "h-[1px] mx-4 transition-opacity duration-300",

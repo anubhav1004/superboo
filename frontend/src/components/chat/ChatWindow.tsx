@@ -201,7 +201,7 @@ export default function ChatWindow() {
           <div className="text-[14px] text-fg font-medium truncate">{session.title}</div>
           <div className="flex-1" />
           <button onClick={() => setCreatePanelOpen(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] text-fg-dim hover:text-fg border border-[rgba(255,255,255,0.08)] hover:border-[rgba(147,112,255,0.4)] transition-all" style={{background: 'rgba(255,255,255,0.04)'}}>
-            <Sparkles size={11} /> Skills
+            <Sparkles size={11} /> {"\u2728"} Skills
           </button>
         </div>
       </div>
