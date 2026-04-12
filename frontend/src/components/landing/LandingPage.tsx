@@ -548,6 +548,51 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════
+         DOWNLOAD MAC APP
+         ═══════════════════════════════════════════════════════ */}
+      <section className="py-20 md:py-28 px-5 md:px-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="rounded-3xl overflow-hidden relative" style={{background: "linear-gradient(135deg, rgba(147,112,255,0.15), rgba(236,72,153,0.1))", border: "1px solid rgba(147,112,255,0.2)"}}>
+            <div className="absolute inset-0 opacity-20" style={{background: "radial-gradient(circle at 30% 50%, rgba(147,112,255,0.3), transparent 60%)", filter: "blur(40px)"}} />
+            <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 p-8 md:p-12">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-2xl">💻</span>
+                  <span className="text-[11px] text-white/40 uppercase tracking-wider font-medium">macOS App</span>
+                </div>
+                <h3 className="text-[28px] md:text-[36px] font-extrabold text-white tracking-tight mb-3">
+                  Superboo on your <span className="hero-gradient-text">Mac</span>
+                </h3>
+                <p className="text-[15px] text-white/50 leading-relaxed mb-2">
+                  Native desktop app with Guide Mode — Boo follows your cursor across every app, answers questions about your screen, and creates things while you work.
+                </p>
+                <p className="text-[13px] text-white/30 mb-6">
+                  Requires macOS 14+ · Apple Silicon (M1-M4)
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <a href="https://github.com/anubhav1004/superboo/releases/download/v0.1.0/Superboo-0.0.0-arm64.dmg"
+                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-white text-[15px] font-bold transition-all hover:scale-105 active:scale-95"
+                    style={{background: "linear-gradient(135deg, #9370ff, #EC4899)", boxShadow: "0 0 30px -5px rgba(147,112,255,0.4)"}}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Download for Mac
+                  </a>
+                  <a href="https://github.com/anubhav1004/superboo/releases/tag/v0.1.0"
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-white/60 text-[14px] font-semibold border border-white/10 hover:border-white/20 transition-all hover:text-white">
+                    Release notes
+                  </a>
+                </div>
+              </div>
+              <div className="flex-shrink-0">
+                <div className="ghost-float">
+                  <Ghost size={100} id="dlG" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════
          7. FINAL CTA
          ═══════════════════════════════════════════════════════ */}
       <section id="section-cta" className="py-28 md:py-40 px-5 md:px-8 relative min-h-[80vh] flex items-center justify-center">
