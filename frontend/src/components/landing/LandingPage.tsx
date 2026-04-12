@@ -381,20 +381,18 @@ export default function LandingPage() {
           <p className="text-[15px] md:text-[17px] text-white/50 leading-relaxed max-w-md mb-10">
             TikToks, pitch decks, resumes, posters, meal plans &mdash; just tell Boo.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 items-center">
-            <div className="flex flex-col items-center">
-              <button onClick={() => nav("/login")}
-                className="group hero-cta-primary px-10 py-4 rounded-xl text-white text-[16px] font-bold transition-all">
-                Try it free
-                <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
-              </button>
-              <span className="text-[12px] text-white/30 mt-2">(No credit card)</span>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-3 items-stretch">
+            <button onClick={() => nav("/login")}
+              className="group hero-cta-primary px-8 py-3.5 rounded-xl text-white text-[15px] font-bold transition-all">
+              Try it free
+              <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
+            </button>
             <a href="#section-features"
-              className="hero-cta-secondary px-10 py-4 rounded-xl text-white/70 hover:text-white text-[16px] font-semibold transition-all text-center">
+              className="hero-cta-secondary px-8 py-3.5 rounded-xl text-white/70 hover:text-white text-[15px] font-semibold transition-all text-center flex items-center justify-center">
               Watch it work
             </a>
           </div>
+          <p className="text-[12px] text-white/30 mt-3">No credit card required</p>
         </div>
 
         {/* Floating chat preview card */}

@@ -248,7 +248,7 @@ export default function ChatWindow() {
 
   if (!session || session.messages.length === 0) {
     return (
-      <div className={desktop ? "desktop-chat-stage" : "flex-1 flex flex-col h-full overflow-hidden bg-bg"}>
+      <div className={desktop ? "desktop-chat-stage" : "flex-1 flex flex-col h-full overflow-y-auto bg-bg"}>
         {!desktop && (
           <div className="flex md:hidden items-center px-4 py-3 border-b border-[rgba(255,255,255,0.08)]">
             <button
@@ -292,12 +292,9 @@ export default function ChatWindow() {
               </div>
 
               <div className={desktop ? "flex-1 min-w-0" : ""}>
-                <h1 className={desktop ? "desktop-hero-title" : "text-[24px] md:text-[32px] font-extrabold tracking-tight text-center mb-2 text-gradient"}>
+                <h1 className={desktop ? "desktop-hero-title" : "text-[24px] md:text-[32px] font-extrabold tracking-tight text-center mb-8 text-gradient"}>
                   What can Boo create for you{user?.name ? `, ${user.name}` : ""}?
                 </h1>
-                <p className={desktop ? "desktop-hero-subtitle" : "text-[13px] text-fg-dim text-center mb-8 max-w-sm"}>
-                  Describe the outcome and Superboo turns it into files, media, drafts, and structured work.
-                </p>
 
                 {desktop && (
                   <div className="desktop-hero-pills">
