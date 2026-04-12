@@ -251,7 +251,7 @@ export default function AuthPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-full text-white text-[14px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+            className="w-full py-3 rounded-xl text-white text-[14px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
             style={{
               background: "linear-gradient(135deg, #9370ff, #EC4899)",
               boxShadow: "0 0 30px -5px rgba(147,112,255,0.4)",

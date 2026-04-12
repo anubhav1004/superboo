@@ -52,8 +52,9 @@ export default function PricingPage() {
             <a href="/#section-features" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Features</a>
             <a href="/agent" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">24x7 Agent</a>
             <a href="/pricing" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Pricing</a>
+            <a href="/download" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Download</a>
             <button onClick={() => nav("/login")}
-              className="text-[13px] px-5 py-2 rounded-full text-white font-semibold transition-all"
+              className="text-[13px] px-5 py-2 rounded-xl text-white font-semibold transition-all"
               style={{ background: "linear-gradient(135deg, #9370ff, #EC4899)" }}>
               Get started
             </button>
@@ -131,7 +132,7 @@ export default function PricingPage() {
               ))}
             </div>
             <button onClick={() => nav("/login")}
-              className="w-full py-3 rounded-full text-[14px] font-semibold text-white/70 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full py-3 rounded-xl text-[14px] font-semibold text-white/70 transition-all hover:scale-[1.02] active:scale-[0.98]"
               style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
               Start free
             </button>
@@ -177,7 +178,7 @@ export default function PricingPage() {
                 ))}
               </div>
               <button onClick={() => nav("/login")}
-                className="w-full py-3 rounded-full text-[14px] font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="w-full py-3 rounded-xl text-[14px] font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{ background: "linear-gradient(135deg, #9370ff, #EC4899)", boxShadow: "0 0 30px -5px rgba(147,112,255,0.4)" }}>
                 Start Pro <ArrowRight size={14} className="inline ml-1" />
               </button>
@@ -217,7 +218,7 @@ export default function PricingPage() {
               ))}
             </div>
             <button onClick={() => nav("/login")}
-              className="w-full py-3 rounded-full text-[14px] font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full py-3 rounded-xl text-[14px] font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
               style={{ background: "linear-gradient(135deg, #EC4899, #9370ff)", boxShadow: "0 0 30px -5px rgba(236,72,153,0.3)" }}>
               Deploy Agent <ArrowRight size={14} className="inline ml-1" />
             </button>

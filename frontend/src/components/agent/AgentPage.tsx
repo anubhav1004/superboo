@@ -96,8 +96,9 @@ export default function AgentPage() {
             <a href="/#section-features" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Features</a>
             <a href="/agent" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">24x7 Agent</a>
             <a href="/pricing" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Pricing</a>
+            <a href="/download" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Download</a>
             <button onClick={() => nav("/login")}
-              className="text-[13px] px-5 py-2 rounded-full text-white font-semibold transition-all"
+              className="text-[13px] px-5 py-2 rounded-xl text-white font-semibold transition-all"
               style={{ background: "linear-gradient(135deg, #9370ff, #EC4899)" }}>
               Get started
             </button>
@@ -133,12 +134,12 @@ export default function AgentPage() {
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button onClick={() => nav("/login")}
-              className="px-8 py-4 rounded-full text-[16px] font-bold transition-all hover:scale-105 active:scale-95"
+              className="px-8 py-4 rounded-xl text-[16px] font-bold transition-all hover:scale-105 active:scale-95"
               style={{ background: "linear-gradient(135deg, #9370ff, #EC4899)", boxShadow: "0 0 40px -8px rgba(147,112,255,0.5)" }}>
               Deploy your Boo — $20/mo <ArrowRight size={16} className="inline ml-2" />
             </button>
             <a href="#channels"
-              className="px-8 py-4 rounded-full text-[16px] font-semibold text-white/60 hover:text-white border border-white/10 hover:border-white/20 transition-all text-center">
+              className="px-8 py-4 rounded-xl text-[16px] font-semibold text-white/60 hover:text-white border border-white/10 hover:border-white/20 transition-all text-center">
               See how it works
             </a>
           </div>
@@ -221,7 +222,7 @@ export default function AgentPage() {
               </div>
               <p className="text-[15px] text-white/60 leading-relaxed mb-6">{activeChannel.desc}</p>
               <div className="flex items-center gap-3">
-                <button className="px-5 py-2.5 rounded-full text-[13px] font-semibold text-white transition-all hover:scale-105 active:scale-95"
+                <button className="px-5 py-2.5 rounded-xl text-[13px] font-semibold text-white transition-all hover:scale-105 active:scale-95"
                   style={{ background: activeChannel.color }}>
                   Connect {activeChannel.name}
                 </button>
@@ -299,7 +300,7 @@ export default function AgentPage() {
               </div>
 
               <button onClick={() => nav("/login")}
-                className="w-full py-4 rounded-full text-[16px] font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="w-full py-4 rounded-xl text-[16px] font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{ background: "linear-gradient(135deg, #9370ff, #EC4899)", boxShadow: "0 0 40px -8px rgba(147,112,255,0.4)" }}>
                 Deploy your Boo <ArrowRight size={16} className="inline ml-2" />
               </button>
@@ -346,7 +347,7 @@ export default function AgentPage() {
             Deploy once. Use forever. $20/month for an AI that never sleeps.
           </p>
           <button onClick={() => nav("/login")}
-            className="px-10 py-4 rounded-full text-[16px] font-bold text-white transition-all hover:scale-105 active:scale-95"
+            className="px-10 py-4 rounded-xl text-[16px] font-bold text-white transition-all hover:scale-105 active:scale-95"
             style={{ background: "linear-gradient(135deg, #9370ff, #EC4899)", boxShadow: "0 0 40px -8px rgba(147,112,255,0.5)" }}>
             Get started <ArrowRight size={16} className="inline ml-2" />
           </button>

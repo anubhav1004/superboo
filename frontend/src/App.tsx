@@ -19,6 +19,7 @@ import BotMarketplace from "./components/bots/BotMarketplace";
 import BotChat from "./components/bots/BotChat";
 import AgentPage from "./components/agent/AgentPage";
 import PricingPage from "./components/pricing/PricingPage";
+import DownloadPage from "./components/download/DownloadPage";
 import { useHealth } from "./hooks/useHealth";
 import { useKeyboard } from "./hooks/useKeyboard";
 import { isDesktopApp, isMacDesktop } from "./lib/desktop";
@@ -186,6 +187,7 @@ export default function App() {
         />
         <Route path="/agent" element={<AgentPage />} />
         <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/download" element={<DownloadPage />} />
         <Route path="/bots" element={<BotMarketplace />} />
         <Route path="/bots/:id" element={<BotChat />} />
         {isMacDesktop() && <Route path="/landing" element={<LandingPage />} />}

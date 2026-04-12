@@ -333,8 +333,10 @@ export default function LandingPage() {
             <a href="#section-features" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Features</a>
             <a href="/agent" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">24x7 Agent</a>
             <a href="/pricing" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Pricing</a>
+            <a href="/download" className="text-[13px] text-white/50 hover:text-white transition-colors hidden md:block">Download</a>
+
             <button onClick={() => nav("/login")}
-              className="text-[13px] px-5 py-2 rounded-full bg-gradient-to-r from-[#9370ff] to-[#EC4899] hover:opacity-90 text-white font-semibold transition-all shadow-lg shadow-purple-500/25">
+              className="text-[13px] px-5 py-2 rounded-xl bg-gradient-to-r from-[#9370ff] to-[#EC4899] hover:opacity-90 text-white font-semibold transition-all shadow-lg shadow-purple-500/25">
               Get started
             </button>
           </div>
@@ -382,14 +384,14 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row gap-4 items-center">
             <div className="flex flex-col items-center">
               <button onClick={() => nav("/login")}
-                className="group hero-cta-primary px-10 py-4 rounded-full text-white text-[16px] font-bold transition-all">
+                className="group hero-cta-primary px-10 py-4 rounded-xl text-white text-[16px] font-bold transition-all">
                 Try it free
                 <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
               </button>
               <span className="text-[12px] text-white/30 mt-2">(No credit card)</span>
             </div>
             <a href="#section-features"
-              className="hero-cta-secondary px-10 py-4 rounded-full text-white/70 hover:text-white text-[16px] font-semibold transition-all text-center">
+              className="hero-cta-secondary px-10 py-4 rounded-xl text-white/70 hover:text-white text-[16px] font-semibold transition-all text-center">
               Watch it work
             </a>
           </div>
@@ -571,13 +573,13 @@ export default function LandingPage() {
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <a href="https://github.com/anubhav1004/superboo/releases/download/v0.1.0/Superboo-0.0.0-arm64.dmg"
-                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-white text-[15px] font-bold transition-all hover:scale-105 active:scale-95"
+                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-white text-[15px] font-bold transition-all hover:scale-105 active:scale-95"
                     style={{background: "linear-gradient(135deg, #9370ff, #EC4899)", boxShadow: "0 0 30px -5px rgba(147,112,255,0.4)"}}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     Download for Mac
                   </a>
                   <a href="https://github.com/anubhav1004/superboo/releases/tag/v0.1.0"
-                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-white/60 text-[14px] font-semibold border border-white/10 hover:border-white/20 transition-all hover:text-white">
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-white/60 text-[14px] font-semibold border border-white/10 hover:border-white/20 transition-all hover:text-white">
                     Release notes
                   </a>
                 </div>
@@ -624,7 +626,7 @@ export default function LandingPage() {
           <button onClick={() => nav("/login")}
             onMouseEnter={() => setCtaHover(true)}
             onMouseLeave={() => setCtaHover(false)}
-            className="group hero-cta-primary px-12 py-5 rounded-full text-white text-[18px] font-bold transition-all">
+            className="group hero-cta-primary px-12 py-5 rounded-xl text-white text-[18px] font-bold transition-all">
             Start creating &mdash; it&apos;s free
             <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
           </button>
@@ -644,6 +646,7 @@ export default function LandingPage() {
             <a href="/" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Home</a>
             <a href="/agent" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Agent</a>
             <a href="/pricing" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Pricing</a>
+            <a href="/download" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Download</a>
             <button onClick={() => nav("/chat")} className="text-[12px] text-white/30 hover:text-white/60 transition-colors bg-transparent border-none cursor-pointer">Chat</button>
             <span className="text-[10px] text-white/15 hidden md:inline">Press G for a surprise</span>
           </div>
@@ -836,7 +839,7 @@ export default function LandingPage() {
         }
         .use-case-card {
           display: flex; align-items: center; gap: 12px;
-          padding: 16px 28px; border-radius: 20px;
+          padding: 16px 28px; border-radius: 14px;
           border: none; cursor: pointer;
           white-space: nowrap; flex-shrink: 0;
           transition: transform 0.3s, box-shadow 0.3s;
