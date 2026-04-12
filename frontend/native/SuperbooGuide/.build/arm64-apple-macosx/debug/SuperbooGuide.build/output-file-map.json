@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.build/master.swiftdeps"
+  },
+  "/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/Sources/main.swift": {
+    "dependencies": "/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.build/main.d",
+    "object": "/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.build/main.swift.o",
+    "swiftmodule": "/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.build/main~partial.swiftmodule",
+    "swift-dependencies": "/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.build/main.swiftdeps"
+  }
+}

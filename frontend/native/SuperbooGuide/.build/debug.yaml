@@ -1,0 +1,81 @@
+client:
+  name: basic
+  file-system: device-agnostic
+tools: {}
+targets:
+  "PackageStructure": ["<PackageStructure>"]
+  "SuperbooGuide-arm64-apple-macosx16.0-debug.exe": ["<SuperbooGuide-arm64-apple-macosx16.0-debug.exe>"]
+  "SuperbooGuide-arm64-apple-macosx16.0-debug.module": ["<SuperbooGuide-arm64-apple-macosx16.0-debug.module>"]
+  "main": ["<SuperbooGuide-arm64-apple-macosx16.0-debug.exe>","<SuperbooGuide-arm64-apple-macosx16.0-debug.module>"]
+  "test": ["<SuperbooGuide-arm64-apple-macosx16.0-debug.exe>","<SuperbooGuide-arm64-apple-macosx16.0-debug.module>"]
+default: "main"
+nodes:
+  "/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/Sources/":
+    is-directory-structure: true
+    content-exclusion-patterns: [".git",".build"]
+  "/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide":
+    is-mutated: true
+commands:
+  "/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide-entitlement.plist":
+    tool: write-auxiliary-file
+    inputs: ["<entitlement-plist>","<com.apple.security.get-task-allow>"]
+    outputs: ["/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide-entitlement.plist"]
+    description: "Write auxiliary file /Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide-entitlement.plist"
+
+  "/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.build/sources":
+    tool: write-auxiliary-file
+    inputs: ["<sources-file-list>","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/Sources/main.swift"]
+    outputs: ["/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.build/sources"]
+    description: "Write auxiliary file /Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.build/sources"
+
+  "/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.product/Objects.LinkFileList":
+    tool: write-auxiliary-file
+    inputs: ["<link-file-list>","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.build/main.swift.o"]
+    outputs: ["/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.product/Objects.LinkFileList"]
+    description: "Write auxiliary file /Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.product/Objects.LinkFileList"
+
+  "/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt":
+    tool: write-auxiliary-file
+    inputs: ["<swift-get-version>","/Library/Developer/CommandLineTools/usr/bin/swiftc"]
+    outputs: ["/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt"]
+    always-out-of-date: "true"
+    description: "Write auxiliary file /Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt"
+
+  "<SuperbooGuide-arm64-apple-macosx16.0-debug.exe>":
+    tool: phony
+    inputs: ["<SuperbooGuide-arm64-apple-macosx16.0-debug.exe-CodeSigning>"]
+    outputs: ["<SuperbooGuide-arm64-apple-macosx16.0-debug.exe>"]
+
+  "<SuperbooGuide-arm64-apple-macosx16.0-debug.module>":
+    tool: phony
+    inputs: ["/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.build/main.swift.o","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/Modules/SuperbooGuide.swiftmodule"]
+    outputs: ["<SuperbooGuide-arm64-apple-macosx16.0-debug.module>"]
+
+  "C.SuperbooGuide-arm64-apple-macosx16.0-debug.exe":
+    tool: shell
+    inputs: ["/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.build/main.swift.o","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.product/Objects.LinkFileList"]
+    outputs: ["/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide"]
+    description: "Linking ./.build/arm64-apple-macosx/debug/SuperbooGuide"
+    args: ["/Library/Developer/CommandLineTools/usr/bin/swiftc","-L","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug","-o","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide","-module-name","SuperbooGuide","-Xlinker","-no_warn_duplicate_libraries","-emit-executable","-Xlinker","-alias","-Xlinker","_SuperbooGuide_main","-Xlinker","_main","-Xlinker","-rpath","-Xlinker","@loader_path","@/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.product/Objects.LinkFileList","-target","arm64-apple-macosx14.0","-Xlinker","-add_ast_path","-Xlinker","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/Modules/SuperbooGuide.swiftmodule","-F","/Library/Developer/CommandLineTools/Library/Developer/Frameworks","-sdk","/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk","-g","-Xlinker","-rpath","-Xlinker","/Library/Developer/CommandLineTools/Library/Developer/Frameworks"]
+
+  "C.SuperbooGuide-arm64-apple-macosx16.0-debug.exe-entitlements":
+    tool: shell
+    inputs: ["/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide-entitlement.plist"]
+    outputs: ["<SuperbooGuide-arm64-apple-macosx16.0-debug.exe-CodeSigning>"]
+    description: "Applying debug entitlements to ./.build/arm64-apple-macosx/debug/SuperbooGuide"
+    args: ["codesign","--force","--sign","-","--entitlements","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide-entitlement.plist","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide"]
+
+  "C.SuperbooGuide-arm64-apple-macosx16.0-debug.module":
+    tool: shell
+    inputs: ["/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/Sources/main.swift","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.build/sources"]
+    outputs: ["/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.build/main.swift.o","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/Modules/SuperbooGuide.swiftmodule"]
+    description: "Compiling Swift Module 'SuperbooGuide' (1 sources)"
+    args: ["/Library/Developer/CommandLineTools/usr/bin/swiftc","-module-name","SuperbooGuide","-emit-dependencies","-emit-module","-emit-module-path","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/Modules/SuperbooGuide.swiftmodule","-output-file-map","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.build/output-file-map.json","-incremental","-c","@/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/SuperbooGuide.build/sources","-I","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/Modules","-target","arm64-apple-macosx14.0","-enable-batch-mode","-index-store-path","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/index/store","-Onone","-enable-testing","-j8","-DSWIFT_PACKAGE","-DDEBUG","-module-cache-path","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/.build/arm64-apple-macosx/debug/ModuleCache","-parseable-output","-Xfrontend","-entry-point-function-name","-Xfrontend","SuperbooGuide_main","-swift-version","5","-F","/Library/Developer/CommandLineTools/Library/Developer/Frameworks","-sdk","/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk","-g","-Xcc","-isysroot","-Xcc","/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk","-Xcc","-fPIC","-Xcc","-g","-package-name","superbooguide"]
+
+  "PackageStructure":
+    tool: package-structure-tool
+    inputs: ["/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/Sources/","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/Package.swift","/Users/anubhavmishra/openclaw-ui/frontend/native/SuperbooGuide/Package.resolved"]
+    outputs: ["<PackageStructure>"]
+    description: "Planning build"
+    allow-missing-inputs: true
+

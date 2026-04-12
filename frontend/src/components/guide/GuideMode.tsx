@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useChatStore } from "../../store/chat";
 import { sendChatWithPolling } from "../../lib/api";
+import { isDesktopApp } from "../../lib/desktop";
 
 /* ═══════════════════════════════════════════════════
    Tips & personality
@@ -142,8 +143,15 @@ export default function GuideMode() {
   const sparkleId = useRef(0);
   const [spaceHeld, setSpaceHeld] = useState(false);
   const [bobPhase, setBobPhase] = useState(0);
+  const [showTextInput, setShowTextInput] = useState(false);
+  const [textInput, setTextInput] = useState("");
+  const textInputRef = useRef<HTMLInputElement>(null);
 
-  // Voice
+  // Check if speech recognition is available
+  const hasSpeech = typeof window !== "undefined" && !isDesktopApp() &&
+    !!(window as any).SpeechRecognition || !!(window as any).webkitSpeechRecognition;
+
+  // Voice (only used when hasSpeech is true)
   const { transcript, isListening, start: startListening, stop: stopListening } = useSpeechRecognition();
 
   // ESC to exit
@@ -155,59 +163,83 @@ export default function GuideMode() {
     return () => window.removeEventListener("keydown", handler);
   }, [toggleGuideMode]);
 
-  // SPACE hold = push-to-talk
+  // Send a message to Boo (shared between voice and text)
+  const sendToBoo = useCallback(async (text: string) => {
+    if (!text || text.trim().length < 2) {
+      setMood("idle");
+      setBubble("Say something! I'm here to help 👻");
+      return;
+    }
+    setMood("thinking");
+    setBubble("Hmm, let me think...");
+    try {
+      const reply = await sendChatWithPolling(
+        `[system: You are Superboo Guide Mode. You are a friendly ghost companion following the user's cursor. Keep responses SHORT (1-2 sentences max). Be helpful, casual, fun. No markdown. No file paths. Just conversational.]\n${text}`,
+        "agent:main:main"
+      );
+      if (reply && reply.trim()) {
+        const shortReply = reply.length > 150 ? reply.slice(0, 147) + "..." : reply;
+        setMood("speaking");
+        setBubble(shortReply);
+        speak(shortReply, () => {
+          setMood("idle");
+          setTimeout(() => setBubble(hasSpeech ? "Hold SPACE to talk again!" : "Press SPACE to type again!"), 3000);
+        });
+      } else {
+        setMood("idle");
+        setBubble("Hmm, I didn't catch that. Try again?");
+      }
+    } catch {
+      setMood("idle");
+      setBubble("Oops, couldn't connect. Try again!");
+    }
+  }, [hasSpeech]);
+
+  // SPACE = push-to-talk (voice) or toggle text input (no voice)
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.code === "Space" && !e.repeat && !spaceHeld) {
-        // Don't capture if typing in an input
-        const tag = (e.target as HTMLElement)?.tagName;
-        if (tag === "INPUT" || tag === "TEXTAREA") return;
+      // Don't capture if typing in the guide text input
+      if (showTextInput) return;
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+
+      if (e.code === "Space" && !e.repeat) {
         e.preventDefault();
-        setSpaceHeld(true);
-        setMood("listening");
-        setBubble("I'm listening...");
-        startListening();
+        if (hasSpeech) {
+          // Voice mode: hold to talk
+          setSpaceHeld(true);
+          setMood("listening");
+          setBubble("I'm listening...");
+          startListening();
+        } else {
+          // Text mode: toggle input
+          setShowTextInput(true);
+          setMood("listening");
+          setBubble("Type your question...");
+          setTimeout(() => textInputRef.current?.focus(), 100);
+        }
       }
     };
     const up = async (e: KeyboardEvent) => {
-      if (e.code === "Space" && spaceHeld) {
+      if (e.code === "Space" && spaceHeld && hasSpeech) {
         e.preventDefault();
         setSpaceHeld(false);
         const text = stopListening();
-        if (text && text.trim().length > 2) {
-          setMood("thinking");
-          setBubble("Hmm, let me think...");
-          try {
-            const reply = await sendChatWithPolling(
-              `[system: You are Superboo Guide Mode. You are a friendly ghost companion following the user's cursor. Keep responses SHORT (1-2 sentences max). Be helpful, casual, fun. No markdown. No file paths. Just conversational.]\n${text}`,
-              "agent:main:main"
-            );
-            if (reply && reply.trim()) {
-              const shortReply = reply.length > 150 ? reply.slice(0, 147) + "..." : reply;
-              setMood("speaking");
-              setBubble(shortReply);
-              speak(shortReply, () => {
-                setMood("idle");
-                setTimeout(() => setBubble("Hold SPACE to talk again!"), 3000);
-              });
-            } else {
-              setMood("idle");
-              setBubble("Hmm, I didn't catch that. Try again?");
-            }
-          } catch {
-            setMood("idle");
-            setBubble("Oops, couldn't connect. Try again!");
-          }
-        } else {
-          setMood("idle");
-          setBubble("Hold SPACE longer and speak!");
-        }
+        sendToBoo(text);
       }
     };
     window.addEventListener("keydown", down);
     window.addEventListener("keyup", up);
     return () => { window.removeEventListener("keydown", down); window.removeEventListener("keyup", up); };
-  }, [spaceHeld, startListening, stopListening]);
+  }, [spaceHeld, hasSpeech, showTextInput, startListening, stopListening, sendToBoo]);
+
+  // Handle text input submit
+  const handleTextSubmit = useCallback(() => {
+    const text = textInput.trim();
+    setShowTextInput(false);
+    setTextInput("");
+    sendToBoo(text);
+  }, [textInput, sendToBoo]);
 
   // Mouse tracking
   useEffect(() => {
@@ -279,7 +311,7 @@ export default function GuideMode() {
         <div style={{ position:"fixed", top:56, left:"50%", transform:"translateX(-50%)", zIndex:10001, pointerEvents:"none",
           background:"rgba(12,1,24,0.8)", backdropFilter:"blur(12px)", border:"1px solid rgba(147,112,255,0.3)",
           borderRadius:20, padding:"6px 16px", fontSize:12, color:"rgba(255,255,255,0.7)", whiteSpace:"nowrap", animation:"gmPillIn 0.3s ease-out" }}>
-          👻 Guide Mode — hold <kbd style={{ background:"rgba(255,255,255,0.1)", padding:"1px 6px", borderRadius:4, fontSize:11, margin:"0 2px" }}>SPACE</kbd> to talk · <kbd style={{ background:"rgba(255,255,255,0.1)", padding:"1px 6px", borderRadius:4, fontSize:11 }}>ESC</kbd> to exit
+          👻 Guide Mode — press <kbd style={{ background:"rgba(255,255,255,0.1)", padding:"1px 6px", borderRadius:4, fontSize:11, margin:"0 2px" }}>SPACE</kbd> to {hasSpeech ? "talk" : "type"} · <kbd style={{ background:"rgba(255,255,255,0.1)", padding:"1px 6px", borderRadius:4, fontSize:11 }}>ESC</kbd> to exit
         </div>
       )}
 
@@ -313,6 +345,36 @@ export default function GuideMode() {
           </div>
         )}
       </div>
+
+      {/* Text input (when speech not available) */}
+      {showTextInput && (
+        <div style={{
+          position: "fixed", bottom: 80, left: "50%", transform: "translateX(-50%)", zIndex: 10003,
+          display: "flex", gap: 8, alignItems: "center",
+        }}>
+          <input
+            ref={textInputRef}
+            value={textInput}
+            onChange={(e) => setTextInput(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") handleTextSubmit(); if (e.key === "Escape") { setShowTextInput(false); setMood("idle"); } }}
+            placeholder="Ask Boo anything..."
+            style={{
+              width: 360, padding: "10px 16px", borderRadius: 16, fontSize: 14,
+              background: "rgba(12,1,24,0.9)", backdropFilter: "blur(20px)",
+              border: "1px solid rgba(147,112,255,0.4)", color: "white", outline: "none",
+              boxShadow: "0 0 30px rgba(147,112,255,0.2)",
+            }}
+          />
+          <button
+            onClick={handleTextSubmit}
+            style={{
+              padding: "10px 20px", borderRadius: 16, fontSize: 13, fontWeight: 600,
+              background: "linear-gradient(135deg, #9370ff, #EC4899)", color: "white",
+              border: "none", cursor: "pointer",
+            }}
+          >Ask</button>
+        </div>
+      )}
 
       {/* Click sparkles */}
       {sparkles.map(s => (
