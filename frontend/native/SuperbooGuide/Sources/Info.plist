@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>SuperbooGuide</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.superboo.guide</string>
+    <key>CFBundleVersion</key>
+    <string>1.0</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleExecutable</key>
+    <string>SuperbooGuide</string>
+    <key>LSUIElement</key>
+    <true/>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Superboo uses your microphone so you can talk to Boo</string>
+    <key>NSScreenCaptureUsageDescription</key>
+    <string>Superboo needs screen access to help guide you</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>Superboo uses speech recognition so you can talk to Boo</string>
+</dict>
+</plist>

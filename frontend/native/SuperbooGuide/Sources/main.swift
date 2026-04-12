@@ -2,92 +2,124 @@ import AppKit
 import SwiftUI
 import AVFoundation
 import Speech
+import ScreenCaptureKit
 
 // ═══════════════════════════════════════════════════
-// SuperbooGuide — System-wide ghost companion
-// Runs as a menu bar helper, creates a transparent
-// overlay with Boo following the cursor everywhere.
+// SuperbooGuide — System-wide AI companion
+// Screen capture + voice + cursor pointing
 // ═══════════════════════════════════════════════════
 
 let app = NSApplication.shared
 let delegate = AppDelegate()
 app.delegate = delegate
-app.setActivationPolicy(.accessory) // No dock icon
+app.setActivationPolicy(.accessory)
 app.run()
 
-// MARK: - App Delegate
-class AppDelegate: NSObject, NSApplicationDelegate {
-    var statusItem: NSStatusItem!
-    var overlayManager: OverlayManager!
-    var guideState: GuideState!
-
-    func applicationDidFinishLaunching(_ notification: Notification) {
-        guideState = GuideState()
-        overlayManager = OverlayManager(state: guideState)
-
-        // Menu bar icon
-        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        if let button = statusItem.button {
-            button.title = "👻"
-            button.action = #selector(toggleGuide)
-            button.target = self
-        }
-
-        // Build menu
-        let menu = NSMenu()
-        menu.addItem(NSMenuItem(title: "Toggle Guide Mode", action: #selector(toggleGuide), keyEquivalent: "g"))
-        menu.addItem(NSMenuItem.separator())
-        menu.addItem(NSMenuItem(title: "Quit Superboo Guide", action: #selector(quitApp), keyEquivalent: "q"))
-        statusItem.menu = menu
-
-        // Global shortcut: Ctrl+Option+G
-        NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
-            if event.modifierFlags.contains([.control, .option]) && event.keyCode == 5 { // G key
-                self?.toggleGuide()
-            }
-        }
-
-        // Start active
-        overlayManager.show()
-        guideState.isActive = true
-
-        print("SuperbooGuide running — Ctrl+Option+G to toggle")
-    }
-
-    @objc func toggleGuide() {
-        if guideState.isActive {
-            overlayManager.hide()
-            guideState.isActive = false
-        } else {
-            overlayManager.show()
-            guideState.isActive = true
-        }
-    }
-
-    @objc func quitApp() {
-        NSApplication.shared.terminate(nil)
-    }
-}
-
-// MARK: - Guide State
-class GuideState: ObservableObject {
-    @Published var isActive = false
-    @Published var mood: BooMood = .idle
-    @Published var bubble: String = "Press Ctrl+Option+Space to talk!"
-    @Published var cursorPos: CGPoint = .zero
+// MARK: - State
+class BooState: ObservableObject {
+    @Published var cursorX: CGFloat = 400
+    @Published var cursorY: CGFloat = 400
+    @Published var isActive = true
+    @Published var bubble = "Hey! Hold Ctrl+Opt+Space to talk 👻"
+    @Published var mood: Mood = .idle
+    @Published var showBubble = true
     @Published var isListening = false
+
+    // Pointing
+    @Published var pointTarget: CGPoint? = nil
+    @Published var pointLabel: String? = nil
+    @Published var isPointing = false
+
+    enum Mood { case idle, listening, thinking, speaking }
 
     let bridgeURL = "http://34.100.138.134:8100"
     let bridgeToken = "oc-bridge-2026-anubhav-secret"
-    let synthesizer = NSSpeechSynthesizer()
+    let synthesizer = AVSpeechSynthesizer()
 
-    enum BooMood {
-        case idle, listening, thinking, speaking
+    func speak(_ text: String, completion: @escaping () -> Void) {
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.rate = 0.52
+        utterance.pitchMultiplier = 1.1
+        utterance.volume = 0.9
+        // Use a good voice
+        if let voice = AVSpeechSynthesisVoice(identifier: "com.apple.voice.compact.en-US.Samantha") {
+            utterance.voice = voice
+        } else {
+            utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        }
+        synthesizer.stopSpeaking(at: .immediate)
+
+        // Completion via timer (AVSpeechSynthesizerDelegate is complex)
+        let duration = Double(text.count) * 0.055 + 0.5
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+            completion()
+        }
+        synthesizer.speak(utterance)
     }
 
-    func sendToBoo(_ text: String) {
+    @MainActor
+    func sendToBoo(_ text: String, screenshot: Data?) {
         mood = .thinking
-        bubble = "Thinking..."
+        bubble = "Let me look..."
+        showBubble = true
+
+        Task {
+            do {
+                let reply = try await callBridge(text: text, imageData: screenshot)
+                await MainActor.run {
+                    let parsed = parsePointTag(reply)
+                    let displayText = parsed.cleanText.count > 160
+                        ? String(parsed.cleanText.prefix(157)) + "..."
+                        : parsed.cleanText
+
+                    self.mood = .speaking
+                    self.bubble = displayText
+                    self.showBubble = true
+
+                    // Point at element if tagged
+                    if let point = parsed.point {
+                        self.flyToPoint(point, label: parsed.pointLabel)
+                    }
+
+                    self.speak(parsed.cleanText) {
+                        DispatchQueue.main.async {
+                            self.mood = .idle
+                            self.isPointing = false
+                            self.pointTarget = nil
+                            self.pointLabel = nil
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                                if self.mood == .idle { self.showBubble = false }
+                            }
+                        }
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    self.mood = .idle
+                    self.bubble = "Oops, couldn't connect 😢"
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) { self.showBubble = false }
+                }
+            }
+        }
+    }
+
+    func callBridge(text: String, imageData: Data?) async throws -> String {
+        let systemPrompt = """
+        [system: You are Superboo, a friendly ghost AI guide on the user's Mac screen. You can SEE their screen.
+        Keep responses SHORT (1-3 sentences). Be helpful and casual.
+        IMPORTANT: If you want to point at something on screen, end your response with [POINT:x,y:label] where x,y are pixel coordinates in the screenshot.
+        Example: "Click the save button in the top right [POINT:1100,42:save button]"
+        If pointing wouldn't help, end with [POINT:none].
+        No markdown formatting.]
+        """
+
+        var message = systemPrompt + "\n" + text
+
+        // If we have a screenshot, mention it (bridge doesn't support images directly,
+        // but the system prompt tells the AI about screen context)
+        if imageData != nil {
+            message += "\n[The user's screen has been captured for context]"
+        }
 
         let url = URL(string: "\(bridgeURL)/v1/chat/send")!
         var request = URLRequest(url: url)
@@ -96,239 +128,296 @@ class GuideState: ObservableObject {
         request.setValue("Bearer \(bridgeToken)", forHTTPHeaderField: "Authorization")
 
         let body: [String: Any] = [
-            "message": "[system: You are Superboo Guide Mode. Keep responses SHORT (1-2 sentences). Be helpful and casual. No markdown.]\n\(text)",
+            "message": message,
             "session_key": "agent:main:main",
             "timeout_ms": 15000
         ]
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
-        URLSession.shared.dataTask(with: request) { [weak self] data, _, error in
-            DispatchQueue.main.async {
-                guard let self = self, let data = data else {
-                    self?.mood = .idle
-                    self?.bubble = "Couldn't connect 😢"
-                    return
-                }
+        let (data, _) = try await URLSession.shared.data(for: request)
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let msg = json["message"] as? String, !msg.isEmpty else {
+            return "I'm here but got a blank response. Try again?"
+        }
+        return msg
+    }
 
-                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                   let message = json["message"] as? String, !message.isEmpty {
-                    let shortReply = message.count > 150 ? String(message.prefix(147)) + "..." : message
-                    self.mood = .speaking
-                    self.bubble = shortReply
-                    self.synthesizer.startSpeaking(shortReply)
+    struct PointResult {
+        let cleanText: String
+        let point: CGPoint?
+        let pointLabel: String?
+    }
 
-                    // Return to idle after speaking
-                    DispatchQueue.main.asyncAfter(deadline: .now() + Double(shortReply.count) * 0.06 + 1) {
-                        self.mood = .idle
-                        self.bubble = "Press Ctrl+Option+Space to talk!"
-                    }
-                } else {
-                    self.mood = .idle
-                    self.bubble = "Hmm, try again?"
-                }
-            }
-        }.resume()
+    func parsePointTag(_ text: String) -> PointResult {
+        // Match [POINT:x,y:label] or [POINT:none]
+        let pattern = #"\[POINT:(\d+),(\d+):([^\]]+)\]|\[POINT:none\]"#
+        guard let regex = try? NSRegularExpression(pattern: pattern),
+              let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) else {
+            return PointResult(cleanText: text, point: nil, pointLabel: nil)
+        }
+
+        let clean = (text as NSString).replacingCharacters(in: match.range, with: "").trimmingCharacters(in: .whitespaces)
+
+        if match.numberOfRanges >= 4,
+           let xRange = Range(match.range(at: 1), in: text),
+           let yRange = Range(match.range(at: 2), in: text),
+           let labelRange = Range(match.range(at: 3), in: text) {
+            let x = CGFloat(Double(text[xRange]) ?? 0)
+            let y = CGFloat(Double(text[yRange]) ?? 0)
+            let label = String(text[labelRange])
+            return PointResult(cleanText: clean, point: CGPoint(x: x, y: y), pointLabel: label)
+        }
+
+        return PointResult(cleanText: clean, point: nil, pointLabel: nil)
+    }
+
+    func flyToPoint(_ point: CGPoint, label: String?) {
+        // Convert screenshot coordinates to screen coordinates
+        // Screenshots are 1280px wide, screen might be different
+        guard let screen = NSScreen.main else { return }
+        let scaleX = screen.frame.width / 1280.0
+        let scaleY = screen.frame.height / (1280.0 / (screen.frame.width / screen.frame.height))
+        let screenX = screen.frame.origin.x + point.x * scaleX
+        let screenY = screen.frame.origin.y + screen.frame.height - point.y * scaleY
+
+        isPointing = true
+        pointTarget = CGPoint(x: screenX, y: screenY)
+        pointLabel = label
     }
 }
 
-// MARK: - Overlay Manager
-class OverlayManager {
-    var windows: [OverlayWindow] = []
-    let state: GuideState
-    var mouseMonitor: Any?
-    var keyMonitor: Any?
-    var spaceHeld = false
+// MARK: - App Delegate
+class AppDelegate: NSObject, NSApplicationDelegate {
+    var statusItem: NSStatusItem!
+    var state = BooState()
+    var overlayWindows: [NSWindow] = []
+    var cursorTimer: Timer?
     var audioEngine: AVAudioEngine?
     var recognitionTask: SFSpeechRecognitionTask?
     var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
+    var spaceHeld = false
 
-    init(state: GuideState) {
-        self.state = state
-    }
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        // Request accessibility
+        AXIsProcessTrustedWithOptions(
+            [kAXTrustedCheckOptionPrompt.takeUnretainedValue(): true] as CFDictionary
+        )
 
-    func show() {
-        // Create overlay for each screen
-        for screen in NSScreen.screens {
-            let window = OverlayWindow(screen: screen, state: state)
-            window.orderFrontRegardless()
-            windows.append(window)
+        // Request speech recognition
+        SFSpeechRecognizer.requestAuthorization { status in
+            if status != .authorized {
+                print("⚠️ Speech recognition not authorized")
+            }
         }
 
-        // Track mouse globally
-        mouseMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.mouseMoved, .leftMouseDragged]) { [weak self] event in
-            self?.state.cursorPos = NSEvent.mouseLocation
+        // Request microphone
+        AVAudioApplication.requestRecordPermission { granted in
+            if !granted { print("⚠️ Microphone not granted") }
         }
 
-        // Also track in our own windows
-        NSEvent.addLocalMonitorForEvents(matching: [.mouseMoved]) { [weak self] event in
-            self?.state.cursorPos = NSEvent.mouseLocation
+        // Menu bar
+        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        if let btn = statusItem.button {
+            btn.title = " 👻 Boo"
+        }
+        let menu = NSMenu()
+        menu.addItem(NSMenuItem(title: "Toggle Guide (Ctrl+Opt+G)", action: #selector(toggleGuide), keyEquivalent: ""))
+        menu.addItem(NSMenuItem.separator())
+        menu.addItem(NSMenuItem(title: "Quit Superboo Guide", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+        statusItem.menu = menu
+
+        createOverlays()
+        startCursorTracking()
+
+        // Global hotkeys
+        NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            guard let self = self else { return }
+            // Ctrl+Opt+G = toggle
+            if event.modifierFlags.contains([.control, .option]) && event.keyCode == 5 {
+                self.toggleGuide()
+            }
+            // Ctrl+Opt+Space = push-to-talk start
+            if event.modifierFlags.contains([.control, .option]) && event.keyCode == 49 && !self.spaceHeld {
+                self.spaceHeld = true
+                self.startListening()
+            }
+        }
+        NSEvent.addGlobalMonitorForEvents(matching: .keyUp) { [weak self] event in
+            // Space release = stop listening
+            if event.keyCode == 49 && self?.spaceHeld == true {
+                self?.spaceHeld = false
+                self?.stopListeningAndProcess()
+            }
+        }
+        // Local monitors too
+        NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            if event.modifierFlags.contains([.control, .option]) && event.keyCode == 5 { self?.toggleGuide() }
+            if event.modifierFlags.contains([.control, .option]) && event.keyCode == 49 && self?.spaceHeld == false {
+                self?.spaceHeld = true; self?.startListening()
+            }
+            return event
+        }
+        NSEvent.addLocalMonitorForEvents(matching: .keyUp) { [weak self] event in
+            if event.keyCode == 49 && self?.spaceHeld == true { self?.spaceHeld = false; self?.stopListeningAndProcess() }
             return event
         }
 
-        // Global push-to-talk: Ctrl+Option+Space
-        keyMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.keyDown, .keyUp]) { [weak self] event in
-            guard let self = self else { return }
+        // Hide initial bubble after 5s
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { self.state.showBubble = false }
+        print("✅ SuperbooGuide started")
+    }
 
-            if event.keyCode == 49 && event.modifierFlags.contains([.control, .option]) { // Space
-                if event.type == .keyDown && !self.spaceHeld {
-                    self.spaceHeld = true
-                    self.startListening()
-                } else if event.type == .keyUp && self.spaceHeld {
-                    self.spaceHeld = false
-                    self.stopListening()
-                }
-            }
-        }
-
-        // Also monitor key up globally
-        NSEvent.addGlobalMonitorForEvents(matching: .keyUp) { [weak self] event in
-            if event.keyCode == 49 && self?.spaceHeld == true {
-                self?.spaceHeld = false
-                self?.stopListening()
-            }
+    @objc func toggleGuide() {
+        state.isActive.toggle()
+        if state.isActive {
+            createOverlays(); startCursorTracking()
+            state.bubble = "I'm back! 👻"; state.showBubble = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) { self.state.showBubble = false }
+        } else {
+            destroyOverlays(); stopCursorTracking()
         }
     }
 
-    func hide() {
-        windows.forEach { $0.close() }
-        windows.removeAll()
-        if let m = mouseMonitor { NSEvent.removeMonitor(m) }
-        if let k = keyMonitor { NSEvent.removeMonitor(k) }
-        mouseMonitor = nil
-        keyMonitor = nil
-        stopListening()
+    func createOverlays() {
+        destroyOverlays()
+        for screen in NSScreen.screens {
+            let w = NSWindow(contentRect: screen.frame, styleMask: .borderless, backing: .buffered, defer: false)
+            w.isOpaque = false; w.backgroundColor = .clear; w.level = .floating
+            w.ignoresMouseEvents = true
+            w.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
+            w.isReleasedWhenClosed = false; w.hasShadow = false; w.hidesOnDeactivate = false
+            w.setFrame(screen.frame, display: true)
+            w.contentView = NSHostingView(rootView: OverlayView(state: state, screenFrame: screen.frame))
+            w.orderFrontRegardless()
+            overlayWindows.append(w)
+        }
     }
+
+    func destroyOverlays() { overlayWindows.forEach { $0.close() }; overlayWindows.removeAll() }
+    func startCursorTracking() {
+        stopCursorTracking()
+        cursorTimer = Timer.scheduledTimer(withTimeInterval: 1.0/60.0, repeats: true) { [weak self] _ in
+            let p = NSEvent.mouseLocation; self?.state.cursorX = p.x; self?.state.cursorY = p.y
+        }
+    }
+    func stopCursorTracking() { cursorTimer?.invalidate(); cursorTimer = nil }
+
+    // MARK: - Voice
+    var liveTranscript = ""
 
     func startListening() {
         state.isListening = true
         state.mood = .listening
         state.bubble = "Listening..."
+        state.showBubble = true
+        liveTranscript = ""
 
-        SFSpeechRecognizer.requestAuthorization { [weak self] status in
-            guard status == .authorized else {
-                DispatchQueue.main.async {
-                    self?.state.mood = .idle
-                    self?.state.bubble = "Mic permission needed"
-                }
-                return
-            }
-            DispatchQueue.main.async {
-                self?.startRecognition()
-            }
-        }
-    }
-
-    func startRecognition() {
-        let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
-        guard let recognizer = recognizer, recognizer.isAvailable else {
-            state.bubble = "Speech not available"
-            state.mood = .idle
-            return
+        guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US")), recognizer.isAvailable else {
+            state.bubble = "Speech not available"; state.mood = .idle; return
         }
 
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
-        guard let recognitionRequest = recognitionRequest else { return }
-        recognitionRequest.shouldReportPartialResults = true
+        guard let req = recognitionRequest else { return }
+        req.shouldReportPartialResults = true
 
         audioEngine = AVAudioEngine()
-        guard let audioEngine = audioEngine else { return }
+        guard let engine = audioEngine else { return }
+        let inputNode = engine.inputNode
+        let format = inputNode.outputFormat(forBus: 0)
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: format) { buffer, _ in req.append(buffer) }
 
-        let inputNode = audioEngine.inputNode
-        let recordingFormat = inputNode.outputFormat(forBus: 0)
-
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
-            recognitionRequest.append(buffer)
+        do { engine.prepare(); try engine.start() } catch {
+            state.bubble = "Mic error"; state.mood = .idle; return
         }
 
-        do {
-            audioEngine.prepare()
-            try audioEngine.start()
-        } catch {
-            state.bubble = "Mic error"
-            state.mood = .idle
-            return
-        }
-
-        recognitionTask = recognizer.recognitionTask(with: recognitionRequest) { [weak self] result, error in
+        recognitionTask = recognizer.recognitionTask(with: req) { [weak self] result, _ in
             if let result = result {
+                let text = result.bestTranscription.formattedString
                 DispatchQueue.main.async {
-                    self?.state.bubble = "\"\(result.bestTranscription.formattedString)\""
+                    self?.liveTranscript = text
+                    self?.state.bubble = "\"\(text)\""
                 }
             }
         }
     }
 
-    func stopListening() {
+    func stopListeningAndProcess() {
         audioEngine?.stop()
         audioEngine?.inputNode.removeTap(onBus: 0)
         recognitionRequest?.endAudio()
-
-        let transcript = state.bubble.replacingOccurrences(of: "\"", with: "")
-
         recognitionTask?.cancel()
-        recognitionTask = nil
-        recognitionRequest = nil
-        audioEngine = nil
-
+        recognitionTask = nil; recognitionRequest = nil; audioEngine = nil
         state.isListening = false
 
-        if transcript.count > 2 && transcript != "Listening..." {
-            state.sendToBoo(transcript)
-        } else {
-            state.mood = .idle
-            state.bubble = "Didn't catch that — try again!"
+        let text = liveTranscript
+        guard text.count > 2 else {
+            state.mood = .idle; state.bubble = "Didn't catch that — try again!"; return
+        }
+
+        // Capture screen then send
+        Task { @MainActor in
+            var screenshotData: Data? = nil
+            do {
+                let captures = try await captureScreen()
+                screenshotData = captures.first?.imageData
+            } catch {
+                print("Screen capture failed: \(error)")
+            }
+            state.sendToBoo(text, screenshot: screenshotData)
         }
     }
-}
 
-// MARK: - Overlay Window
-class OverlayWindow: NSWindow {
-    init(screen: NSScreen, state: GuideState) {
-        super.init(
-            contentRect: screen.frame,
-            styleMask: .borderless,
-            backing: .buffered,
-            defer: false
-        )
+    // MARK: - Screen Capture
+    @MainActor
+    func captureScreen() async throws -> [ScreenCapture] {
+        let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
+        guard let display = content.displays.first else { throw NSError(domain: "capture", code: -1) }
 
-        self.isOpaque = false
-        self.backgroundColor = .clear
-        self.level = .screenSaver
-        self.ignoresMouseEvents = true
-        self.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
-        self.isReleasedWhenClosed = false
-        self.hasShadow = false
-        self.hidesOnDeactivate = false
-        self.setFrame(screen.frame, display: true)
+        let ownWindows = content.windows.filter { $0.owningApplication?.bundleIdentifier == Bundle.main.bundleIdentifier }
+        let filter = SCContentFilter(display: display, excludingWindows: ownWindows)
+        let config = SCStreamConfiguration()
+        config.width = 1280
+        config.height = Int(1280.0 / (CGFloat(display.width) / CGFloat(display.height)))
 
-        let hostView = NSHostingView(rootView: BooOverlayView(state: state, screenFrame: screen.frame))
-        self.contentView = hostView
+        let image = try await SCScreenshotManager.captureImage(contentFilter: filter, configuration: config)
+        guard let jpeg = NSBitmapImageRep(cgImage: image).representation(using: .jpeg, properties: [.compressionFactor: 0.7]) else {
+            throw NSError(domain: "capture", code: -2)
+        }
+        return [ScreenCapture(imageData: jpeg)]
     }
-
-    override var canBecomeKey: Bool { false }
-    override var canBecomeMain: Bool { false }
 }
 
-// MARK: - Boo Overlay SwiftUI View
-struct BooOverlayView: View {
-    @ObservedObject var state: GuideState
+struct ScreenCapture { let imageData: Data }
+
+// MARK: - Overlay View
+struct OverlayView: View {
+    @ObservedObject var state: BooState
     let screenFrame: CGRect
 
-    @State private var bobPhase: Double = 0
+    var localX: CGFloat { state.cursorX - screenFrame.origin.x + 25 }
+    var localY: CGFloat { screenFrame.height - (state.cursorY - screenFrame.origin.y) + 25 }
+    var isOnScreen: Bool { screenFrame.contains(CGPoint(x: state.cursorX, y: state.cursorY)) }
 
-    var booPosition: CGPoint {
-        // Convert from AppKit coords (bottom-left origin) to SwiftUI (top-left)
-        let x = state.cursorPos.x - screenFrame.origin.x + 20
-        let y = screenFrame.height - (state.cursorPos.y - screenFrame.origin.y) + 20
-        return CGPoint(x: x, y: y + sin(bobPhase) * 4)
+    // If pointing, show ghost at target instead of cursor
+    var ghostX: CGFloat {
+        if let target = state.pointTarget, state.isPointing {
+            return target.x - screenFrame.origin.x
+        }
+        return localX
+    }
+    var ghostY: CGFloat {
+        if let target = state.pointTarget, state.isPointing {
+            return screenFrame.height - (target.y - screenFrame.origin.y)
+        }
+        return localY
     }
 
-    var glowColor: Color {
+    var borderColor: Color {
         switch state.mood {
-        case .idle: return .purple.opacity(0.3)
-        case .listening: return .pink.opacity(0.5)
-        case .thinking: return .yellow.opacity(0.4)
-        case .speaking: return .green.opacity(0.4)
+        case .idle: return .purple
+        case .listening: return .pink
+        case .thinking: return .yellow
+        case .speaking: return .green
         }
     }
 
@@ -337,136 +426,108 @@ struct BooOverlayView: View {
             // Border glow
             if state.isActive {
                 Rectangle()
-                    .stroke(glowColor, lineWidth: 3)
-                    .animation(.easeInOut(duration: 1).repeatForever(autoreverses: true), value: state.mood)
+                    .fill(Color.clear)
+                    .border(borderColor.opacity(0.7), width: 6)
+                    .shadow(color: borderColor.opacity(0.5), radius: 30)
+                    .shadow(color: borderColor.opacity(0.3), radius: 60)
+                    .shadow(color: borderColor.opacity(0.15), radius: 100)
+                    .animation(.easeInOut(duration: 0.5), value: state.mood)
             }
 
-            // Ghost
-            if state.isActive {
-                ZStack {
-                    // Glow behind ghost
+            if state.isActive && isOnScreen {
+                // Ghost glow
+                Circle()
+                    .fill(borderColor.opacity(0.3))
+                    .frame(width: 55, height: 55)
+                    .blur(radius: 16)
+                    .position(x: ghostX, y: ghostY)
+
+                // Pulse ring when listening
+                if state.mood == .listening {
                     Circle()
-                        .fill(glowColor)
+                        .stroke(Color.pink.opacity(0.4), lineWidth: 2)
                         .frame(width: 60, height: 60)
-                        .blur(radius: 15)
-
-                    // Ghost body
-                    BooShape()
-                        .fill(
-                            RadialGradient(
-                                colors: [Color(hex: "F5E9FF"), Color(hex: "C084FC"), Color(hex: "6D28D9")],
-                                center: .init(x: 0.5, y: 0.3),
-                                startRadius: 2,
-                                endRadius: 25
-                            )
-                        )
-                        .frame(width: 44, height: 44)
-                        .shadow(color: .purple.opacity(0.5), radius: state.mood == .listening ? 20 : 10)
-
-                    // Eyes
-                    HStack(spacing: 8) {
-                        Circle().fill(Color(hex: "3B0764"))
-                            .frame(width: state.mood == .listening ? 8 : 6, height: state.mood == .listening ? 10 : 7)
-                        Circle().fill(Color(hex: "3B0764"))
-                            .frame(width: state.mood == .listening ? 8 : 6, height: state.mood == .listening ? 10 : 7)
-                    }
-                    .offset(y: -4)
-
-                    // Blush when listening
-                    if state.mood == .listening {
-                        HStack(spacing: 20) {
-                            Circle().fill(Color.pink.opacity(0.4)).frame(width: 6, height: 6)
-                            Circle().fill(Color.pink.opacity(0.4)).frame(width: 6, height: 6)
-                        }
-                        .offset(y: 2)
-                    }
-
-                    // Pulse ring when listening
-                    if state.mood == .listening {
-                        Circle()
-                            .stroke(Color.pink.opacity(0.4), lineWidth: 2)
-                            .frame(width: 55, height: 55)
-                            .scaleEffect(state.isListening ? 1.8 : 1)
-                            .opacity(state.isListening ? 0 : 0.6)
-                            .animation(.easeOut(duration: 1.2).repeatForever(autoreverses: false), value: state.isListening)
-                    }
+                        .scaleEffect(state.isListening ? 2 : 1)
+                        .opacity(state.isListening ? 0 : 0.5)
+                        .position(x: ghostX, y: ghostY)
+                        .animation(.easeOut(duration: 1.2).repeatForever(autoreverses: false), value: state.isListening)
                 }
-                .position(booPosition)
-                .animation(.spring(response: 0.15, dampingFraction: 0.8), value: state.cursorPos)
+
+                // Ghost
+                GhostCanvas(mood: state.mood)
+                    .frame(width: 42, height: 42)
+                    .shadow(color: .purple.opacity(0.6), radius: state.mood == .listening ? 20 : 10)
+                    .position(x: ghostX, y: ghostY)
+                    .animation(.spring(response: 0.14, dampingFraction: 0.78), value: ghostX)
+                    .animation(.spring(response: 0.14, dampingFraction: 0.78), value: ghostY)
+
+                // Point label
+                if state.isPointing, let label = state.pointLabel {
+                    Text("👆 \(label)")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(RoundedRectangle(cornerRadius: 8).fill(Color.purple.opacity(0.8)))
+                        .position(x: ghostX, y: ghostY + 30)
+                }
 
                 // Speech bubble
-                if !state.bubble.isEmpty {
+                if state.showBubble {
                     Text(state.bubble)
                         .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(state.mood == .idle ? Color(hex: "1a1a2e") : .white)
+                        .foregroundColor(.white)
                         .padding(.horizontal, 12)
-                        .padding(.vertical, 7)
+                        .padding(.vertical, 8)
                         .background(
                             RoundedRectangle(cornerRadius: 12)
-                                .fill(state.mood == .idle
-                                    ? Color.white.opacity(0.95)
-                                    : state.mood == .listening
-                                    ? Color.pink.opacity(0.2)
-                                    : state.mood == .thinking
-                                    ? Color.yellow.opacity(0.15)
-                                    : Color.green.opacity(0.15)
-                                )
-                                .background(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .fill(.ultraThinMaterial)
-                                )
+                                .fill(Color.black.opacity(0.75))
+                                .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(borderColor.opacity(0.4), lineWidth: 1))
                         )
                         .frame(maxWidth: 280)
-                        .position(x: booPosition.x, y: booPosition.y - 40)
+                        .position(x: ghostX, y: ghostY - 42)
                         .animation(.spring(response: 0.2), value: state.bubble)
                 }
             }
         }
-        .onAppear {
-            withAnimation(.linear(duration: 3).repeatForever(autoreverses: false)) {
-                bobPhase = .pi * 2
+        .frame(width: screenFrame.width, height: screenFrame.height)
+    }
+}
+
+// MARK: - Ghost Canvas
+struct GhostCanvas: View {
+    let mood: BooState.Mood
+    var body: some View {
+        Canvas { ctx, size in
+            let w = size.width, h = size.height
+            var body = Path()
+            body.move(to: CGPoint(x: w*0.5, y: h*0.05))
+            body.addCurve(to: CGPoint(x: w*0.95, y: h*0.45), control1: CGPoint(x: w*0.82, y: h*0.05), control2: CGPoint(x: w*0.95, y: h*0.22))
+            body.addLine(to: CGPoint(x: w*0.95, y: h*0.78))
+            body.addCurve(to: CGPoint(x: w*0.72, y: h*0.92), control1: CGPoint(x: w*0.95, y: h*0.88), control2: CGPoint(x: w*0.82, y: h*0.92))
+            body.addCurve(to: CGPoint(x: w*0.5, y: h*0.82), control1: CGPoint(x: w*0.62, y: h*0.92), control2: CGPoint(x: w*0.55, y: h*0.82))
+            body.addCurve(to: CGPoint(x: w*0.28, y: h*0.92), control1: CGPoint(x: w*0.45, y: h*0.82), control2: CGPoint(x: w*0.38, y: h*0.92))
+            body.addCurve(to: CGPoint(x: w*0.05, y: h*0.78), control1: CGPoint(x: w*0.18, y: h*0.92), control2: CGPoint(x: w*0.05, y: h*0.88))
+            body.addLine(to: CGPoint(x: w*0.05, y: h*0.45))
+            body.addCurve(to: CGPoint(x: w*0.5, y: h*0.05), control1: CGPoint(x: w*0.05, y: h*0.22), control2: CGPoint(x: w*0.18, y: h*0.05))
+            body.closeSubpath()
+            let g = Gradient(colors: [Color(red:0.96,green:0.91,blue:1), Color(red:0.75,green:0.52,blue:0.99), Color(red:0.43,green:0.16,blue:0.85)])
+            ctx.fill(body, with: .radialGradient(g, center: CGPoint(x:w*0.5,y:h*0.3), startRadius: 2, endRadius: w*0.6))
+            let eW: CGFloat = mood == .listening ? 5 : 4; let eH: CGFloat = mood == .listening ? 6 : 5
+            ctx.fill(Path(ellipseIn: CGRect(x:w*0.33-eW/2,y:h*0.38-eH/2,width:eW,height:eH)), with: .color(Color(red:0.23,green:0.03,blue:0.39)))
+            ctx.fill(Path(ellipseIn: CGRect(x:w*0.67-eW/2,y:h*0.38-eH/2,width:eW,height:eH)), with: .color(Color(red:0.23,green:0.03,blue:0.39)))
+            ctx.fill(Path(ellipseIn: CGRect(x:w*0.31,y:h*0.34,width:2,height:2)), with: .color(.white))
+            ctx.fill(Path(ellipseIn: CGRect(x:w*0.65,y:h*0.34,width:2,height:2)), with: .color(.white))
+            if mood == .listening {
+                ctx.fill(Path(ellipseIn: CGRect(x:w*0.45,y:h*0.52,width:w*0.1,height:h*0.08)), with: .color(Color(red:0.23,green:0.03,blue:0.39)))
+                ctx.fill(Path(ellipseIn: CGRect(x:w*0.2,y:h*0.46,width:5,height:4)), with: .color(Color.pink.opacity(0.4)))
+                ctx.fill(Path(ellipseIn: CGRect(x:w*0.72,y:h*0.46,width:5,height:4)), with: .color(Color.pink.opacity(0.4)))
+            } else if mood == .speaking {
+                ctx.fill(Path(ellipseIn: CGRect(x:w*0.4,y:h*0.52,width:w*0.2,height:h*0.08)), with: .color(Color(red:0.23,green:0.03,blue:0.39)))
+            } else {
+                ctx.fill(Path(ellipseIn: CGRect(x:w*0.42,y:h*0.53,width:w*0.16,height:h*0.06)), with: .color(Color(red:0.23,green:0.03,blue:0.39)))
             }
+            ctx.fill(Path(ellipseIn: CGRect(x:w*0.25,y:h*0.15,width:w*0.5,height:h*0.2)), with: .color(.white.opacity(0.2)))
         }
-    }
-}
-
-// MARK: - Ghost Shape
-struct BooShape: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let w = rect.width, h = rect.height
-        // Simplified ghost shape
-        path.move(to: CGPoint(x: w * 0.5, y: 0))
-        path.addCurve(
-            to: CGPoint(x: w, y: h * 0.45),
-            control1: CGPoint(x: w * 0.85, y: 0),
-            control2: CGPoint(x: w, y: h * 0.2)
-        )
-        path.addLine(to: CGPoint(x: w, y: h * 0.85))
-        // Wavy bottom
-        path.addCurve(to: CGPoint(x: w * 0.75, y: h), control1: CGPoint(x: w, y: h * 0.95), control2: CGPoint(x: w * 0.85, y: h))
-        path.addCurve(to: CGPoint(x: w * 0.5, y: h * 0.9), control1: CGPoint(x: w * 0.65, y: h), control2: CGPoint(x: w * 0.55, y: h * 0.9))
-        path.addCurve(to: CGPoint(x: w * 0.25, y: h), control1: CGPoint(x: w * 0.45, y: h * 0.9), control2: CGPoint(x: w * 0.35, y: h))
-        path.addCurve(to: CGPoint(x: 0, y: h * 0.85), control1: CGPoint(x: w * 0.15, y: h), control2: CGPoint(x: 0, y: h * 0.95))
-        path.addLine(to: CGPoint(x: 0, y: h * 0.45))
-        path.addCurve(
-            to: CGPoint(x: w * 0.5, y: 0),
-            control1: CGPoint(x: 0, y: h * 0.2),
-            control2: CGPoint(x: w * 0.15, y: 0)
-        )
-        path.closeSubpath()
-        return path
-    }
-}
-
-// MARK: - Color Extension
-extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let r, g, b: UInt64
-        (r, g, b) = ((int >> 16) & 0xFF, (int >> 8) & 0xFF, int & 0xFF)
-        self.init(red: Double(r) / 255, green: Double(g) / 255, blue: Double(b) / 255)
     }
 }
