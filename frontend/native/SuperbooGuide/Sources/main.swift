@@ -60,35 +60,38 @@ class BooState: ObservableObject {
     @MainActor
     func sendToBoo(_ text: String, screenshot: Data?) {
         mood = .thinking
-        bubble = "Let me look..."
+        bubble = "Let me look at your screen..."
         showBubble = true
 
         Task {
             do {
-                let reply = try await callBridge(text: text, imageData: screenshot)
+                let result = try await callComputerUse(text: text, imageData: screenshot)
+
                 await MainActor.run {
-                    let parsed = parsePointTag(reply)
-                    let displayText = parsed.cleanText.count > 160
-                        ? String(parsed.cleanText.prefix(157)) + "..."
-                        : parsed.cleanText
+                    let displayText = result.response.count > 160
+                        ? String(result.response.prefix(157)) + "..."
+                        : result.response
 
                     self.mood = .speaking
                     self.bubble = displayText
                     self.showBubble = true
 
-                    // Point or click at element if tagged
-                    if let point = parsed.point {
-                        self.flyToPoint(point, label: parsed.pointLabel)
-                        // If click requested, click after the cursor arrives
-                        if parsed.shouldClick {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
-                                self.clickAtCurrentPosition()
-                                self.bubble = "Clicked \(parsed.pointLabel ?? "it")! ✅"
-                            }
+                    // Handle CLICK action — move cursor and click
+                    if let click = result.click {
+                        let point = CGPoint(x: CGFloat(click.x), y: CGFloat(click.y))
+                        self.flyToPoint(point, label: click.label)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+                            self.clickAtCurrentPosition()
+                            self.bubble = "Clicked \(click.label)! ✅"
                         }
                     }
+                    // Handle POINT action — move cursor to show
+                    else if let point = result.point {
+                        let cgPoint = CGPoint(x: CGFloat(point.x), y: CGFloat(point.y))
+                        self.flyToPoint(cgPoint, label: point.label)
+                    }
 
-                    self.speak(parsed.cleanText) {
+                    self.speak(result.response) {
                         DispatchQueue.main.async {
                             self.mood = .idle
                             self.isPointing = false
@@ -110,93 +113,59 @@ class BooState: ObservableObject {
         }
     }
 
-    func callBridge(text: String, imageData: Data?) async throws -> String {
-        let systemPrompt = """
-        [system: You are Superboo, a friendly ghost AI guide on the user's Mac screen. You can SEE their screen.
-        Keep responses SHORT (1-3 sentences). Be helpful and casual.
-        IMPORTANT ACTIONS:
-        - To POINT at something: end with [POINT:x,y:label] where x,y are pixel coordinates in the screenshot.
-        - To CLICK something: end with [CLICK:x,y:label] — this will move the cursor AND click.
-        - If no action needed: end with [POINT:none].
-        Examples:
-        - "See the save button up there? [POINT:1100,42:save button]"
-        - "Let me open that for you [CLICK:500,300:file menu]"
-        - "That's a great question! HTML is the skeleton of web pages. [POINT:none]"
-        Only use CLICK when the user explicitly asks you to click/open/press something.
-        No markdown formatting.]
-        """
+    struct ComputerUseResult {
+        let response: String
+        let point: (x: Int, y: Int, label: String)?
+        let click: (x: Int, y: Int, label: String)?
+    }
 
-        var message = systemPrompt + "\n" + text
-
-        // If we have a screenshot, mention it (bridge doesn't support images directly,
-        // but the system prompt tells the AI about screen context)
-        if imageData != nil {
-            message += "\n[The user's screen has been captured for context]"
-        }
-
-        let url = URL(string: "\(bridgeURL)/v1/chat/send")!
+    func callComputerUse(text: String, imageData: Data?) async throws -> ComputerUseResult {
+        let url = URL(string: "\(bridgeURL)/v1/computer-use")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(bridgeToken)", forHTTPHeaderField: "Authorization")
+        request.timeoutInterval = 30
+
+        let imageBase64 = imageData?.base64EncodedString() ?? ""
 
         let body: [String: Any] = [
-            "message": message,
-            "session_key": "agent:main:main",
-            "timeout_ms": 15000
+            "image": imageBase64,
+            "question": text,
         ]
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
         let (data, _) = try await URLSession.shared.data(for: request)
-        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let msg = json["message"] as? String, !msg.isEmpty else {
-            return "I'm here but got a blank response. Try again?"
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return ComputerUseResult(response: "Got a bad response", point: nil, click: nil)
         }
-        return msg
+
+        let ok = json["ok"] as? Bool ?? false
+        guard ok else {
+            let error = json["error"] as? String ?? "Unknown error"
+            return ComputerUseResult(response: "Error: \(error)", point: nil, click: nil)
+        }
+
+        let response = json["response"] as? String ?? "I see your screen but couldn't form a response."
+
+        // Parse point
+        var point: (x: Int, y: Int, label: String)? = nil
+        if let p = json["point"] as? [String: Any],
+           let x = p["x"] as? Int, let y = p["y"] as? Int, let label = p["label"] as? String {
+            point = (x: x, y: y, label: label)
+        }
+
+        // Parse click
+        var click: (x: Int, y: Int, label: String)? = nil
+        if let c = json["click"] as? [String: Any],
+           let x = c["x"] as? Int, let y = c["y"] as? Int, let label = c["label"] as? String {
+            click = (x: x, y: y, label: label)
+        }
+
+        return ComputerUseResult(response: response, point: point, click: click)
     }
 
-    struct PointResult {
-        let cleanText: String
-        let point: CGPoint?
-        let pointLabel: String?
-        let shouldClick: Bool
-    }
-
-    func parsePointTag(_ text: String) -> PointResult {
-        // Match [CLICK:x,y:label] first (takes priority)
-        let clickPattern = #"\[CLICK:(\d+),(\d+):([^\]]+)\]"#
-        if let clickRegex = try? NSRegularExpression(pattern: clickPattern),
-           let match = clickRegex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
-           match.numberOfRanges >= 4,
-           let xRange = Range(match.range(at: 1), in: text),
-           let yRange = Range(match.range(at: 2), in: text),
-           let labelRange = Range(match.range(at: 3), in: text) {
-            let clean = (text as NSString).replacingCharacters(in: match.range, with: "").trimmingCharacters(in: .whitespaces)
-            let x = CGFloat(Double(text[xRange]) ?? 0)
-            let y = CGFloat(Double(text[yRange]) ?? 0)
-            return PointResult(cleanText: clean, point: CGPoint(x: x, y: y), pointLabel: String(text[labelRange]), shouldClick: true)
-        }
-
-        // Match [POINT:x,y:label] or [POINT:none]
-        let pattern = #"\[POINT:(\d+),(\d+):([^\]]+)\]|\[POINT:none\]"#
-        guard let regex = try? NSRegularExpression(pattern: pattern),
-              let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) else {
-            return PointResult(cleanText: text, point: nil, pointLabel: nil, shouldClick: false)
-        }
-
-        let clean = (text as NSString).replacingCharacters(in: match.range, with: "").trimmingCharacters(in: .whitespaces)
-
-        if match.numberOfRanges >= 4,
-           let xRange = Range(match.range(at: 1), in: text),
-           let yRange = Range(match.range(at: 2), in: text),
-           let labelRange = Range(match.range(at: 3), in: text) {
-            let x = CGFloat(Double(text[xRange]) ?? 0)
-            let y = CGFloat(Double(text[yRange]) ?? 0)
-            return PointResult(cleanText: clean, point: CGPoint(x: x, y: y), pointLabel: String(text[labelRange]), shouldClick: false)
-        }
-
-        return PointResult(cleanText: clean, point: nil, pointLabel: nil, shouldClick: false)
-    }
+    // Parsing is now handled by the bridge's /v1/computer-use endpoint
 
     func flyToPoint(_ point: CGPoint, label: String?) {
         // Convert screenshot coordinates to screen coordinates
