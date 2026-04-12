@@ -76,9 +76,16 @@ class BooState: ObservableObject {
                     self.bubble = displayText
                     self.showBubble = true
 
-                    // Point at element if tagged
+                    // Point or click at element if tagged
                     if let point = parsed.point {
                         self.flyToPoint(point, label: parsed.pointLabel)
+                        // If click requested, click after the cursor arrives
+                        if parsed.shouldClick {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+                                self.clickAtCurrentPosition()
+                                self.bubble = "Clicked \(parsed.pointLabel ?? "it")! ✅"
+                            }
+                        }
                     }
 
                     self.speak(parsed.cleanText) {
@@ -107,9 +114,15 @@ class BooState: ObservableObject {
         let systemPrompt = """
         [system: You are Superboo, a friendly ghost AI guide on the user's Mac screen. You can SEE their screen.
         Keep responses SHORT (1-3 sentences). Be helpful and casual.
-        IMPORTANT: If you want to point at something on screen, end your response with [POINT:x,y:label] where x,y are pixel coordinates in the screenshot.
-        Example: "Click the save button in the top right [POINT:1100,42:save button]"
-        If pointing wouldn't help, end with [POINT:none].
+        IMPORTANT ACTIONS:
+        - To POINT at something: end with [POINT:x,y:label] where x,y are pixel coordinates in the screenshot.
+        - To CLICK something: end with [CLICK:x,y:label] — this will move the cursor AND click.
+        - If no action needed: end with [POINT:none].
+        Examples:
+        - "See the save button up there? [POINT:1100,42:save button]"
+        - "Let me open that for you [CLICK:500,300:file menu]"
+        - "That's a great question! HTML is the skeleton of web pages. [POINT:none]"
+        Only use CLICK when the user explicitly asks you to click/open/press something.
         No markdown formatting.]
         """
 
@@ -146,14 +159,29 @@ class BooState: ObservableObject {
         let cleanText: String
         let point: CGPoint?
         let pointLabel: String?
+        let shouldClick: Bool
     }
 
     func parsePointTag(_ text: String) -> PointResult {
+        // Match [CLICK:x,y:label] first (takes priority)
+        let clickPattern = #"\[CLICK:(\d+),(\d+):([^\]]+)\]"#
+        if let clickRegex = try? NSRegularExpression(pattern: clickPattern),
+           let match = clickRegex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
+           match.numberOfRanges >= 4,
+           let xRange = Range(match.range(at: 1), in: text),
+           let yRange = Range(match.range(at: 2), in: text),
+           let labelRange = Range(match.range(at: 3), in: text) {
+            let clean = (text as NSString).replacingCharacters(in: match.range, with: "").trimmingCharacters(in: .whitespaces)
+            let x = CGFloat(Double(text[xRange]) ?? 0)
+            let y = CGFloat(Double(text[yRange]) ?? 0)
+            return PointResult(cleanText: clean, point: CGPoint(x: x, y: y), pointLabel: String(text[labelRange]), shouldClick: true)
+        }
+
         // Match [POINT:x,y:label] or [POINT:none]
         let pattern = #"\[POINT:(\d+),(\d+):([^\]]+)\]|\[POINT:none\]"#
         guard let regex = try? NSRegularExpression(pattern: pattern),
               let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) else {
-            return PointResult(cleanText: text, point: nil, pointLabel: nil)
+            return PointResult(cleanText: text, point: nil, pointLabel: nil, shouldClick: false)
         }
 
         let clean = (text as NSString).replacingCharacters(in: match.range, with: "").trimmingCharacters(in: .whitespaces)
@@ -164,11 +192,10 @@ class BooState: ObservableObject {
            let labelRange = Range(match.range(at: 3), in: text) {
             let x = CGFloat(Double(text[xRange]) ?? 0)
             let y = CGFloat(Double(text[yRange]) ?? 0)
-            let label = String(text[labelRange])
-            return PointResult(cleanText: clean, point: CGPoint(x: x, y: y), pointLabel: label)
+            return PointResult(cleanText: clean, point: CGPoint(x: x, y: y), pointLabel: String(text[labelRange]), shouldClick: false)
         }
 
-        return PointResult(cleanText: clean, point: nil, pointLabel: nil)
+        return PointResult(cleanText: clean, point: nil, pointLabel: nil, shouldClick: false)
     }
 
     func flyToPoint(_ point: CGPoint, label: String?) {
@@ -176,13 +203,77 @@ class BooState: ObservableObject {
         // Screenshots are 1280px wide, screen might be different
         guard let screen = NSScreen.main else { return }
         let scaleX = screen.frame.width / 1280.0
-        let scaleY = screen.frame.height / (1280.0 / (screen.frame.width / screen.frame.height))
-        let screenX = screen.frame.origin.x + point.x * scaleX
-        let screenY = screen.frame.origin.y + screen.frame.height - point.y * scaleY
+        let aspectRatio = screen.frame.width / screen.frame.height
+        let scaleY = screen.frame.height / (1280.0 / aspectRatio)
+
+        // Screenshot coords are top-left origin, CGEvent coords are also top-left
+        let targetX = point.x * scaleX
+        let targetY = point.y * scaleY
 
         isPointing = true
-        pointTarget = CGPoint(x: screenX, y: screenY)
         pointLabel = label
+
+        // Animate cursor movement in steps for smooth flight
+        let currentPos = NSEvent.mouseLocation
+        // Convert AppKit (bottom-left) to CG (top-left) for CGEvent
+        let screenHeight = screen.frame.height + screen.frame.origin.y
+        let startCG = CGPoint(x: currentPos.x, y: screenHeight - currentPos.y)
+        let endCG = CGPoint(x: targetX, y: targetY)
+
+        // Also update our overlay target (AppKit coords for the ghost)
+        let targetAppKit = CGPoint(x: targetX, y: screenHeight - targetY)
+        pointTarget = targetAppKit
+
+        // Smooth cursor movement over 0.5 seconds (30 steps)
+        let steps = 30
+        let duration = 0.5
+        for i in 0...steps {
+            let t = Double(i) / Double(steps)
+            // Ease-out curve
+            let eased = 1.0 - pow(1.0 - t, 3)
+            let x = startCG.x + (endCG.x - startCG.x) * eased
+            let y = startCG.y + (endCG.y - startCG.y) * eased
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + duration * t) {
+                let moveEvent = CGEvent(
+                    mouseEventSource: nil,
+                    mouseType: .mouseMoved,
+                    mouseCursorPosition: CGPoint(x: x, y: y),
+                    mouseButton: .left
+                )
+                moveEvent?.post(tap: .cghidEventTap)
+            }
+        }
+    }
+
+    /// Click at the current cursor position
+    func clickAtCurrentPosition() {
+        let pos = NSEvent.mouseLocation
+        guard let screen = NSScreen.main else { return }
+        let screenHeight = screen.frame.height + screen.frame.origin.y
+        let cgPos = CGPoint(x: pos.x, y: screenHeight - pos.y)
+
+        let mouseDown = CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown, mouseCursorPosition: cgPos, mouseButton: .left)
+        let mouseUp = CGEvent(mouseEventSource: nil, mouseType: .leftMouseUp, mouseCursorPosition: cgPos, mouseButton: .left)
+        mouseDown?.post(tap: .cghidEventTap)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            mouseUp?.post(tap: .cghidEventTap)
+        }
+    }
+
+    /// Move cursor to a specific screen position (AppKit coordinates)
+    func moveCursorTo(x: CGFloat, y: CGFloat) {
+        guard let screen = NSScreen.main else { return }
+        let screenHeight = screen.frame.height + screen.frame.origin.y
+        let cgPos = CGPoint(x: x, y: screenHeight - y)
+
+        let moveEvent = CGEvent(
+            mouseEventSource: nil,
+            mouseType: .mouseMoved,
+            mouseCursorPosition: cgPos,
+            mouseButton: .left
+        )
+        moveEvent?.post(tap: .cghidEventTap)
     }
 }
 
