@@ -30,17 +30,17 @@ const FEATURES = [
   {
     icon: MessageSquare,
     title: "Chat Interface",
-    desc: "Full Superboo chat with 35+ skills, file creation, and canvas preview. Everything from the web app, native on your Mac.",
+    desc: "Full Superboo chat with creative and learning skills, file creation, and canvas preview. Safe for kids, native on your Mac.",
   },
   {
     icon: MousePointer2,
     title: "Guide Mode",
-    desc: "Boo follows your cursor system-wide, answers questions about your screen, and helps you in any app.",
+    desc: "Boo follows your kid's cursor system-wide, answers questions about the screen, and helps with homework in any app.",
   },
   {
     icon: Monitor,
     title: "Always On",
-    desc: "Menu bar app that lives in your system tray. Press Option+Space to summon Boo from anywhere, anytime.",
+    desc: "Menu bar app that lives in the system tray. Press Option+Space to summon Boo from anywhere. Safe AI, always available.",
   },
 ];
 
@@ -70,7 +70,7 @@ function AppPreview() {
         {/* Sidebar */}
         <div className="w-[180px] border-r border-white/6 p-3 flex flex-col gap-1" style={{ background: "rgba(15,6,28,0.95)" }}>
           <div className="text-[11px] text-white/30 uppercase tracking-wider px-2 py-1 mb-1">Chats</div>
-          {["Pitch deck project", "TikTok scripts", "Resume polish", "Study guide"].map((c, i) => (
+          {["Dragon story", "Science fair poster", "Math homework", "Study guide"].map((c, i) => (
             <div key={i} className={`px-3 py-2 rounded-lg text-[12px] truncate ${i === 0 ? "bg-white/8 text-white/80" : "text-white/40"}`}>
               {c}
             </div>
@@ -85,18 +85,18 @@ function AppPreview() {
           <div className="flex-1 p-4 space-y-3 overflow-hidden">
             {/* User message */}
             <div className="flex gap-2.5">
-              <div className="w-6 h-6 rounded-full bg-white/10 flex-shrink-0 flex items-center justify-center text-[10px] text-white/50">Y</div>
-              <div className="text-[12px] text-white/80 leading-relaxed pt-0.5">Make me a 10-slide pitch deck for my AI startup</div>
+              <div className="w-6 h-6 rounded-full bg-white/10 flex-shrink-0 flex items-center justify-center text-[10px] text-white/50">K</div>
+              <div className="text-[12px] text-white/80 leading-relaxed pt-0.5">Help me write a story about a dragon who can't fly</div>
             </div>
             {/* Bot message */}
             <div className="flex gap-2.5">
               <div className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] text-white" style={{ background: "linear-gradient(135deg, #9370ff, #EC4899)" }}>S</div>
               <div className="text-[12px] text-white/60 leading-relaxed pt-0.5">
-                <p>On it! Creating your pitch deck with:</p>
+                <p>On it! Writing your dragon story with:</p>
                 <div className="mt-2 space-y-1">
-                  <div className="flex items-center gap-2 text-[11px]"><span className="text-[#4ade80]">&#10003;</span> Market analysis</div>
-                  <div className="flex items-center gap-2 text-[11px]"><span className="text-[#4ade80]">&#10003;</span> Revenue projections</div>
-                  <div className="flex items-center gap-2 text-[11px]"><span className="text-white/30">...</span> Designing slides</div>
+                  <div className="flex items-center gap-2 text-[11px]"><span className="text-[#4ade80]">&#10003;</span> Character created</div>
+                  <div className="flex items-center gap-2 text-[11px]"><span className="text-[#4ade80]">&#10003;</span> Plot outline ready</div>
+                  <div className="flex items-center gap-2 text-[11px]"><span className="text-white/30">...</span> Writing the adventure</div>
                 </div>
               </div>
             </div>
@@ -139,7 +139,7 @@ export default function DownloadPage() {
             <button onClick={() => nav("/login")}
               className="text-[13px] px-5 py-2 rounded-xl text-white font-semibold transition-all"
               style={{ background: "linear-gradient(135deg, #9370ff, #EC4899)" }}>
-              Get started
+              Try Boo free
             </button>
           </div>
         </div>
@@ -164,7 +164,7 @@ export default function DownloadPage() {
             </span>
           </h1>
           <p className="text-[18px] md:text-[22px] text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Your AI companion, right on your desktop.
+            Your kid&apos;s AI companion, right on the desktop. Safe and fun.
           </p>
 
           <a href={DMG_URL}
@@ -174,7 +174,7 @@ export default function DownloadPage() {
             Download for Mac
           </a>
           <p className="text-[13px] text-white/30 mt-4">
-            macOS 14+ &middot; Apple Silicon
+            macOS 14+ &middot; Apple Silicon &middot; Safe for kids
           </p>
         </div>
       </section>
@@ -209,7 +209,7 @@ export default function DownloadPage() {
               </span>
             </h2>
             <p className="text-white/40 text-[15px] mt-3 max-w-md mx-auto">
-              A real desktop app with sidebar, chat, canvas, and guide mode.
+              A real desktop app with sidebar, chat, canvas, and guide mode. Safe for kids.
             </p>
           </div>
           <AppPreview />
@@ -278,7 +278,7 @@ export default function DownloadPage() {
             Get Boo on your Mac.
           </h2>
           <p className="text-white/40 text-[15px] mb-10 max-w-sm mx-auto">
-            Free to download. Sign in with your Superboo account.
+            Free to download. Safe for kids. Sign in with your Superboo account.
           </p>
           <a href={DMG_URL}
             className="inline-flex items-center gap-3 px-10 py-4 rounded-xl text-white text-[17px] font-bold transition-all hover:scale-105 active:scale-95"

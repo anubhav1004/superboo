@@ -56,10 +56,10 @@ function useReveal<T extends HTMLElement>(): [React.RefObject<T | null>, boolean
    ═══════════════════════════════════════════════════════ */
 function ChatPreview() {
   const lines = [
-    { role: "user", text: "Make me a pitch deck for my AI fitness app" },
-    { role: "bot", text: "On it! Creating your pitch deck..." },
-    { role: "bot", text: "Designing visuals and charts..." },
-    { role: "bot", text: "Your 10-slide pitch deck is ready!" },
+    { role: "user", text: "Help me write a story about a dragon who's afraid of fire" },
+    { role: "bot", text: "On it! Crafting your story..." },
+    { role: "bot", text: "Adding characters and twists..." },
+    { role: "bot", text: "Your story is ready to read!" },
   ];
   const [shown, setShown] = useState(0);
   useEffect(() => {
@@ -112,9 +112,9 @@ function ChatPreview() {
 function HowItWorks() {
   const [step, setStep] = useState(0);
   const steps = [
-    { label: "You type", desc: "Tell Boo what you need in plain words", icon: MessageCircle },
-    { label: "Boo works", desc: "The ghost picks tools and creates it", icon: Sparkles },
-    { label: "You get it", desc: "Download your polished creation instantly", icon: Film },
+    { label: "Your kid tells Boo", desc: "A story for English class? Help with fractions? A poster for the school fair? Just ask.", icon: MessageCircle },
+    { label: "Boo creates it safely", desc: "Using our proprietary safe AI models, Boo makes exactly what your kid described. No unsafe content, ever.", icon: Sparkles },
+    { label: "Download & share", desc: "Print the poster, submit the essay, share the story. Real creations your kid made with AI.", icon: Film },
   ];
 
   useEffect(() => {
@@ -131,13 +131,13 @@ function HowItWorks() {
         {step === 0 && (
           <div className="how-typing-mock">
             <div className="how-typing-cursor"/>
-            <span className="text-white/70 text-sm">Make me a TikTok about...</span>
+            <span className="text-white/70 text-sm">Write me a story about...</span>
           </div>
         )}
         {step === 2 && (
           <div className="how-result-mock">
             <Play size={32} className="text-white/80" />
-            <span className="text-white/60 text-xs mt-2">pitch_deck.pdf</span>
+            <span className="text-white/60 text-xs mt-2">my_story.pdf</span>
           </div>
         )}
         {step !== 0 && step !== 1 && step !== 2 && <StepIcon size={48} className="text-white/60" />}
@@ -166,74 +166,74 @@ function HowItWorks() {
    Data
    ═══════════════════════════════════════════════════════ */
 const USE_CASES = [
-  { emoji: "\uD83C\uDFAC", label: "Create a TikTok", bg: "linear-gradient(135deg, #EC4899, #F472B6)" },
-  { emoji: "\uD83D\uDCCA", label: "Make a pitch deck", bg: "linear-gradient(135deg, #8B5CF6, #A78BFA)" },
-  { emoji: "\uD83D\uDCDD", label: "Write my resume", bg: "linear-gradient(135deg, #22C55E, #4ADE80)" },
-  { emoji: "\uD83D\uDCAA", label: "Workout plan", bg: "linear-gradient(135deg, #F43F5E, #FB7185)" },
-  { emoji: "\uD83D\uDCDA", label: "Study guide", bg: "linear-gradient(135deg, #06B6D4, #22D3EE)" },
+  { emoji: "\uD83D\uDCD6", label: "Write a story", bg: "linear-gradient(135deg, #EC4899, #F472B6)" },
+  { emoji: "\uD83C\uDFA8", label: "Make art", bg: "linear-gradient(135deg, #8B5CF6, #A78BFA)" },
+  { emoji: "\uD83D\uDCDA", label: "Study guide", bg: "linear-gradient(135deg, #22C55E, #4ADE80)" },
+  { emoji: "\uD83D\uDCAA", label: "Science experiment", bg: "linear-gradient(135deg, #F43F5E, #FB7185)" },
+  { emoji: "\uD83C\uDFAE", label: "Build a game", bg: "linear-gradient(135deg, #06B6D4, #22D3EE)" },
   { emoji: "\uD83C\uDFB5", label: "Write a song", bg: "linear-gradient(135deg, #F97316, #FB923C)" },
-  { emoji: "\uD83D\uDCC8", label: "Interview prep", bg: "linear-gradient(135deg, #EAB308, #FACC15)" },
-  { emoji: "\u2709\uFE0F", label: "Draft an email", bg: "linear-gradient(135deg, #3B82F6, #60A5FA)" },
+  { emoji: "\uD83C\uDF0D", label: "Learn a language", bg: "linear-gradient(135deg, #EAB308, #FACC15)" },
+  { emoji: "\u2709\uFE0F", label: "School project", bg: "linear-gradient(135deg, #3B82F6, #60A5FA)" },
   { emoji: "\uD83C\uDFA8", label: "Design a poster", bg: "linear-gradient(135deg, #F43F5E, #EC4899)" },
-  { emoji: "\uD83D\uDE02", label: "Generate memes", bg: "linear-gradient(135deg, #22C55E, #06B6D4)" },
-  { emoji: "\uD83D\uDC98", label: "Dating profile", bg: "linear-gradient(135deg, #EC4899, #8B5CF6)" },
-  { emoji: "\uD83C\uDF73", label: "Meal planner", bg: "linear-gradient(135deg, #F97316, #EAB308)" },
+  { emoji: "\uD83D\uDCDD", label: "Book report", bg: "linear-gradient(135deg, #22C55E, #06B6D4)" },
+  { emoji: "\uD83E\uDDEA", label: "Math tutor", bg: "linear-gradient(135deg, #EC4899, #8B5CF6)" },
+  { emoji: "\uD83D\uDCA1", label: "Comic creator", bg: "linear-gradient(135deg, #F97316, #EAB308)" },
 ];
 
 const BENTO_ITEMS = [
-  { title: "Content Creation", desc: "TikToks, thumbnails, captions, scripts", span: "col-span-2", color: "#EC4899", icon: Video, accent: "from-[#EC4899]/20 to-[#F472B6]/10", mockType: "tiktok" as const },
-  { title: "Writing & Docs", desc: "Resumes, decks, cover letters", span: "col-span-1", color: "#3B82F6", icon: FileText, accent: "from-[#3B82F6]/20 to-[#60A5FA]/10", mockType: "resume" as const },
-  { title: "Design", desc: "Posters, logos, memes", span: "col-span-1", color: "#8B5CF6", icon: PenTool, accent: "from-[#8B5CF6]/20 to-[#A78BFA]/10", mockType: "design" as const },
-  { title: "Learning", desc: "Study guides, homework help", span: "col-span-1", color: "#06B6D4", icon: BookOpen, accent: "from-[#06B6D4]/20 to-[#22D3EE]/10", mockType: "learning" as const },
-  { title: "Lifestyle", desc: "Meal plans, workouts, travel", span: "col-span-1", color: "#22C55E", icon: Dumbbell, accent: "from-[#22C55E]/20 to-[#4ADE80]/10", mockType: "lifestyle" as const },
-  { title: "Fun & Creative", desc: "Music, stories, trivia, jokes", span: "col-span-2", color: "#F97316", icon: Music, accent: "from-[#F97316]/20 to-[#FB923C]/10", mockType: "fun" as const },
+  { title: "Creative Projects", desc: "Stories, art, videos, comics", span: "col-span-2", color: "#EC4899", icon: Video, accent: "from-[#EC4899]/20 to-[#F472B6]/10", mockType: "tiktok" as const },
+  { title: "Homework Help", desc: "Math, science, all subjects", span: "col-span-1", color: "#3B82F6", icon: FileText, accent: "from-[#3B82F6]/20 to-[#60A5FA]/10", mockType: "resume" as const },
+  { title: "Art Studio", desc: "Design posters, cards, logos", span: "col-span-1", color: "#8B5CF6", icon: PenTool, accent: "from-[#8B5CF6]/20 to-[#A78BFA]/10", mockType: "design" as const },
+  { title: "Study Tools", desc: "Flashcards, quizzes, guides", span: "col-span-1", color: "#06B6D4", icon: BookOpen, accent: "from-[#06B6D4]/20 to-[#22D3EE]/10", mockType: "learning" as const },
+  { title: "Languages", desc: "Practice any language", span: "col-span-1", color: "#22C55E", icon: Dumbbell, accent: "from-[#22C55E]/20 to-[#4ADE80]/10", mockType: "lifestyle" as const },
+  { title: "Safe & Fun", desc: "Built for kids, trusted by parents", span: "col-span-2", color: "#F97316", icon: Music, accent: "from-[#F97316]/20 to-[#FB923C]/10", mockType: "fun" as const },
 ];
 
 const TESTIMONIALS = [
-  { quote: "Made my entire pitch deck in 2 minutes", handle: "@startup_kid", color: "#EC4899" },
-  { quote: "My dating profile finally gets matches", handle: "@lonely_coder", color: "#8B5CF6" },
-  { quote: "Study guides saved my GPA", handle: "@college_life", color: "#06B6D4" },
-  { quote: "Best meal planner I've ever used", handle: "@fitfoodie", color: "#22C55E" },
-  { quote: "TikTok thumbnails in 30 seconds flat", handle: "@creator_vibes", color: "#F97316" },
-  { quote: "Wrote my resignation letter beautifully", handle: "@corporate_escape", color: "#F43F5E" },
+  { quote: "My daughter wrote her first short story with Boo!", handle: "@proud_parent", color: "#EC4899" },
+  { quote: "Boo helped me understand fractions finally", handle: "@math_kid", color: "#8B5CF6" },
+  { quote: "I made a poster for my science fair in 5 minutes!", handle: "@young_creator", color: "#06B6D4" },
+  { quote: "I actually enjoy homework now??", handle: "@student_life", color: "#22C55E" },
+  { quote: "My son uses Boo more than YouTube", handle: "@happy_mom", color: "#F97316" },
+  { quote: "Best study buddy ever", handle: "@exam_prep_kid", color: "#F43F5E" },
 ];
 
 const SKILL_BUBBLES = [
-  { name: "TikTok Videos", size: "lg", color: "#EC4899", desc: "Create scroll-stopping short videos" },
-  { name: "Pitch Decks", size: "lg", color: "#8B5CF6", desc: "Investor-ready presentations" },
-  { name: "Resumes", size: "lg", color: "#3B82F6", desc: "Land your dream job" },
-  { name: "Study Guides", size: "md", color: "#06B6D4", desc: "Ace every exam" },
-  { name: "Meal Plans", size: "md", color: "#22C55E", desc: "Eat better, feel better" },
-  { name: "Posters", size: "md", color: "#F97316", desc: "Eye-catching designs" },
-  { name: "Cover Letters", size: "sm", color: "#EAB308", desc: "Stand out from the pile" },
-  { name: "Memes", size: "lg", color: "#F43F5E", desc: "Peak internet humor" },
-  { name: "Dating Profiles", size: "md", color: "#EC4899", desc: "Swipe right material" },
-  { name: "Workout Plans", size: "md", color: "#22C55E", desc: "Get fit your way" },
-  { name: "Social Posts", size: "sm", color: "#3B82F6", desc: "Content that pops" },
-  { name: "Logos", size: "sm", color: "#8B5CF6", desc: "Brand identity in seconds" },
-  { name: "Voiceovers", size: "md", color: "#F97316", desc: "Professional audio" },
-  { name: "Travel Plans", size: "sm", color: "#06B6D4", desc: "Plan the perfect trip" },
-  { name: "Interview Prep", size: "lg", color: "#EAB308", desc: "Nail every question" },
-  { name: "Budget Plans", size: "sm", color: "#22C55E", desc: "Money management" },
-  { name: "Song Lyrics", size: "md", color: "#EC4899", desc: "Write your next hit" },
-  { name: "Market Research", size: "sm", color: "#3B82F6", desc: "Know your market" },
-  { name: "LinkedIn Bio", size: "sm", color: "#8B5CF6", desc: "Professional presence" },
+  { name: "Story Writer", size: "lg", color: "#EC4899", desc: "Write amazing stories" },
+  { name: "Homework Help", size: "lg", color: "#8B5CF6", desc: "Step-by-step explanations" },
+  { name: "Art Studio", size: "lg", color: "#3B82F6", desc: "Create beautiful art" },
+  { name: "Science Projects", size: "md", color: "#06B6D4", desc: "Fun experiments" },
+  { name: "Math Tutor", size: "md", color: "#22C55E", desc: "Master every concept" },
+  { name: "Study Guides", size: "md", color: "#F97316", desc: "Ace every test" },
+  { name: "Comic Creator", size: "lg", color: "#EAB308", desc: "Design your own comics" },
+  { name: "Poetry Workshop", size: "md", color: "#F43F5E", desc: "Express yourself in verse" },
+  { name: "Book Reports", size: "md", color: "#EC4899", desc: "Understand any book" },
+  { name: "Language Practice", size: "lg", color: "#22C55E", desc: "Learn any language" },
+  { name: "Flashcards", size: "md", color: "#3B82F6", desc: "Study smarter" },
+  { name: "Science Experiments", size: "md", color: "#8B5CF6", desc: "Try cool experiments" },
+  { name: "Creative Writing", size: "lg", color: "#F97316", desc: "Let your imagination fly" },
+  { name: "Poster Design", size: "md", color: "#06B6D4", desc: "Eye-catching designs" },
+  { name: "Quiz Maker", size: "md", color: "#EAB308", desc: "Test your knowledge" },
+  { name: "Letter Writing", size: "sm", color: "#22C55E", desc: "Write to anyone" },
+  { name: "Game Builder", size: "lg", color: "#EC4899", desc: "Create your own games" },
+  { name: "History Explorer", size: "sm", color: "#3B82F6", desc: "Travel through time" },
+  { name: "Spelling Bee", size: "sm", color: "#8B5CF6", desc: "Become a word wizard" },
   { name: "Trivia Games", size: "md", color: "#F43F5E", desc: "Fun for everyone" },
-  { name: "Video Editing", size: "lg", color: "#F97316", desc: "Clips that captivate" },
-  { name: "Email Drafts", size: "sm", color: "#06B6D4", desc: "Perfect every send" },
-  { name: "Book Summaries", size: "sm", color: "#EAB308", desc: "Key insights fast" },
-  { name: "Business Plans", size: "md", color: "#22C55E", desc: "Launch with confidence" },
-  { name: "Thumbnails", size: "md", color: "#EC4899", desc: "Click-worthy images" },
-  { name: "Gift Ideas", size: "sm", color: "#F43F5E", desc: "Thoughtful surprises" },
-  { name: "Captions", size: "sm", color: "#3B82F6", desc: "Words that hook" },
+  { name: "Video Projects", size: "md", color: "#F97316", desc: "Create cool videos" },
+  { name: "Geography", size: "sm", color: "#06B6D4", desc: "Explore the world" },
+  { name: "Reading Helper", size: "sm", color: "#EAB308", desc: "Understand any text" },
+  { name: "Presentation Maker", size: "md", color: "#22C55E", desc: "Wow your class" },
+  { name: "Music Creator", size: "md", color: "#EC4899", desc: "Write songs and beats" },
+  { name: "Debate Coach", size: "sm", color: "#F43F5E", desc: "Build strong arguments" },
+  { name: "Drawing Helper", size: "sm", color: "#3B82F6", desc: "Learn to draw" },
   { name: "Stories", size: "md", color: "#8B5CF6", desc: "Creative narratives" },
   { name: "Jokes", size: "sm", color: "#F97316", desc: "Guaranteed laughs" },
-  { name: "Recipes", size: "sm", color: "#22C55E", desc: "Cook something new" },
+  { name: "Fun Facts", size: "sm", color: "#22C55E", desc: "Learn something new" },
   { name: "Flashcards", size: "md", color: "#06B6D4", desc: "Study smarter" },
-  { name: "Presentations", size: "md", color: "#EAB308", desc: "Wow any audience" },
-  { name: "Image Editing", size: "sm", color: "#EC4899", desc: "Polish every photo" },
-  { name: "Scripts", size: "sm", color: "#F43F5E", desc: "Words for any scene" },
-  { name: "Newsletters", size: "sm", color: "#3B82F6", desc: "Engage your audience" },
+  { name: "School Projects", size: "md", color: "#EAB308", desc: "Get an A+" },
+  { name: "Coloring Pages", size: "sm", color: "#EC4899", desc: "Print and color" },
+  { name: "Brain Teasers", size: "sm", color: "#F43F5E", desc: "Challenge your mind" },
+  { name: "Storyboards", size: "sm", color: "#3B82F6", desc: "Plan your story visually" },
 ];
 
 /* ═══════════════════════════════════════════════════════
@@ -337,7 +337,7 @@ export default function LandingPage() {
 
             <button onClick={() => nav("/login")}
               className="text-[13px] px-5 py-2 rounded-xl bg-gradient-to-r from-[#9370ff] to-[#EC4899] hover:opacity-90 text-white font-semibold transition-all shadow-lg shadow-purple-500/25">
-              Get started
+              Try Boo free
             </button>
           </div>
         </div>
@@ -376,23 +376,23 @@ export default function LandingPage() {
             <span className="hero-gradient-text">Superboo</span>
           </h1>
           <p className="text-[20px] md:text-[26px] text-white/90 leading-relaxed max-w-lg mb-3 font-semibold">
-            Your AI that actually does stuff.
+            The AI built just for kids.
           </p>
           <p className="text-[15px] md:text-[17px] text-white/50 leading-relaxed max-w-md mb-10">
-            TikToks, pitch decks, resumes, posters, meal plans &mdash; just tell Boo.
+            Stories, homework, art projects, science experiments &mdash; Boo makes learning and creating magical.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 items-stretch">
             <button onClick={() => nav("/login")}
               className="group hero-cta-primary px-8 py-3.5 rounded-xl text-white text-[15px] font-bold transition-all">
-              Try it free
+              Let your kid try Boo
               <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
             </button>
             <a href="#section-features"
               className="hero-cta-secondary px-8 py-3.5 rounded-xl text-white/70 hover:text-white text-[15px] font-semibold transition-all text-center flex items-center justify-center">
-              Watch it work
+              See what kids create
             </a>
           </div>
-          <p className="text-[12px] text-white/30 mt-3">No credit card required</p>
+          <p className="text-[12px] text-white/30 mt-3">Free &amp; safe for kids. No credit card.</p>
         </div>
 
         {/* Floating chat preview card */}
@@ -426,16 +426,50 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════
+         MISSION: Why we built Superboo
+         ═══════════════════════════════════════════════════════ */}
+      <section className="py-24 md:py-36 px-5 md:px-8 relative">
+        <div className="absolute inset-0 opacity-20" style={{ background: "radial-gradient(ellipse at 50% 50%, rgba(147,112,255,0.15), transparent 70%)", filter: "blur(80px)" }} aria-hidden="true" />
+        <div className="max-w-5xl mx-auto relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-[36px] md:text-[52px] font-extrabold tracking-[-0.03em] mb-4">
+              Why we built <span className="hero-gradient-text">Superboo</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="p-7 rounded-2xl" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", backdropFilter: "blur(12px)" }}>
+              <h3 className="text-[18px] font-bold text-white mb-3">Kids aren&apos;t small adults</h3>
+              <p className="text-[14px] text-white/50 leading-relaxed">
+                Today&apos;s AI tools are built for professionals — complex prompts, corporate language, adult content risks. Kids think differently. They explore, imagine, and create in ways that adult tools can&apos;t support.
+              </p>
+            </div>
+            <div className="p-7 rounded-2xl" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", backdropFilter: "blur(12px)" }}>
+              <h3 className="text-[18px] font-bold text-white mb-3">Safe AI, built in-house</h3>
+              <p className="text-[14px] text-white/50 leading-relaxed">
+                Superboo is powered by proprietary safe AI models we build specifically for young users. Every response is filtered for age-appropriateness. No adult content. No data harvesting. No ads.
+              </p>
+            </div>
+            <div className="p-7 rounded-2xl" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", backdropFilter: "blur(12px)" }}>
+              <h3 className="text-[18px] font-bold text-white mb-3">Creativity over productivity</h3>
+              <p className="text-[14px] text-white/50 leading-relaxed">
+                While other AI tools optimize for work output, Superboo optimizes for imagination. We measure success by stories written, art created, and curiosity sparked — not documents processed.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════
          3. BENTO GRID
          ═══════════════════════════════════════════════════════ */}
       <section id="section-features" className="py-24 md:py-36 px-5 md:px-8">
         <div ref={bentoRef} className={`max-w-5xl mx-auto reveal ${bentoVis ? "revealed" : ""}`}>
           <div className="text-center mb-16">
             <h2 className="text-[36px] md:text-[52px] font-extrabold tracking-[-0.03em] mb-4">
-              One Boo. <span className="hero-gradient-text">Infinite possibilities.</span>
+              One Boo. <span className="hero-gradient-text">Endless imagination.</span>
             </h2>
             <p className="text-white/40 text-[16px] max-w-md mx-auto">
-              Describe what you want. Boo picks the right tools and creates it.
+              Your kid describes what they want. Boo creates it safely.
             </p>
           </div>
 
@@ -487,7 +521,7 @@ export default function LandingPage() {
         <div ref={howRef} className={`max-w-3xl mx-auto reveal ${howVis ? "revealed" : ""} relative z-10`}>
           <div className="text-center mb-16">
             <h2 className="text-[36px] md:text-[52px] font-extrabold tracking-[-0.03em] mb-4">
-              It&apos;s <span className="hero-gradient-text">stupidly</span> simple.
+              It&apos;s <span className="hero-gradient-text">super</span> simple.
             </h2>
           </div>
           <HowItWorks />
@@ -501,7 +535,7 @@ export default function LandingPage() {
         <div ref={testRef} className={`reveal ${testVis ? "revealed" : ""}`}>
           <div className="text-center mb-12 px-5">
             <h2 className="text-[28px] md:text-[40px] font-extrabold tracking-[-0.03em]">
-              Loved by <span className="hero-gradient-text">creators, students, and hustlers</span>
+              Loved by <span className="hero-gradient-text">kids and parents everywhere</span>
             </h2>
           </div>
           <div className="testimonial-marquee">
@@ -526,7 +560,7 @@ export default function LandingPage() {
         <div ref={skillsRef} className={`max-w-5xl mx-auto reveal ${skillsVis ? "revealed" : ""} relative z-10`}>
           <div className="text-center mb-16">
             <h2 className="text-[36px] md:text-[52px] font-extrabold tracking-[-0.03em] mb-4">
-              35+ skills. <span className="hero-gradient-text">One ghost.</span>
+              So many skills. <span className="hero-gradient-text">One friendly ghost.</span>
             </h2>
           </div>
           <div className="skills-cloud">
@@ -564,10 +598,10 @@ export default function LandingPage() {
                   Superboo on your <span className="hero-gradient-text">Mac</span>
                 </h3>
                 <p className="text-[15px] text-white/50 leading-relaxed mb-2">
-                  Native desktop app with Guide Mode — Boo follows your cursor across every app, answers questions about your screen, and creates things while you work.
+                  Native desktop app with Guide Mode — Boo follows your cursor across every app, answers questions about the screen, and helps kids create while they learn. Safe for kids.
                 </p>
                 <p className="text-[13px] text-white/30 mb-6">
-                  Requires macOS 14+ · Apple Silicon (M1-M4)
+                  Requires macOS 14+ · Apple Silicon (M1-M4) · Safe for kids
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <a href="https://github.com/anubhav1004/superboo/releases/download/v0.1.1/Superboo-0.0.0-arm64.dmg"
@@ -616,16 +650,16 @@ export default function LandingPage() {
             <Ghost size={120} id="ctaG" />
           </div>
           <h2 className="text-[40px] md:text-[64px] font-extrabold tracking-[-0.03em] mb-4 leading-tight">
-            What will <span className="hero-gradient-text">YOU</span> create?
+            What will <span className="hero-gradient-text">YOUR kid</span> create?
           </h2>
           <p className="text-white/40 text-[16px] max-w-sm mb-10">
-            No signup required. No credit card. Just vibes.
+            Safe, fun, and educational. Try Boo free.
           </p>
           <button onClick={() => nav("/login")}
             onMouseEnter={() => setCtaHover(true)}
             onMouseLeave={() => setCtaHover(false)}
             className="group hero-cta-primary px-12 py-5 rounded-xl text-white text-[18px] font-bold transition-all">
-            Start creating &mdash; it&apos;s free
+            Let your kid try Boo &mdash; it&apos;s free
             <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
           </button>
         </div>

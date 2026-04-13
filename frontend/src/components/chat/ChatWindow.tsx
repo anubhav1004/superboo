@@ -36,45 +36,45 @@ function BooAvatar({ size = 56 }: { size?: number }) {
 
 const QUICK_START = [
   {
-    emoji: "🎬",
-    title: "Launch a short video",
-    desc: "Story beat, captions, soundtrack, export.",
-    prompt: "Create a 15-second TikTok about my new coffee shop opening this weekend",
+    emoji: "\uD83D\uDCD6",
+    title: "Write me a story",
+    desc: "Write a story about a dragon who's afraid of fire.",
+    prompt: "Write a story about a dragon who's afraid of fire",
     color: "#FF8A5B",
   },
   {
-    emoji: "📊",
-    title: "Build a pitch deck",
-    desc: "Ten polished slides from an idea in plain language.",
-    prompt: "Create a 10-slide pitch deck for my AI-powered fitness app startup",
+    emoji: "\uD83C\uDFA8",
+    title: "Help with art",
+    desc: "Design a poster for my school science fair.",
+    prompt: "Design a poster for my school science fair about the solar system",
     color: "#69D8C4",
   },
   {
-    emoji: "📝",
-    title: "Write a resume",
-    desc: "Clean one-page draft with strong bullets.",
-    prompt: "Write a one-page resume for a CS graduate looking for frontend developer roles",
+    emoji: "\uD83D\uDCDA",
+    title: "Homework help",
+    desc: "Help me understand how photosynthesis works.",
+    prompt: "Help me understand how photosynthesis works",
     color: "#F3C969",
   },
   {
-    emoji: "📚",
-    title: "Make a study guide",
-    desc: "Notes, summaries, and flashcards in one pass.",
-    prompt: "Create a study guide for AP Biology Chapter 12 — cell division and mitosis",
+    emoji: "\uD83E\uDDEA",
+    title: "Science experiment",
+    desc: "What's a cool science experiment I can do at home?",
+    prompt: "What's a cool science experiment I can do at home?",
     color: "#7BC0FF",
   },
   {
-    emoji: "🍽️",
-    title: "Plan a weekly routine",
-    desc: "Meals, groceries, constraints, and timing.",
-    prompt: "Plan a week of healthy meals for under $50 — I'm vegetarian and meal-prepping on Sunday",
+    emoji: "\uD83C\uDFAE",
+    title: "Make a game",
+    desc: "Create a simple quiz game about world capitals.",
+    prompt: "Create a simple quiz game about world capitals",
     color: "#9FE870",
   },
   {
-    emoji: "💼",
-    title: "Prep for interviews",
-    desc: "Questions, model answers, and a practice loop.",
-    prompt: "Give me 10 common product manager interview questions and help me practice",
+    emoji: "\u270D\uFE0F",
+    title: "Help me write",
+    desc: "Help me write a thank you letter to my teacher.",
+    prompt: "Help me write a thank you letter to my teacher",
     color: "#F48E8C",
   },
 ];
@@ -293,7 +293,7 @@ export default function ChatWindow() {
 
               <div className={desktop ? "flex-1 min-w-0" : ""}>
                 <h1 className={desktop ? "desktop-hero-title" : "text-[24px] md:text-[32px] font-extrabold tracking-tight text-center mb-8 text-gradient"}>
-                  What can Boo create for you{user?.name ? `, ${user.name}` : ""}?
+                  What do you want to create today{user?.name ? `, ${user.name}` : ""}?
                 </h1>
 
                 {desktop && (

@@ -26,29 +26,29 @@ function Ghost({ size = 80 }: { size?: number }) {
 
 /* ── Channel data ── */
 const CHANNELS = [
-  { id: "whatsapp", name: "WhatsApp", emoji: "💬", color: "#25D366", desc: "Chat with Boo on WhatsApp. Send messages, photos, voice notes — Boo responds instantly." },
-  { id: "telegram", name: "Telegram", emoji: "✈️", color: "#0088cc", desc: "Add Boo as a Telegram bot. Works in groups too — Boo joins your team chats." },
-  { id: "discord", name: "Discord", emoji: "🎮", color: "#5865F2", desc: "Invite Boo to your Discord server. It responds in channels and DMs." },
-  { id: "imessage", name: "iMessage", emoji: "💙", color: "#34AADC", desc: "Text Boo from your iPhone. It feels like chatting with a friend." },
-  { id: "slack", name: "Slack", emoji: "💼", color: "#4A154B", desc: "Add Boo to your Slack workspace. Automate tasks across channels." },
-  { id: "email", name: "Email", emoji: "📧", color: "#EA4335", desc: "Email Boo and get responses. Great for async tasks and long requests." },
+  { id: "whatsapp", name: "WhatsApp", emoji: "💬", color: "#25D366", desc: "Your kid can reach Boo on WhatsApp. Send messages, photos, voice notes — Boo responds instantly. Parents can monitor conversations." },
+  { id: "telegram", name: "Telegram", emoji: "✈️", color: "#0088cc", desc: "Add Boo as a Telegram bot. Great for family groups — Boo helps with homework right in the chat." },
+  { id: "discord", name: "Discord", emoji: "🎮", color: "#5865F2", desc: "Invite Boo to your family Discord. Kids can ask for help in their own channels." },
+  { id: "imessage", name: "iMessage", emoji: "💙", color: "#34AADC", desc: "Your kid can text Boo from their iPhone. It feels like chatting with a smart friend." },
+  { id: "slack", name: "Slack", emoji: "💼", color: "#4A154B", desc: "Add Boo to your family or homeschool workspace. Great for organized learning." },
+  { id: "email", name: "Email", emoji: "📧", color: "#EA4335", desc: "Email Boo for longer projects — book reports, research, creative writing assignments." },
 ];
 
 /* ── Features ── */
 const FEATURES = [
-  { icon: Clock, title: "Always on", desc: "Boo runs 24/7 on your cloud. Send a message at 3am — it responds in seconds." },
-  { icon: Globe, title: "Every channel", desc: "WhatsApp, Telegram, Discord, Slack, email — Boo talks to you wherever you are." },
-  { icon: Zap, title: "35+ skills", desc: "Decks, videos, images, documents, research, coding — all running autonomously." },
-  { icon: Shield, title: "Your data, your cloud", desc: "Everything runs on your own machine. No one else sees your conversations." },
-  { icon: Cpu, title: "Serious power", desc: "2 CPUs and 64 GB RAM. Enough to run all skills, browser automation, and AI models simultaneously." },
-  { icon: HardDrive, title: "Persistent memory", desc: "Boo remembers everything across sessions. Your preferences, past requests, context — it never forgets." },
+  { icon: Clock, title: "There when homework strikes", desc: "Boo runs 24/7. When your kid needs help at 9pm on a school night, Boo is there in seconds." },
+  { icon: Globe, title: "Every channel", desc: "WhatsApp, iMessage, Telegram, Discord — your kid can reach Boo wherever they already chat." },
+  { icon: Zap, title: "Creative + learning skills", desc: "Stories, art, homework help, science experiments, language practice — all safe and age-appropriate." },
+  { icon: Shield, title: "Safe & private", desc: "Proprietary safe AI models. No adult content. No data sold. Everything filtered for kids." },
+  { icon: Cpu, title: "Parental dashboard", desc: "See what your kid creates, set usage limits, review conversations. Full parental control." },
+  { icon: HardDrive, title: "Remembers your kid", desc: "Boo remembers your kid's grade level, interests, and learning style. It gets better over time." },
 ];
 
 /* ── Steps ── */
 const STEPS = [
-  { num: "01", title: "Sign up for a plan", desc: "Pick the $20/month plan. You get a dedicated cloud instance with 2 CPUs and 64 GB RAM — ready in 60 seconds." },
-  { num: "02", title: "Connect your channels", desc: "Link WhatsApp, Telegram, Discord, or any channel you use. Scan a QR code or paste a bot token — that's it." },
-  { num: "03", title: "Tell Boo what to do", desc: "Start chatting. Boo creates, automates, and responds across all your channels, 24 hours a day." },
+  { num: "01", title: "Sign up for the Family plan", desc: "Pick the $20/month Family plan. Your kid gets a dedicated, safe AI companion — ready in 60 seconds." },
+  { num: "02", title: "Connect your kid's channels", desc: "Link WhatsApp, iMessage, or any app your kid uses. Scan a QR code — that's it. You control which channels." },
+  { num: "03", title: "Your kid starts creating", desc: "Homework help at 9pm, a story for English class, a poster for the science fair. Boo is always there." },
 ];
 
 /* ── Pricing ── */
@@ -56,24 +56,24 @@ const PLAN = {
   price: "$20",
   period: "/month",
   features: [
-    "2 CPUs dedicated to your agent",
-    "64 GB RAM — run everything at once",
-    "256 GB storage for your creations",
-    "35+ skills (slides, videos, images, docs)",
-    "All channels (WhatsApp, Telegram, Discord, Slack)",
-    "Always-on — 24/7 uptime",
-    "Browser automation (research, scraping)",
-    "Persistent memory across sessions",
-    "Priority support",
+    "Dedicated safe AI for your family",
+    "All creative & learning skills",
+    "All channels (WhatsApp, iMessage, Telegram, Discord)",
+    "Always-on — 24/7 homework help",
+    "Parental dashboard & usage reports",
+    "Multiple kid profiles",
+    "Proprietary safe AI models",
+    "Persistent memory — Boo knows your kid",
+    "Priority family support",
   ],
 };
 
 /* ── Use cases ── */
 const USE_CASES = [
-  { emoji: "🎓", title: "Students", desc: "\"Boo, create a study guide for my biology exam tomorrow\" — at midnight, on WhatsApp. Done." },
-  { emoji: "🚀", title: "Creators", desc: "\"Make me 5 TikTok scripts about fitness\" — on Telegram while you're at the gym. Ready when you are." },
-  { emoji: "💼", title: "Freelancers", desc: "\"Write a proposal for the client meeting\" — on Slack at 6am. Sent before you finish coffee." },
-  { emoji: "🏠", title: "Everyone", desc: "\"Plan my meals for the week\" — on iMessage while grocery shopping. List in your pocket." },
+  { emoji: "🎓", title: "Homework at night", desc: "\"Boo, help me understand photosynthesis for my test tomorrow\" — at 9pm, on WhatsApp. Explained in seconds." },
+  { emoji: "🎨", title: "School projects", desc: "\"Make me a poster for the science fair about volcanoes\" — on iMessage after school. Ready to print." },
+  { emoji: "🌍", title: "Language learners", desc: "\"Practice Spanish with me\" — on Telegram during summer break. Interactive and fun." },
+  { emoji: "📚", title: "Creative kids", desc: "\"Write me a story about a time-traveling cat\" — on Discord before bed. A new adventure every night." },
 ];
 
 export default function AgentPage() {
@@ -100,7 +100,7 @@ export default function AgentPage() {
             <button onClick={() => nav("/login")}
               className="text-[13px] px-5 py-2 rounded-xl text-white font-semibold transition-all"
               style={{ background: "linear-gradient(135deg, #9370ff, #EC4899)" }}>
-              Get started
+              Try Boo free
             </button>
           </div>
         </div>
@@ -120,23 +120,23 @@ export default function AgentPage() {
           </div>
 
           <h1 className="text-[44px] sm:text-[56px] md:text-[72px] font-extrabold leading-[0.95] tracking-[-0.04em] mb-6">
-            Your AI.{" "}
+            Your kid&apos;s AI.{" "}
             <span style={{ background: "linear-gradient(135deg, #C084FC, #EC4899, #9370ff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
               Always on.
             </span>
           </h1>
           <p className="text-[18px] md:text-[22px] text-white/70 max-w-2xl mx-auto mb-4 leading-relaxed">
-            Superboo runs 24/7 on your own cloud. It creates slides, edits videos, writes documents, researches markets — and responds on WhatsApp, Telegram, Discord, or wherever you are.
+            Boo is there when homework strikes at 9pm. It helps with math, writes stories, creates art, and answers curious questions — on WhatsApp, iMessage, or wherever your kid chats.
           </p>
           <p className="text-[15px] text-white/40 mb-10">
-            Not a chatbot. A full AI agent that actually does things while you sleep.
+            Not a chatbot. A safe, dedicated AI companion for your child.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button onClick={() => nav("/login")}
               className="px-8 py-4 rounded-xl text-[16px] font-bold transition-all hover:scale-105 active:scale-95"
               style={{ background: "linear-gradient(135deg, #9370ff, #EC4899)", boxShadow: "0 0 40px -8px rgba(147,112,255,0.5)" }}>
-              Deploy your Boo — $20/mo <ArrowRight size={16} className="inline ml-2" />
+              Get the Family plan — $20/mo <ArrowRight size={16} className="inline ml-2" />
             </button>
             <a href="#channels"
               className="px-8 py-4 rounded-xl text-[16px] font-semibold text-white/60 hover:text-white border border-white/10 hover:border-white/20 transition-all text-center">
@@ -150,11 +150,11 @@ export default function AgentPage() {
       <section className="py-20 md:py-28 px-5 md:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <span className="text-[11px] text-[#9370ff] uppercase tracking-[0.2em] font-medium">What you get</span>
+            <span className="text-[11px] text-[#9370ff] uppercase tracking-[0.2em] font-medium">What your family gets</span>
             <h2 className="text-[32px] md:text-[44px] font-extrabold tracking-[-0.03em] mt-3">
               Not just a chatbot. A{" "}
               <span style={{ background: "linear-gradient(135deg, #C084FC, #EC4899)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                full agent.
+                safe AI companion.
               </span>
             </h2>
           </div>
@@ -186,7 +186,7 @@ export default function AgentPage() {
               </span>
             </h2>
             <p className="text-white/40 text-[15px] mt-4 max-w-md mx-auto">
-              Connect your favorite messaging apps. Boo responds on all of them, simultaneously.
+              Your kid can reach Boo on any messaging app. Parents control which channels are active.
             </p>
           </div>
 
@@ -288,7 +288,7 @@ export default function AgentPage() {
                 </span>
                 <span className="text-[18px] text-white/40">{PLAN.period}</span>
               </div>
-              <p className="text-[14px] text-white/50 mb-8">Everything you need to run your own AI agent, 24/7.</p>
+              <p className="text-[14px] text-white/50 mb-8">Everything your family needs. Safe AI for kids, parental controls, all channels.</p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
                 {PLAN.features.map((f, i) => (
@@ -302,7 +302,7 @@ export default function AgentPage() {
               <button onClick={() => nav("/login")}
                 className="w-full py-4 rounded-xl text-[16px] font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{ background: "linear-gradient(135deg, #9370ff, #EC4899)", boxShadow: "0 0 40px -8px rgba(147,112,255,0.4)" }}>
-                Deploy your Boo <ArrowRight size={16} className="inline ml-2" />
+                Get the Family plan <ArrowRight size={16} className="inline ml-2" />
               </button>
               <p className="text-center text-[12px] text-white/30 mt-3">Cancel anytime. No contracts.</p>
             </div>
@@ -315,9 +315,9 @@ export default function AgentPage() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-[32px] md:text-[44px] font-extrabold tracking-[-0.03em]">
-              Real people.{" "}
+              Real kids.{" "}
               <span style={{ background: "linear-gradient(135deg, #C084FC, #EC4899)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                Real use.
+                Real learning.
               </span>
             </h2>
           </div>
@@ -341,15 +341,15 @@ export default function AgentPage() {
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <div className="ghost-float mb-6 inline-block"><Ghost size={80} /></div>
           <h2 className="text-[36px] md:text-[52px] font-extrabold tracking-[-0.03em] mb-4">
-            Your Boo is waiting.
+            Your kid&apos;s Boo is waiting.
           </h2>
           <p className="text-white/40 text-[15px] mb-10 max-w-sm mx-auto">
-            Deploy once. Use forever. $20/month for an AI that never sleeps.
+            Safe, always on, and built for kids. $20/month for the whole family.
           </p>
           <button onClick={() => nav("/login")}
             className="px-10 py-4 rounded-xl text-[16px] font-bold text-white transition-all hover:scale-105 active:scale-95"
             style={{ background: "linear-gradient(135deg, #9370ff, #EC4899)", boxShadow: "0 0 40px -8px rgba(147,112,255,0.5)" }}>
-            Get started <ArrowRight size={16} className="inline ml-2" />
+            Try Boo free <ArrowRight size={16} className="inline ml-2" />
           </button>
         </div>
       </section>

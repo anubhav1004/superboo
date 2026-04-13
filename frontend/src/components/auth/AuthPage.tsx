@@ -156,6 +156,9 @@ export default function AuthPage() {
         >
           Welcome to Superboo
         </h1>
+        <p className="text-[13px] text-center mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>
+          The AI built for kids
+        </p>
         <p className="text-[13px] text-center mb-6" style={{ color: "rgba(255,255,255,0.4)" }}>
           {mode === "login"
             ? "Sign in to continue creating"
@@ -267,7 +270,7 @@ export default function AuthPage() {
 
         {/* Free plan note */}
         <p className="text-[11px] text-center mt-4" style={{ color: "rgba(255,255,255,0.25)" }}>
-          Free plan. No credit card required.
+          Free &amp; safe for kids. No credit card.
         </p>
 
         {/* Toggle link */}

@@ -26,10 +26,11 @@ function Ghost({ size = 80, id = "gPricing" }: { size?: number; id?: string }) {
 
 const FAQS = [
   { q: "Can I cancel anytime?", a: "Yes. No contracts, no commitments. Cancel with one click." },
-  { q: "What's included in the free plan?", a: "10 creations per month, web chat access, and basic text skills." },
-  { q: "Do I need a credit card for free?", a: "No. Sign up and start using Superboo instantly." },
-  { q: "What channels does Agent support?", a: "WhatsApp, Telegram, Discord, Slack, Email, and iMessage." },
+  { q: "Is Superboo safe for kids?", a: "Absolutely. We use proprietary safe AI models built specifically for young users. Every response is filtered for age-appropriateness. No adult content, no data harvesting, no ads." },
+  { q: "Do I need a credit card for free?", a: "No. Sign up and let your kid start using Boo instantly." },
+  { q: "What age range is Superboo for?", a: "Superboo is designed for kids ages 8-16. The AI adapts to your child's grade level and learning style." },
   { q: "Can I upgrade later?", a: "Yes. Upgrade or downgrade anytime from your settings." },
+  { q: "Can multiple kids use one account?", a: "The Family plan supports multiple kid profiles, each with their own preferences and conversation history." },
 ];
 
 export default function PricingPage() {
@@ -56,7 +57,7 @@ export default function PricingPage() {
             <button onClick={() => nav("/login")}
               className="text-[13px] px-5 py-2 rounded-xl text-white font-semibold transition-all"
               style={{ background: "linear-gradient(135deg, #9370ff, #EC4899)" }}>
-              Get started
+              Try Boo free
             </button>
           </div>
         </div>
@@ -80,7 +81,7 @@ export default function PricingPage() {
             </span>
           </h1>
           <p className="text-[16px] md:text-[18px] text-white/50 max-w-md mx-auto mb-10">
-            Start free. Upgrade when you need more power.
+            Start free. Upgrade when your kid wants more.
           </p>
 
           {/* -- Toggle -- */}
@@ -116,15 +117,15 @@ export default function PricingPage() {
           <div className="rounded-2xl p-7 flex flex-col"
             style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
             <div className="mb-6">
-              <h3 className="text-[18px] font-bold text-white mb-1">Free</h3>
-              <p className="text-[13px] text-white/40">Try Superboo for free</p>
+              <h3 className="text-[18px] font-bold text-white mb-1">Explorer</h3>
+              <p className="text-[13px] text-white/40">Let your kid try Boo</p>
             </div>
             <div className="flex items-baseline gap-1 mb-6">
               <span className="text-[48px] font-extrabold text-white">$0</span>
               <span className="text-[15px] text-white/30">/month</span>
             </div>
             <div className="space-y-3 mb-8 flex-1">
-              {["10 creations/month", "Web chat only", "Basic skills (text only)", "Community support"].map((f, i) => (
+              {["10 creations/month", "Web chat only", "Basic homework help", "Safe AI models"].map((f, i) => (
                 <div key={i} className="flex items-center gap-2.5">
                   <Check size={14} className="text-white/30 flex-shrink-0" />
                   <span className="text-[13px] text-white/60">{f}</span>
@@ -151,8 +152,8 @@ export default function PricingPage() {
             </div>
             <div className="relative z-10 flex flex-col h-full">
               <div className="mb-6">
-                <h3 className="text-[18px] font-bold text-white mb-1">Pro</h3>
-                <p className="text-[13px] text-white/40">For creators and students</p>
+                <h3 className="text-[18px] font-bold text-white mb-1">Creator</h3>
+                <p className="text-[13px] text-white/40">For creative kids</p>
               </div>
               <div className="flex items-baseline gap-1 mb-1">
                 <span className="text-[48px] font-extrabold" style={{ background: "linear-gradient(135deg, #C084FC, #EC4899)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
@@ -165,9 +166,9 @@ export default function PricingPage() {
               <div className="space-y-3 mb-8 flex-1">
                 {[
                   "Unlimited creations",
-                  "All 35+ skills",
-                  "File creation (slides, docs, sheets)",
-                  "Image generation",
+                  "All creative & learning skills",
+                  "Story & art generation",
+                  "Homework help (all subjects)",
                   "Priority support",
                   "Chat history sync",
                 ].map((f, i) => (
@@ -180,7 +181,7 @@ export default function PricingPage() {
               <button onClick={() => nav("/login")}
                 className="w-full py-3 rounded-xl text-[14px] font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{ background: "linear-gradient(135deg, #9370ff, #EC4899)", boxShadow: "0 0 30px -5px rgba(147,112,255,0.4)" }}>
-                Start Pro <ArrowRight size={14} className="inline ml-1" />
+                Start Creator <ArrowRight size={14} className="inline ml-1" />
               </button>
             </div>
           </div>
@@ -189,8 +190,8 @@ export default function PricingPage() {
           <div className="rounded-2xl p-7 flex flex-col md:scale-[1.02]"
             style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(236,72,153,0.3)" }}>
             <div className="mb-6">
-              <h3 className="text-[18px] font-bold text-white mb-1">Agent</h3>
-              <p className="text-[13px] text-white/40">Your own 24/7 AI agent</p>
+              <h3 className="text-[18px] font-bold text-white mb-1">Family</h3>
+              <p className="text-[13px] text-white/40">For the whole family</p>
             </div>
             <div className="flex items-baseline gap-1 mb-1">
               <span className="text-[48px] font-extrabold text-white">
@@ -201,15 +202,15 @@ export default function PricingPage() {
             {annual && <p className="text-[12px] text-white/30 mb-6">Billed annually</p>}
             {!annual && <p className="text-[12px] text-white/30 mb-6">Billed monthly</p>}
             <div className="space-y-3 mb-8 flex-1">
-              <p className="text-[12px] text-white/40 font-semibold uppercase tracking-wider mb-1">Everything in Pro, plus:</p>
+              <p className="text-[12px] text-white/40 font-semibold uppercase tracking-wider mb-1">Everything in Creator, plus:</p>
               {[
-                "Dedicated cloud (2 CPUs, 64 GB RAM)",
-                "All channels (WhatsApp, Telegram, Discord, Slack, Email)",
-                "Always-on 24/7",
+                "Dedicated safe AI for your family",
+                "All channels (WhatsApp, iMessage, Telegram, Discord)",
+                "Always-on 24/7 homework help",
+                "Parental dashboard & controls",
+                "Usage reports",
+                "Multiple kid profiles",
                 "Persistent memory",
-                "Browser automation",
-                "Custom skills",
-                "API access",
               ].map((f, i) => (
                 <div key={i} className="flex items-center gap-2.5">
                   <Check size={14} className="text-[#EC4899] flex-shrink-0" />
@@ -220,7 +221,7 @@ export default function PricingPage() {
             <button onClick={() => nav("/login")}
               className="w-full py-3 rounded-xl text-[14px] font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
               style={{ background: "linear-gradient(135deg, #EC4899, #9370ff)", boxShadow: "0 0 30px -5px rgba(236,72,153,0.3)" }}>
-              Deploy Agent <ArrowRight size={14} className="inline ml-1" />
+              Get Family plan <ArrowRight size={14} className="inline ml-1" />
             </button>
           </div>
         </div>

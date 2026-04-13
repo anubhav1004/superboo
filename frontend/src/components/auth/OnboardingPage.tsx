@@ -30,23 +30,22 @@ function Ghost({ size = 64 }: { size?: number }) {
 }
 
 const CATEGORIES = [
-  { id: "content", label: "Content", emoji: "🎬", color: "#EC4899" },
-  { id: "design", label: "Design", emoji: "🎨", color: "#9370ff" },
-  { id: "writing", label: "Writing", emoji: "📝", color: "#22C55E" },
-  { id: "video", label: "Video", emoji: "🎥", color: "#F43F5E" },
-  { id: "learning", label: "Learning", emoji: "📚", color: "#06B6D4" },
-  { id: "lifestyle", label: "Lifestyle", emoji: "🍕", color: "#EAB308" },
-  { id: "career", label: "Career", emoji: "💼", color: "#F97316" },
-  { id: "fun", label: "Fun", emoji: "🎮", color: "#A855F7" },
+  { id: "writing", label: "Creative Writing", emoji: "\u270D\uFE0F", color: "#EC4899" },
+  { id: "design", label: "Art & Design", emoji: "\uD83C\uDFA8", color: "#9370ff" },
+  { id: "homework", label: "Homework Help", emoji: "\uD83D\uDCDA", color: "#22C55E" },
+  { id: "science", label: "Science & Experiments", emoji: "\uD83E\uDDEA", color: "#F43F5E" },
+  { id: "languages", label: "Languages", emoji: "\uD83C\uDF0D", color: "#06B6D4" },
+  { id: "games", label: "Games & Quizzes", emoji: "\uD83C\uDFAE", color: "#EAB308" },
+  { id: "music", label: "Music", emoji: "\uD83C\uDFB5", color: "#F97316" },
+  { id: "reading", label: "Reading", emoji: "\uD83D\uDCD6", color: "#A855F7" },
 ];
 
 const ROLES = [
-  "Student",
-  "Creator",
-  "Freelancer",
-  "Startup",
-  "Professional",
-  "Just exploring",
+  "Student (Elementary)",
+  "Student (Middle School)",
+  "Student (High School)",
+  "Homeschooler",
+  "Just for fun",
 ];
 
 export default function OnboardingPage() {
@@ -143,10 +142,10 @@ export default function OnboardingPage() {
                 WebkitTextFillColor: "transparent",
               }}
             >
-              What do you want to create?
+              What do you love to do?
             </h2>
             <p className="text-[13px] text-center mb-6" style={{ color: "rgba(255,255,255,0.4)" }}>
-              Pick 2-3 categories that interest you
+              Pick 2-3 things that interest you
             </p>
 
             <div className="grid grid-cols-2 gap-3 mb-8">
@@ -209,7 +208,7 @@ export default function OnboardingPage() {
               Tell us about yourself
             </h2>
             <p className="text-[13px] text-center mb-6" style={{ color: "rgba(255,255,255,0.4)" }}>
-              What best describes you?
+              What grade are you in?
             </p>
 
             <div className="flex flex-wrap gap-3 justify-center mb-8">
@@ -280,7 +279,7 @@ export default function OnboardingPage() {
               Welcome to Superboo, {user.name}!
             </h2>
             <p className="text-[14px] mb-8" style={{ color: "rgba(255,255,255,0.5)" }}>
-              Boo is ready to create whatever you need.
+              Boo is ready to help you learn and create amazing things!
             </p>
 
             <button
@@ -291,7 +290,7 @@ export default function OnboardingPage() {
                 boxShadow: "0 0 30px -5px rgba(147,112,255,0.4)",
               }}
             >
-              Start with Free plan &rarr;
+              Start exploring &rarr;
             </button>
           </div>
         )}
