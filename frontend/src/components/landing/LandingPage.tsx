@@ -570,13 +570,13 @@ export default function LandingPage() {
                   Requires macOS 14+ · Apple Silicon (M1-M4)
                 </p>
                 <div className="flex flex-wrap gap-3">
-                  <a href="https://github.com/anubhav1004/superboo/releases/download/v0.1.0/Superboo-0.0.0-arm64.dmg"
+                  <a href="https://github.com/anubhav1004/superboo/releases/download/v0.1.1/Superboo-0.0.0-arm64.dmg"
                     className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-white text-[15px] font-bold transition-all hover:scale-105 active:scale-95"
                     style={{background: "linear-gradient(135deg, #9370ff, #EC4899)", boxShadow: "0 0 30px -5px rgba(147,112,255,0.4)"}}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     Download for Mac
                   </a>
-                  <a href="https://github.com/anubhav1004/superboo/releases/tag/v0.1.0"
+                  <a href="https://github.com/anubhav1004/superboo/releases/tag/v0.1.1"
                     className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-white/60 text-[14px] font-semibold border border-white/10 hover:border-white/20 transition-all hover:text-white">
                     Release notes
                   </a>

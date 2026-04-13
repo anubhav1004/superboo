@@ -22,5 +22,10 @@
     <string>Superboo needs screen access to help guide you</string>
     <key>NSSpeechRecognitionUsageDescription</key>
     <string>Superboo uses speech recognition so you can talk to Boo</string>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
 </dict>
 </plist>

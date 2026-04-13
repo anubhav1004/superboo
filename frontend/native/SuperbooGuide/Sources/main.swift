@@ -9,10 +9,12 @@ import ScreenCaptureKit
 // Screen capture + voice + cursor pointing
 // ═══════════════════════════════════════════════════
 
+print("🚀 SuperbooGuide launching...")
 let app = NSApplication.shared
 let delegate = AppDelegate()
 app.delegate = delegate
 app.setActivationPolicy(.accessory)
+print("🚀 Calling app.run()")
 app.run()
 
 // MARK: - State
@@ -60,12 +62,20 @@ class BooState: ObservableObject {
     @MainActor
     func sendToBoo(_ text: String, screenshot: Data?) {
         mood = .thinking
-        bubble = "Let me look at your screen..."
+        bubble = "Thinking..."
         showBubble = true
+        print("📤 sendToBoo: '\(text)' screenshot=\(screenshot?.count ?? 0) bytes")
 
         Task {
             do {
-                let result = try await callComputerUse(text: text, imageData: screenshot)
+                let result: ComputerUseResult
+                if let img = screenshot, img.count > 100 {
+                    print("📸 Sending with screenshot")
+                    result = try await callComputerUse(text: text, imageData: img)
+                } else {
+                    print("💬 No screenshot — sending text only to chat")
+                    result = try await callChatFallback(text: text)
+                }
 
                 await MainActor.run {
                     let displayText = result.response.count > 160
@@ -104,10 +114,12 @@ class BooState: ObservableObject {
                     }
                 }
             } catch {
+                print("❌ Error: \(error)")
                 await MainActor.run {
                     self.mood = .idle
-                    self.bubble = "Oops, couldn't connect 😢"
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) { self.showBubble = false }
+                    self.bubble = "Error: \(error.localizedDescription)"
+                    self.showBubble = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) { self.showBubble = false }
                 }
             }
         }
@@ -165,19 +177,51 @@ class BooState: ObservableObject {
         return ComputerUseResult(response: response, point: point, click: click)
     }
 
-    // Parsing is now handled by the bridge's /v1/computer-use endpoint
+    /// Fallback: send text-only to the chat API when screenshot isn't available
+    func callChatFallback(text: String) async throws -> ComputerUseResult {
+        let url = URL(string: "\(bridgeURL)/v1/chat/send")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(bridgeToken)", forHTTPHeaderField: "Authorization")
+        request.timeoutInterval = 20
+
+        let body: [String: Any] = [
+            "message": "[system: You are Superboo Guide Mode. Keep responses SHORT (1-2 sentences). Be casual and helpful. Reply directly as assistant message. Do NOT use the send tool.]\n\(text)",
+            "session_key": "agent:main:main",
+            "timeout_ms": 15000
+        ]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        print("📡 Calling chat fallback...")
+
+        let (data, _) = try await URLSession.shared.data(for: request)
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return ComputerUseResult(response: "Got a weird response", point: nil, click: nil)
+        }
+        print("📡 Chat response: \(json)")
+        let msg = json["message"] as? String ?? "Hmm, try again?"
+        return ComputerUseResult(response: msg, point: nil, click: nil)
+    }
 
     func flyToPoint(_ point: CGPoint, label: String?) {
-        // Convert screenshot coordinates to screen coordinates
-        // Screenshots are 1280px wide, screen might be different
         guard let screen = NSScreen.main else { return }
-        let scaleX = screen.frame.width / 1280.0
-        let aspectRatio = screen.frame.width / screen.frame.height
-        let scaleY = screen.frame.height / (1280.0 / aspectRatio)
 
-        // Screenshot coords are top-left origin, CGEvent coords are also top-left
+        // Screenshot is captured at config.width = 1280 pixels
+        // Screen is screen.frame.width x screen.frame.height POINTS
+        // On Retina: 1280 points = 2560 pixels, but screenshot is 1280px
+        // So screenshot coords map 1:1 to screen points on a 1280pt-wide display
+        // For other sizes: scale proportionally
+        let screenshotWidth: CGFloat = 1280.0
+        let screenshotHeight: CGFloat = screenshotWidth * (screen.frame.height / screen.frame.width)
+
+        let scaleX = screen.frame.width / screenshotWidth
+        let scaleY = screen.frame.height / screenshotHeight
+
+        // Screenshot coords: top-left origin. CG coords: also top-left origin.
         let targetX = point.x * scaleX
         let targetY = point.y * scaleY
+
+        print("🎯 flyToPoint: screenshot(\(Int(point.x)),\(Int(point.y))) → screen(\(Int(targetX)),\(Int(targetY))) scale(\(scaleX),\(scaleY)) screenSize(\(Int(screen.frame.width)),\(Int(screen.frame.height)))")
 
         isPointing = true
         pointLabel = label
@@ -189,9 +233,10 @@ class BooState: ObservableObject {
         let startCG = CGPoint(x: currentPos.x, y: screenHeight - currentPos.y)
         let endCG = CGPoint(x: targetX, y: targetY)
 
-        // Also update our overlay target (AppKit coords for the ghost)
-        let targetAppKit = CGPoint(x: targetX, y: screenHeight - targetY)
-        pointTarget = targetAppKit
+        // Also update our overlay target (AppKit coords — bottom-left origin — for the ghost)
+        let targetAppKitY = screen.frame.origin.y + screen.frame.height - targetY
+        pointTarget = CGPoint(x: screen.frame.origin.x + targetX, y: targetAppKitY)
+        print("🎯 Ghost target (AppKit): (\(Int(screen.frame.origin.x + targetX)),\(Int(targetAppKitY)))")
 
         // Smooth cursor movement over 0.5 seconds (30 steps)
         let steps = 30
@@ -276,15 +321,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         // Menu bar
+        print("📌 Creating status bar item...")
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let btn = statusItem.button {
             btn.title = " 👻 Boo"
         }
+
         let menu = NSMenu()
-        menu.addItem(NSMenuItem(title: "Toggle Guide (Ctrl+Opt+G)", action: #selector(toggleGuide), keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: "💬 Ask Boo a Question", action: #selector(menuAskQuestion), keyEquivalent: "t"))
+        menu.addItem(NSMenuItem(title: "🎤 Start Listening", action: #selector(menuStartListening), keyEquivalent: "l"))
+        menu.addItem(NSMenuItem(title: "⬛ Stop & Answer", action: #selector(menuStopListening), keyEquivalent: "s"))
         menu.addItem(NSMenuItem.separator())
-        menu.addItem(NSMenuItem(title: "Quit Superboo Guide", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+        menu.addItem(NSMenuItem(title: "Toggle Guide", action: #selector(toggleGuide), keyEquivalent: "g"))
+        menu.addItem(NSMenuItem.separator())
+        menu.addItem(NSMenuItem(title: "Quit Boo", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         statusItem.menu = menu
+        print("📌 Menu created with \(menu.items.count) items")
 
         createOverlays()
         startCursorTracking()
@@ -327,6 +379,48 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         print("✅ SuperbooGuide started")
     }
 
+    @objc func menuStartListening() {
+        print("🎤 Menu: Start listening")
+        startListening()
+    }
+
+    @objc func menuStopListening() {
+        print("⬛ Menu: Stop listening")
+        stopListeningAndProcess()
+    }
+
+    @objc func menuAskQuestion() {
+        print("💬 Menu: Type question")
+        let alert = NSAlert()
+        alert.messageText = "Ask Boo"
+        alert.informativeText = "Type your question — Boo will look at your screen and answer."
+        alert.alertStyle = .informational
+        let input = NSTextField(frame: NSRect(x: 0, y: 0, width: 300, height: 24))
+        input.placeholderString = "e.g. Where is the trash icon?"
+        alert.accessoryView = input
+        alert.addButton(withTitle: "Ask")
+        alert.addButton(withTitle: "Cancel")
+
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn {
+            let text = input.stringValue
+            guard text.count > 1 else { return }
+            print("💬 Question: \(text)")
+            // Capture screen and send
+            Task { @MainActor in
+                var screenshotData: Data? = nil
+                do {
+                    let captures = try await captureScreen()
+                    screenshotData = captures.first?.imageData
+                    print("📸 Screenshot captured: \(screenshotData?.count ?? 0) bytes")
+                } catch {
+                    print("❌ Screen capture failed: \(error)")
+                }
+                state.sendToBoo(text, screenshot: screenshotData)
+            }
+        }
+    }
+
     @objc func toggleGuide() {
         state.isActive.toggle()
         if state.isActive {
@@ -366,6 +460,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var liveTranscript = ""
 
     func startListening() {
+        print("🎤 startListening called")
         state.isListening = true
         state.mood = .listening
         state.bubble = "Listening..."
@@ -402,6 +497,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func stopListeningAndProcess() {
+        print("⬛ stopListeningAndProcess called — transcript: '\(liveTranscript)'")
         audioEngine?.stop()
         audioEngine?.inputNode.removeTap(onBus: 0)
         recognitionRequest?.endAudio()

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, MessageSquare, MousePointer2, Monitor } from "lucide-react";
 
-const DMG_URL = "https://github.com/anubhav1004/superboo/releases/download/v0.1.0/Superboo-0.0.0-arm64.dmg";
+const DMG_URL = "https://github.com/anubhav1004/superboo/releases/download/v0.1.1/Superboo-0.0.0-arm64.dmg";
 
 /* -- Ghost SVG -- */
 function Ghost({ size = 80, id = "gDL" }: { size?: number; id?: string }) {
