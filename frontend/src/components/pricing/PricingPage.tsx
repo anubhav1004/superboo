@@ -118,7 +118,7 @@ export default function PricingPage() {
             style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
             <div className="mb-6">
               <h3 className="text-[18px] font-bold text-white mb-1">Explorer</h3>
-              <p className="text-[13px] text-white/40">Let your kid try Boo</p>
+              <p className="text-[13px] text-white/40">Try the full Boo experience</p>
             </div>
             <div className="flex items-baseline gap-1 mb-6">
               <span className="text-[48px] font-extrabold text-white">$0</span>
@@ -153,7 +153,7 @@ export default function PricingPage() {
             <div className="relative z-10 flex flex-col h-full">
               <div className="mb-6">
                 <h3 className="text-[18px] font-bold text-white mb-1">Creator</h3>
-                <p className="text-[13px] text-white/40">For creative kids</p>
+                <p className="text-[13px] text-white/40">For kids who create everything</p>
               </div>
               <div className="flex items-baseline gap-1 mb-1">
                 <span className="text-[48px] font-extrabold" style={{ background: "linear-gradient(135deg, #C084FC, #EC4899)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
@@ -191,7 +191,7 @@ export default function PricingPage() {
             style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(236,72,153,0.3)" }}>
             <div className="mb-6">
               <h3 className="text-[18px] font-bold text-white mb-1">Family</h3>
-              <p className="text-[13px] text-white/40">For the whole family</p>
+              <p className="text-[13px] text-white/40">Unlimited creation for the whole family</p>
             </div>
             <div className="flex items-baseline gap-1 mb-1">
               <span className="text-[48px] font-extrabold text-white">

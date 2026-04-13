@@ -36,19 +36,19 @@ const CHANNELS = [
 
 /* ── Features ── */
 const FEATURES = [
-  { icon: Clock, title: "There when homework strikes", desc: "Boo runs 24/7. When your kid needs help at 9pm on a school night, Boo is there in seconds." },
+  { icon: Clock, title: "Always on, always ready", desc: "Boo runs 24/7. Whether your kid wants to make a video at 3pm or write code at 9pm, Boo is there in seconds." },
   { icon: Globe, title: "Every channel", desc: "WhatsApp, iMessage, Telegram, Discord — your kid can reach Boo wherever they already chat." },
-  { icon: Zap, title: "Creative + learning skills", desc: "Stories, art, homework help, science experiments, language practice — all safe and age-appropriate." },
+  { icon: Zap, title: "Full AI agent", desc: "Videos, games, art, music, presentations, code, homework — Boo can create anything an adult AI can, but safe for kids." },
   { icon: Shield, title: "Safe & private", desc: "Proprietary safe AI models. No adult content. No data sold. Everything filtered for kids." },
   { icon: Cpu, title: "Parental dashboard", desc: "See what your kid creates, set usage limits, review conversations. Full parental control." },
-  { icon: HardDrive, title: "Remembers your kid", desc: "Boo remembers your kid's grade level, interests, and learning style. It gets better over time." },
+  { icon: HardDrive, title: "Remembers your kid", desc: "Boo remembers your kid's interests, projects, and style. It gets better over time." },
 ];
 
 /* ── Steps ── */
 const STEPS = [
   { num: "01", title: "Sign up for the Family plan", desc: "Pick the $20/month Family plan. Your kid gets a dedicated, safe AI companion — ready in 60 seconds." },
   { num: "02", title: "Connect your kid's channels", desc: "Link WhatsApp, iMessage, or any app your kid uses. Scan a QR code — that's it. You control which channels." },
-  { num: "03", title: "Your kid starts creating", desc: "Homework help at 9pm, a story for English class, a poster for the science fair. Boo is always there." },
+  { num: "03", title: "Your kid starts creating", desc: "A video for TikTok, a game for friends, a poster for their room, homework help at 9pm. Boo is always there." },
 ];
 
 /* ── Pricing ── */
@@ -70,10 +70,10 @@ const PLAN = {
 
 /* ── Use cases ── */
 const USE_CASES = [
-  { emoji: "🎓", title: "Homework at night", desc: "\"Boo, help me understand photosynthesis for my test tomorrow\" — at 9pm, on WhatsApp. Explained in seconds." },
-  { emoji: "🎨", title: "School projects", desc: "\"Make me a poster for the science fair about volcanoes\" — on iMessage after school. Ready to print." },
-  { emoji: "🌍", title: "Language learners", desc: "\"Practice Spanish with me\" — on Telegram during summer break. Interactive and fun." },
-  { emoji: "📚", title: "Creative kids", desc: "\"Write me a story about a time-traveling cat\" — on Discord before bed. A new adventure every night." },
+  { emoji: "🎬", title: "Video creator", desc: "\"Make me a birthday video for my best friend\" — on WhatsApp after school. Ready to share in minutes." },
+  { emoji: "🎮", title: "Game builder", desc: "\"Build me a quiz game about space\" — on iMessage. A real playable game, created by your kid." },
+  { emoji: "🎨", title: "Design studio", desc: "\"Design a logo for my lemonade stand\" — on Telegram. Professional-looking, made by a 10-year-old." },
+  { emoji: "📚", title: "Homework too", desc: "\"Help me understand photosynthesis for my test\" — at 9pm, on Discord. But that's just one of 35+ things Boo does." },
 ];
 
 export default function AgentPage() {
@@ -126,10 +126,10 @@ export default function AgentPage() {
             </span>
           </h1>
           <p className="text-[18px] md:text-[22px] text-white/70 max-w-2xl mx-auto mb-4 leading-relaxed">
-            Boo is there when homework strikes at 9pm. It helps with math, writes stories, creates art, and answers curious questions — on WhatsApp, iMessage, or wherever your kid chats.
+            Boo makes videos, builds games, designs art, writes code, helps with homework — on WhatsApp, iMessage, or wherever your kid chats. A full AI agent, always ready.
           </p>
           <p className="text-[15px] text-white/40 mb-10">
-            Not a chatbot. A safe, dedicated AI companion for your child.
+            Not a chatbot. A safe, dedicated AI agent for your child.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -317,7 +317,7 @@ export default function AgentPage() {
             <h2 className="text-[32px] md:text-[44px] font-extrabold tracking-[-0.03em]">
               Real kids.{" "}
               <span style={{ background: "linear-gradient(135deg, #C084FC, #EC4899)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                Real learning.
+                Real creations.
               </span>
             </h2>
           </div>

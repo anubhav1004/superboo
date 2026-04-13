@@ -112,9 +112,9 @@ function ChatPreview() {
 function HowItWorks() {
   const [step, setStep] = useState(0);
   const steps = [
-    { label: "Your kid tells Boo", desc: "A story for English class? Help with fractions? A poster for the school fair? Just ask.", icon: MessageCircle },
-    { label: "Boo creates it safely", desc: "Using our proprietary safe AI models, Boo makes exactly what your kid described. No unsafe content, ever.", icon: Sparkles },
-    { label: "Download & share", desc: "Print the poster, submit the essay, share the story. Real creations your kid made with AI.", icon: Film },
+    { label: "Tell Boo what you want to make", desc: "A video? A game? A poster for your room? A song? Just describe it.", icon: MessageCircle },
+    { label: "Boo creates it", desc: "Using safe AI models, Boo makes exactly what was described. Real files, real creations.", icon: Sparkles },
+    { label: "Download & share", desc: "Share with friends, print it, post it, play it. Your kid made that with AI.", icon: Film },
   ];
 
   useEffect(() => {
@@ -166,72 +166,68 @@ function HowItWorks() {
    Data
    ═══════════════════════════════════════════════════════ */
 const USE_CASES = [
-  { emoji: "\uD83D\uDCD6", label: "Write a story", bg: "linear-gradient(135deg, #EC4899, #F472B6)" },
-  { emoji: "\uD83C\uDFA8", label: "Make art", bg: "linear-gradient(135deg, #8B5CF6, #A78BFA)" },
-  { emoji: "\uD83D\uDCDA", label: "Study guide", bg: "linear-gradient(135deg, #22C55E, #4ADE80)" },
-  { emoji: "\uD83D\uDCAA", label: "Science experiment", bg: "linear-gradient(135deg, #F43F5E, #FB7185)" },
-  { emoji: "\uD83C\uDFAE", label: "Build a game", bg: "linear-gradient(135deg, #06B6D4, #22D3EE)" },
-  { emoji: "\uD83C\uDFB5", label: "Write a song", bg: "linear-gradient(135deg, #F97316, #FB923C)" },
+  { emoji: "\uD83C\uDFAC", label: "Make a video", bg: "linear-gradient(135deg, #EC4899, #F472B6)" },
+  { emoji: "\uD83C\uDFA8", label: "Design something", bg: "linear-gradient(135deg, #8B5CF6, #A78BFA)" },
+  { emoji: "\uD83D\uDCD6", label: "Write a story", bg: "linear-gradient(135deg, #22C55E, #4ADE80)" },
+  { emoji: "\uD83C\uDFAE", label: "Build a game", bg: "linear-gradient(135deg, #F43F5E, #FB7185)" },
+  { emoji: "\uD83D\uDCCA", label: "Make a presentation", bg: "linear-gradient(135deg, #06B6D4, #22D3EE)" },
+  { emoji: "\uD83C\uDFB5", label: "Create music", bg: "linear-gradient(135deg, #F97316, #FB923C)" },
   { emoji: "\uD83C\uDF0D", label: "Learn a language", bg: "linear-gradient(135deg, #EAB308, #FACC15)" },
-  { emoji: "\u2709\uFE0F", label: "School project", bg: "linear-gradient(135deg, #3B82F6, #60A5FA)" },
-  { emoji: "\uD83C\uDFA8", label: "Design a poster", bg: "linear-gradient(135deg, #F43F5E, #EC4899)" },
-  { emoji: "\uD83D\uDCDD", label: "Book report", bg: "linear-gradient(135deg, #22C55E, #06B6D4)" },
-  { emoji: "\uD83E\uDDEA", label: "Math tutor", bg: "linear-gradient(135deg, #EC4899, #8B5CF6)" },
-  { emoji: "\uD83D\uDCA1", label: "Comic creator", bg: "linear-gradient(135deg, #F97316, #EAB308)" },
+  { emoji: "\uD83E\uDDEA", label: "Science experiment", bg: "linear-gradient(135deg, #3B82F6, #60A5FA)" },
 ];
 
 const BENTO_ITEMS = [
-  { title: "Creative Projects", desc: "Stories, art, videos, comics", span: "col-span-2", color: "#EC4899", icon: Video, accent: "from-[#EC4899]/20 to-[#F472B6]/10", mockType: "tiktok" as const },
-  { title: "Homework Help", desc: "Math, science, all subjects", span: "col-span-1", color: "#3B82F6", icon: FileText, accent: "from-[#3B82F6]/20 to-[#60A5FA]/10", mockType: "resume" as const },
-  { title: "Art Studio", desc: "Design posters, cards, logos", span: "col-span-1", color: "#8B5CF6", icon: PenTool, accent: "from-[#8B5CF6]/20 to-[#A78BFA]/10", mockType: "design" as const },
-  { title: "Study Tools", desc: "Flashcards, quizzes, guides", span: "col-span-1", color: "#06B6D4", icon: BookOpen, accent: "from-[#06B6D4]/20 to-[#22D3EE]/10", mockType: "learning" as const },
-  { title: "Languages", desc: "Practice any language", span: "col-span-1", color: "#22C55E", icon: Dumbbell, accent: "from-[#22C55E]/20 to-[#4ADE80]/10", mockType: "lifestyle" as const },
-  { title: "Safe & Fun", desc: "Built for kids, trusted by parents", span: "col-span-2", color: "#F97316", icon: Music, accent: "from-[#F97316]/20 to-[#FB923C]/10", mockType: "fun" as const },
+  { title: "Create Anything", desc: "Videos, art, music, code, games", span: "col-span-2", color: "#EC4899", icon: Video, accent: "from-[#EC4899]/20 to-[#F472B6]/10", mockType: "tiktok" as const },
+  { title: "Design Studio", desc: "Posters, logos, comics", span: "col-span-1", color: "#8B5CF6", icon: PenTool, accent: "from-[#8B5CF6]/20 to-[#A78BFA]/10", mockType: "design" as const },
+  { title: "Writing", desc: "Stories, scripts, songs", span: "col-span-1", color: "#3B82F6", icon: FileText, accent: "from-[#3B82F6]/20 to-[#60A5FA]/10", mockType: "resume" as const },
+  { title: "Games & Code", desc: "Build real things", span: "col-span-1", color: "#06B6D4", icon: BookOpen, accent: "from-[#06B6D4]/20 to-[#22D3EE]/10", mockType: "learning" as const },
+  { title: "Learning", desc: "Study, practice, explore", span: "col-span-1", color: "#22C55E", icon: Dumbbell, accent: "from-[#22C55E]/20 to-[#4ADE80]/10", mockType: "lifestyle" as const },
+  { title: "Safe & Private", desc: "Built for kids, trusted by parents", span: "col-span-2", color: "#F97316", icon: Music, accent: "from-[#F97316]/20 to-[#FB923C]/10", mockType: "fun" as const },
 ];
 
 const TESTIMONIALS = [
-  { quote: "My daughter wrote her first short story with Boo!", handle: "@proud_parent", color: "#EC4899" },
-  { quote: "Boo helped me understand fractions finally", handle: "@math_kid", color: "#8B5CF6" },
-  { quote: "I made a poster for my science fair in 5 minutes!", handle: "@young_creator", color: "#06B6D4" },
-  { quote: "I actually enjoy homework now??", handle: "@student_life", color: "#22C55E" },
-  { quote: "My son uses Boo more than YouTube", handle: "@happy_mom", color: "#F97316" },
-  { quote: "Best study buddy ever", handle: "@exam_prep_kid", color: "#F43F5E" },
+  { quote: "My daughter made a whole video for her birthday party!", handle: "@proud_parent", color: "#EC4899" },
+  { quote: "I built a quiz game and my friends loved it", handle: "@young_coder", color: "#8B5CF6" },
+  { quote: "Boo helped me design a logo for my lemonade stand", handle: "@kid_entrepreneur", color: "#06B6D4" },
+  { quote: "I wrote a 10-page story with Boo. My teacher was shocked", handle: "@story_kid", color: "#22C55E" },
+  { quote: "My son uses Boo more than YouTube now", handle: "@happy_mom", color: "#F97316" },
+  { quote: "Made my science fair poster in 5 minutes!", handle: "@science_star", color: "#F43F5E" },
 ];
 
 const SKILL_BUBBLES = [
-  { name: "Story Writer", size: "lg", color: "#EC4899", desc: "Write amazing stories" },
-  { name: "Homework Help", size: "lg", color: "#8B5CF6", desc: "Step-by-step explanations" },
-  { name: "Art Studio", size: "lg", color: "#3B82F6", desc: "Create beautiful art" },
-  { name: "Science Projects", size: "md", color: "#06B6D4", desc: "Fun experiments" },
-  { name: "Math Tutor", size: "md", color: "#22C55E", desc: "Master every concept" },
-  { name: "Study Guides", size: "md", color: "#F97316", desc: "Ace every test" },
-  { name: "Comic Creator", size: "lg", color: "#EAB308", desc: "Design your own comics" },
-  { name: "Poetry Workshop", size: "md", color: "#F43F5E", desc: "Express yourself in verse" },
-  { name: "Book Reports", size: "md", color: "#EC4899", desc: "Understand any book" },
-  { name: "Language Practice", size: "lg", color: "#22C55E", desc: "Learn any language" },
-  { name: "Flashcards", size: "md", color: "#3B82F6", desc: "Study smarter" },
-  { name: "Science Experiments", size: "md", color: "#8B5CF6", desc: "Try cool experiments" },
-  { name: "Creative Writing", size: "lg", color: "#F97316", desc: "Let your imagination fly" },
-  { name: "Poster Design", size: "md", color: "#06B6D4", desc: "Eye-catching designs" },
-  { name: "Quiz Maker", size: "md", color: "#EAB308", desc: "Test your knowledge" },
-  { name: "Letter Writing", size: "sm", color: "#22C55E", desc: "Write to anyone" },
-  { name: "Game Builder", size: "lg", color: "#EC4899", desc: "Create your own games" },
-  { name: "History Explorer", size: "sm", color: "#3B82F6", desc: "Travel through time" },
-  { name: "Spelling Bee", size: "sm", color: "#8B5CF6", desc: "Become a word wizard" },
+  { name: "Video Creator", size: "lg", color: "#EC4899", desc: "Create amazing videos" },
+  { name: "Story Writer", size: "lg", color: "#8B5CF6", desc: "Write amazing stories" },
+  { name: "Game Builder", size: "lg", color: "#3B82F6", desc: "Build your own games" },
+  { name: "Art Studio", size: "lg", color: "#06B6D4", desc: "Create beautiful art" },
+  { name: "Music Maker", size: "lg", color: "#22C55E", desc: "Write songs and beats" },
+  { name: "Presentation Builder", size: "md", color: "#F97316", desc: "Wow your audience" },
+  { name: "Code Helper", size: "md", color: "#EAB308", desc: "Write real code" },
+  { name: "Poster Designer", size: "md", color: "#F43F5E", desc: "Eye-catching designs" },
+  { name: "Comic Creator", size: "lg", color: "#EC4899", desc: "Design your own comics" },
+  { name: "Homework Help", size: "md", color: "#22C55E", desc: "Step-by-step explanations" },
+  { name: "Language Practice", size: "lg", color: "#3B82F6", desc: "Learn any language" },
+  { name: "Science Lab", size: "md", color: "#8B5CF6", desc: "Fun experiments" },
+  { name: "Quiz Maker", size: "md", color: "#F97316", desc: "Test your knowledge" },
+  { name: "Song Lyrics", size: "md", color: "#06B6D4", desc: "Write hit songs" },
+  { name: "Logo Design", size: "md", color: "#EAB308", desc: "Brand your ideas" },
+  { name: "Resume Builder", size: "sm", color: "#22C55E", desc: "Stand out" },
+  { name: "Study Guides", size: "md", color: "#EC4899", desc: "Ace every test" },
+  { name: "Letter Writer", size: "sm", color: "#3B82F6", desc: "Write to anyone" },
+  { name: "Video Projects", size: "md", color: "#8B5CF6", desc: "Create cool videos" },
   { name: "Trivia Games", size: "md", color: "#F43F5E", desc: "Fun for everyone" },
-  { name: "Video Projects", size: "md", color: "#F97316", desc: "Create cool videos" },
+  { name: "Poster Design", size: "md", color: "#F97316", desc: "Eye-catching posters" },
   { name: "Geography", size: "sm", color: "#06B6D4", desc: "Explore the world" },
-  { name: "Reading Helper", size: "sm", color: "#EAB308", desc: "Understand any text" },
-  { name: "Presentation Maker", size: "md", color: "#22C55E", desc: "Wow your class" },
-  { name: "Music Creator", size: "md", color: "#EC4899", desc: "Write songs and beats" },
+  { name: "Drawing Helper", size: "sm", color: "#EAB308", desc: "Learn to draw" },
+  { name: "Presentation Maker", size: "md", color: "#22C55E", desc: "Stunning slides" },
+  { name: "Animation", size: "md", color: "#EC4899", desc: "Bring ideas to life" },
   { name: "Debate Coach", size: "sm", color: "#F43F5E", desc: "Build strong arguments" },
-  { name: "Drawing Helper", size: "sm", color: "#3B82F6", desc: "Learn to draw" },
+  { name: "Website Builder", size: "md", color: "#3B82F6", desc: "Build your own site" },
   { name: "Stories", size: "md", color: "#8B5CF6", desc: "Creative narratives" },
   { name: "Jokes", size: "sm", color: "#F97316", desc: "Guaranteed laughs" },
   { name: "Fun Facts", size: "sm", color: "#22C55E", desc: "Learn something new" },
   { name: "Flashcards", size: "md", color: "#06B6D4", desc: "Study smarter" },
   { name: "School Projects", size: "md", color: "#EAB308", desc: "Get an A+" },
-  { name: "Coloring Pages", size: "sm", color: "#EC4899", desc: "Print and color" },
+  { name: "Meme Maker", size: "sm", color: "#EC4899", desc: "LOL-worthy memes" },
   { name: "Brain Teasers", size: "sm", color: "#F43F5E", desc: "Challenge your mind" },
   { name: "Storyboards", size: "sm", color: "#3B82F6", desc: "Plan your story visually" },
 ];
@@ -376,20 +372,20 @@ export default function LandingPage() {
             <span className="hero-gradient-text">Superboo</span>
           </h1>
           <p className="text-[20px] md:text-[26px] text-white/90 leading-relaxed max-w-lg mb-3 font-semibold">
-            The AI built just for kids.
+            The first AI agent built for kids.
           </p>
           <p className="text-[15px] md:text-[17px] text-white/50 leading-relaxed max-w-md mb-10">
-            Stories, homework, art projects, science experiments &mdash; Boo makes learning and creating magical.
+            Videos, games, art, stories, presentations, code &mdash; if you can imagine it, Boo can make it. Safe and built for young creators.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 items-stretch">
             <button onClick={() => nav("/login")}
               className="group hero-cta-primary px-8 py-3.5 rounded-xl text-white text-[15px] font-bold transition-all">
-              Let your kid try Boo
+              Start creating
               <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
             </button>
             <a href="#section-features"
               className="hero-cta-secondary px-8 py-3.5 rounded-xl text-white/70 hover:text-white text-[15px] font-semibold transition-all text-center flex items-center justify-center">
-              See what kids create
+              See what Boo can do
             </a>
           </div>
           <p className="text-[12px] text-white/30 mt-3">Free &amp; safe for kids. No credit card.</p>
@@ -450,9 +446,9 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="p-7 rounded-2xl" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", backdropFilter: "blur(12px)" }}>
-              <h3 className="text-[18px] font-bold text-white mb-3">Creativity over productivity</h3>
+              <h3 className="text-[18px] font-bold text-white mb-3">A real agent, not a toy</h3>
               <p className="text-[14px] text-white/50 leading-relaxed">
-                While other AI tools optimize for work output, Superboo optimizes for imagination. We measure success by stories written, art created, and curiosity sparked — not documents processed.
+                While other AI tools limit kids to educational content, Superboo is a full AI agent. Kids can create videos, build games, design art, write code — everything adults do with AI, but safe.
               </p>
             </div>
           </div>
@@ -469,7 +465,7 @@ export default function LandingPage() {
               One Boo. <span className="hero-gradient-text">Endless imagination.</span>
             </h2>
             <p className="text-white/40 text-[16px] max-w-md mx-auto">
-              Your kid describes what they want. Boo creates it safely.
+              Videos, art, music, games, presentations, websites — Boo is a full AI agent that makes whatever your kid imagines.
             </p>
           </div>
 
@@ -653,13 +649,13 @@ export default function LandingPage() {
             What will <span className="hero-gradient-text">YOUR kid</span> create?
           </h2>
           <p className="text-white/40 text-[16px] max-w-sm mb-10">
-            Safe, fun, and educational. Try Boo free.
+            Safe, powerful, and free to try. A full AI agent for kids.
           </p>
           <button onClick={() => nav("/login")}
             onMouseEnter={() => setCtaHover(true)}
             onMouseLeave={() => setCtaHover(false)}
             className="group hero-cta-primary px-12 py-5 rounded-xl text-white text-[18px] font-bold transition-all">
-            Let your kid try Boo &mdash; it&apos;s free
+            Start creating &mdash; it&apos;s free
             <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
           </button>
         </div>

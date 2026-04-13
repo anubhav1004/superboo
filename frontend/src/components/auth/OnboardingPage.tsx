@@ -30,14 +30,14 @@ function Ghost({ size = 64 }: { size?: number }) {
 }
 
 const CATEGORIES = [
-  { id: "writing", label: "Creative Writing", emoji: "\u270D\uFE0F", color: "#EC4899" },
+  { id: "video", label: "Video & Animation", emoji: "\uD83C\uDFAC", color: "#EC4899" },
   { id: "design", label: "Art & Design", emoji: "\uD83C\uDFA8", color: "#9370ff" },
-  { id: "homework", label: "Homework Help", emoji: "\uD83D\uDCDA", color: "#22C55E" },
-  { id: "science", label: "Science & Experiments", emoji: "\uD83E\uDDEA", color: "#F43F5E" },
-  { id: "languages", label: "Languages", emoji: "\uD83C\uDF0D", color: "#06B6D4" },
-  { id: "games", label: "Games & Quizzes", emoji: "\uD83C\uDFAE", color: "#EAB308" },
-  { id: "music", label: "Music", emoji: "\uD83C\uDFB5", color: "#F97316" },
-  { id: "reading", label: "Reading", emoji: "\uD83D\uDCD6", color: "#A855F7" },
+  { id: "writing", label: "Stories & Writing", emoji: "\u270D\uFE0F", color: "#22C55E" },
+  { id: "games", label: "Games & Code", emoji: "\uD83C\uDFAE", color: "#F43F5E" },
+  { id: "music", label: "Music & Audio", emoji: "\uD83C\uDFB5", color: "#06B6D4" },
+  { id: "homework", label: "School & Homework", emoji: "\uD83D\uDCDA", color: "#EAB308" },
+  { id: "science", label: "Science & Experiments", emoji: "\uD83E\uDDEA", color: "#F97316" },
+  { id: "languages", label: "Languages", emoji: "\uD83C\uDF0D", color: "#A855F7" },
 ];
 
 const ROLES = [
